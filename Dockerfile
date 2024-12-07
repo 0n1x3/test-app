@@ -2,7 +2,7 @@
 FROM node:18-alpine AS builder
 
 # Установка pnpm и typescript
-RUN npm install -g pnpm typescript rimraf
+RUN npm install -g pnpm typescript rimraf tailwindcss postcss autoprefixer
 
 # Рабочая директория
 WORKDIR /app
