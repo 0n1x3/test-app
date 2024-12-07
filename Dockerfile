@@ -13,8 +13,8 @@ COPY packages/shared/package.json ./packages/shared/
 COPY packages/backend/package.json ./packages/backend/
 COPY packages/frontend/package.json ./packages/frontend/
 
-# Устанавливаем зависимости
-RUN pnpm install --frozen-lockfile
+# Устанавливаем зависимости с выводом логов
+RUN pnpm install --frozen-lockfile --verbose
 
 # Копируем исходный код
 COPY . .
@@ -23,8 +23,8 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV NODE_ENV production
 
-# Собираем приложения
-RUN pnpm build
+# Собираем приложения с выводом логов
+RUN pnpm build --verbose
 
 # Продакшн образ
 FROM node:18-alpine AS runner
