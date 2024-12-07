@@ -15,13 +15,10 @@ export interface Game {
 
 export interface GameState {
   gameId: string;
-  // Добавьте необходимые поля для состояния игры
   currentPlayer?: string;
   moves?: any[];
-  // ... другие поля состояния
 }
 
-// События WebSocket
 export enum WSEvents {
   GAME_STATE_UPDATE = 'gameStateUpdate',
   PLAYER_JOINED = 'playerJoined',

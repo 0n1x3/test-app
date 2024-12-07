@@ -27,6 +27,9 @@ COPY packages/frontend/tailwind.config.js ./packages/frontend/
 # Собираем shared пакет
 RUN cd packages/shared && pnpm build
 
+# Проверяем, что shared пакет собран правильно
+RUN ls -la packages/shared/dist
+
 # Копируем остальные исходники
 COPY . .
 
@@ -59,5 +62,5 @@ RUN npm install -g pnpm && pnpm install --prod --frozen-lockfile
 # Открываем порты
 EXPOSE 3000 3005
 
-# Запускаем приложение
+# З��пускаем приложение
 CMD ["pnpm", "start"]
