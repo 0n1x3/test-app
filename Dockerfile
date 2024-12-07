@@ -1,8 +1,8 @@
 # Базовый образ
 FROM node:18-alpine AS builder
 
-# Установка pnpm
-RUN npm install -g pnpm
+# Установка pnpm и typescript
+RUN npm install -g pnpm typescript
 
 # Рабочая директория
 WORKDIR /app
@@ -20,10 +20,13 @@ RUN pnpm install --frozen-lockfile --verbose
 COPY . .
 
 # Устанавливаем переменные окружения для сборки
-ENV NEXT_TELEMETRY_DISABLED 1
-ENV NODE_ENV production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
 
-# Собираем приложения с выводом логов
+# Собираем shared пакет отдельно
+RUN cd packages/shared && pnpm build
+
+# Собираем остальные пакеты
 RUN pnpm build --verbose
 
 # Продакшн образ
