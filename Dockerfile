@@ -2,7 +2,7 @@
 FROM node:18-alpine AS builder
 
 # Установка pnpm и typescript
-RUN npm install -g pnpm typescript rimraf tailwindcss postcss autoprefixer
+RUN npm install -g pnpm typescript rimraf
 
 # Рабочая директория
 WORKDIR /app
@@ -19,6 +19,10 @@ RUN pnpm install --frozen-lockfile
 
 # Копируем исходники shared пакета
 COPY packages/shared ./packages/shared
+
+# Копируем конфигурационные файлы для frontend
+COPY packages/frontend/postcss.config.js ./packages/frontend/
+COPY packages/frontend/tailwind.config.js ./packages/frontend/
 
 # Собираем shared пакет
 RUN cd packages/shared && pnpm build
