@@ -2,19 +2,20 @@
 FROM node:18-alpine AS builder
 
 # Установка pnpm и typescript
-RUN npm install -g pnpm typescript
+RUN npm install -g pnpm typescript rimraf
 
 # Рабочая директория
 WORKDIR /app
 
-# Копируем файлы package.json и pnpm-lock.yaml
+# Копируем конфигурационные файлы
+COPY pnpm-workspace.yaml ./
 COPY package.json pnpm-lock.yaml ./
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/backend/package.json ./packages/backend/
 COPY packages/frontend/package.json ./packages/frontend/
 
-# Устанавливаем зависимости с выводом логов
-RUN pnpm install --frozen-lockfile --verbose
+# Устанавливаем зависимости
+RUN pnpm install --frozen-lockfile
 
 # Копируем исходный код
 COPY . .
@@ -23,27 +24,24 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
-# Собираем shared пакет отдельно
-RUN cd packages/shared && pnpm build
-
-# Собираем остальные пакеты
-RUN pnpm build --verbose
+# Собираем приложения
+RUN pnpm build
 
 # Продакшн образ
 FROM node:18-alpine AS runner
 
 WORKDIR /app
 
-# Копируем собранные файлы из builder
+# Копируем собранные файлы и конфигурации
 COPY --from=builder /app/packages/backend/dist ./packages/backend/dist
 COPY --from=builder /app/packages/frontend/.next ./packages/frontend/.next
 COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
-
-# Копируем package.json файлы
-COPY package.json pnpm-lock.yaml ./
-COPY packages/shared/package.json ./packages/shared/
-COPY packages/backend/package.json ./packages/backend/
-COPY packages/frontend/package.json ./packages/frontend/
+COPY --from=builder /app/pnpm-workspace.yaml ./
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/pnpm-lock.yaml ./
+COPY --from=builder /app/packages/shared/package.json ./packages/shared/
+COPY --from=builder /app/packages/backend/package.json ./packages/backend/
+COPY --from=builder /app/packages/frontend/package.json ./packages/frontend/
 
 # Устанавливаем только production зависимости
 RUN npm install -g pnpm && pnpm install --prod --frozen-lockfile

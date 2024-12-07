@@ -1,9 +1,6 @@
 {
   "name": "test-app",
   "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
   "scripts": {
     "dev": "concurrently \"pnpm --filter frontend dev\" \"pnpm --filter backend dev\"",
     "build": "pnpm --filter shared build && pnpm --filter backend build && pnpm --filter frontend build",
