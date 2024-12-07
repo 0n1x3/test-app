@@ -1,31 +1,24 @@
 import { useEffect, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
 
-const SOCKET_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001';
-
 export function useSocket() {
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
     if (!socketRef.current) {
-      socketRef.current = io(SOCKET_URL, {
+      socketRef.current = io('http://localhost:3001', {
         withCredentials: true,
-        transports: ['websocket']
-      });
-
-      socketRef.current.on('connect', () => {
-        console.log('Connected to WebSocket');
-      });
-
-      socketRef.current.on('disconnect', () => {
-        console.log('Disconnected from WebSocket');
+        transports: ['websocket'],
+        reconnection: true,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
+        reconnectionAttempts: 5
       });
     }
 
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
-        socketRef.current = null;
       }
     };
   }, []);

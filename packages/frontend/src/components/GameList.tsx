@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Game } from '@test-app/shared/types';
+import { Game } from '@test-app/shared';
 import { useSocket } from '@/hooks/useSocket';
 import { GameCard } from './GameCard';
 

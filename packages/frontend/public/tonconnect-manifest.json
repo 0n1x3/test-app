@@ -1,0 +1,7 @@
+{
+  "url": "http://localhost:3000",
+  "name": "Test App",
+  "iconUrl": "https://raw.githubusercontent.com/ton-community/tutorials/main/03-client/test/public/icon.png",
+  "termsOfUseUrl": "https://raw.githubusercontent.com/ton-community/tutorials/main/03-client/test/public/terms.txt",
+  "privacyPolicyUrl": "https://raw.githubusercontent.com/ton-community/tutorials/main/03-client/test/public/privacy.txt"
+} 

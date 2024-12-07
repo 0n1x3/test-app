@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Game, GameState, User } from '@test/shared/types';
+import { Game, User, GameState } from '@test-app/shared';
 
 @Injectable()
 export class GameService {

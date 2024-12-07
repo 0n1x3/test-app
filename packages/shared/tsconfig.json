@@ -9,8 +9,10 @@
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "composite": true,
+    "rootDir": "./src"
   },
-  "include": ["**/*"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 } 
