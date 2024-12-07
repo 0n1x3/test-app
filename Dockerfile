@@ -7,17 +7,21 @@ RUN npm install -g pnpm
 # Рабочая директория
 WORKDIR /app
 
-# Копируем файлы package.json
+# Копируем файлы package.json и pnpm-lock.yaml
 COPY package.json pnpm-lock.yaml ./
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/backend/package.json ./packages/backend/
 COPY packages/frontend/package.json ./packages/frontend/
 
 # Устанавливаем зависимости
-RUN pnpm install
+RUN pnpm install --frozen-lockfile
 
 # Копируем исходный код
 COPY . .
+
+# Устанавливаем переменные окружения для сборки
+ENV NEXT_TELEMETRY_DISABLED 1
+ENV NODE_ENV production
 
 # Собираем приложения
 RUN pnpm build
@@ -39,7 +43,7 @@ COPY packages/backend/package.json ./packages/backend/
 COPY packages/frontend/package.json ./packages/frontend/
 
 # Устанавливаем только production зависимости
-RUN npm install -g pnpm && pnpm install --prod
+RUN npm install -g pnpm && pnpm install --prod --frozen-lockfile
 
 # Открываем порты
 EXPOSE 3000 3005
