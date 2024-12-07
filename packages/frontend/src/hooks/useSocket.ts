@@ -6,7 +6,8 @@ export function useSocket() {
 
   useEffect(() => {
     if (!socketRef.current) {
-      socketRef.current = io('http://localhost:3001', {
+      socketRef.current = io('https://test.timecommunity.xyz', {
+        path: '/socket.io',
         withCredentials: true,
         transports: ['websocket'],
         reconnection: true,

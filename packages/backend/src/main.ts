@@ -4,13 +4,14 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
-  // Настройка CORS
   app.enableCors({
-    origin: ['http://localhost:3000'],
+    origin: ['https://test.timecommunity.xyz'],
     methods: ['GET', 'POST'],
     credentials: true,
   });
 
-  await app.listen(3001);
+  app.setGlobalPrefix('api');
+
+  await app.listen(3005);
 }
 bootstrap(); 

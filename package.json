@@ -7,10 +7,14 @@
   "scripts": {
     "dev": "concurrently \"pnpm --filter frontend dev\" \"pnpm --filter backend dev\"",
     "build": "pnpm --filter shared build && pnpm --filter backend build && pnpm --filter frontend build",
-    "start": "pnpm --filter frontend start"
+    "start": "pnpm --filter frontend start",
+    "test": "pnpm --filter backend test && pnpm --filter frontend test",
+    "lint": "pnpm --filter backend lint && pnpm --filter frontend lint",
+    "prepare": "husky install"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "husky": "^8.0.3"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

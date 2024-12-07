@@ -1,0 +1,10 @@
+node_modules
+.next
+dist
+build
+.env
+.turbo
+.pnpm-store
+.git
+.gitignore
+README.md

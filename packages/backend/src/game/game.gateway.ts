@@ -8,6 +8,7 @@ import { Game, User, WSEvents } from '@test-app/shared';
     origin: ['http://localhost:3000'],
     credentials: true,
   },
+  port: 3005
 })
 export class GameGateway {
   @WebSocketServer()
