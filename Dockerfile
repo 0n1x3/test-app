@@ -7,7 +7,7 @@ RUN npm install -g pnpm typescript rimraf
 # Рабочая директория
 WORKDIR /app
 
-# Копируем конфигурационные файлы
+# Копируем только конфигурационные файлы
 COPY pnpm-workspace.yaml ./
 COPY package.json pnpm-lock.yaml ./
 COPY packages/shared/package.json ./packages/shared/
@@ -17,15 +17,21 @@ COPY packages/frontend/package.json ./packages/frontend/
 # Устанавливаем зависимости
 RUN pnpm install --frozen-lockfile
 
-# Копируем исходный код
+# Копируем исходники shared пакета
+COPY packages/shared ./packages/shared
+
+# Собираем shared пакет
+RUN cd packages/shared && pnpm build
+
+# Копируем остальные исходники
 COPY . .
+
+# Собираем остальные пакеты
+RUN pnpm build
 
 # Устанавливаем переменные окружения для сборки
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
-
-# Собираем приложения
-RUN pnpm build
 
 # Продакшн образ
 FROM node:18-alpine AS runner
