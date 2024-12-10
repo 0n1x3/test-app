@@ -56,7 +56,7 @@ jobs:
       - name: Build and Push Frontend Image
         uses: docker/build-push-action@v3
         with:
-          context: ./packages/frontend
+          context: .
           file: ./packages/frontend/Dockerfile
           push: true
           tags: 0n1x3/test-app-frontend:latest
