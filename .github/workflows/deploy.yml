@@ -68,7 +68,11 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           debug: true
+          port: 22
+          script_stop: true
           script: |
-            cd /home/rdp-user/test/test-app
+            whoami
+            echo "Testing connection"
+            cd /home/rdp-user/test/test-app || exit 1
             docker-compose pull
             docker-compose up -d
