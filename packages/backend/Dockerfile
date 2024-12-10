@@ -22,6 +22,7 @@ COPY packages/shared ./packages/shared
 COPY packages/backend ./packages/backend
 
 # Собираем shared и backend
+RUN cd packages/shared && pnpm install
 RUN pnpm --filter shared build
 RUN pnpm --filter backend build
 
