@@ -5,9 +5,9 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Копируем файлы pnpm
-COPY package.json ./package.json
-COPY pnpm-lock.yaml ./pnpm-lock.yaml
-COPY pnpm-workspace.yaml ./pnpm-workspace.yaml
+COPY package.json .
+COPY pnpm-lock.yaml .
+COPY pnpm-workspace.yaml .
 
 # Копируем package.json из shared и backend
 COPY packages/shared/package.json ./packages/shared/package.json

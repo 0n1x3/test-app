@@ -48,7 +48,7 @@ jobs:
       - name: Build and Push Backend Image
         uses: docker/build-push-action@v3
         with:
-          context: ./packages/backend
+          context: .
           file: ./packages/backend/Dockerfile
           push: true
           tags: 0n1x3/test-app-backend:latest
