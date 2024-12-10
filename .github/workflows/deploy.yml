@@ -73,6 +73,9 @@ jobs:
           script: |
             whoami
             echo "Testing connection"
+            mkdir -p /home/rdp-user/test/test-app
             cd /home/rdp-user/test/test-app || exit 1
+            pwd
+            ls -la
             docker-compose pull
             docker-compose up -d
