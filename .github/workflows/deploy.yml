@@ -77,5 +77,28 @@ jobs:
             cd /home/rdp-user/test/test-app || exit 1
             pwd
             ls -la
+            
+            # Создаем docker-compose.yml
+            cat > docker-compose.yml << 'EOL'
+            version: '3'
+            
+            services:
+              backend:
+                image: 0n1x3/test-app-backend:latest
+                restart: always
+                ports:
+                  - "3005:3005"
+            
+              frontend:
+                image: 0n1x3/test-app-frontend:latest
+                restart: always
+                ports:
+                  - "3000:3000"
+            EOL
+            
+            # Проверяем содержимое
+            cat docker-compose.yml
+            
+            # Запускаем контейнеры
             docker-compose pull
             docker-compose up -d
