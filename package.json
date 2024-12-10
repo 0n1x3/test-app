@@ -2,7 +2,7 @@
   "name": "test-app",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"pnpm --filter frontend dev\" \"pnpm --filter backend dev\"",
+    "dev": "concurrently \"pnpm --filter frontend dev\" \"pnpm --filter backend start:dev\"",
     "build": "pnpm --filter shared build && pnpm --filter backend build && pnpm --filter frontend build",
     "start": "concurrently \"pnpm --filter backend start:prod\" \"pnpm --filter frontend start\"",
     "test": "pnpm --filter backend test && pnpm --filter frontend test",

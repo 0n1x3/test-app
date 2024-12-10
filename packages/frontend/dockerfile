@@ -1,0 +1,22 @@
+# Используем официальный образ Node.js
+FROM node:18-alpine
+
+# Устанавливаем рабочую директорию
+WORKDIR /app
+
+# Копируем файлы зависимостей и устанавливаем их
+COPY package.json pnpm-lock.yaml ./
+RUN npm install -g pnpm
+RUN pnpm install --frozen-lockfile
+
+# Копируем исходный код фронтенда
+COPY . .
+
+# Собираем проект
+RUN pnpm build
+
+# Указываем порт, на котором будет работать фронтенд
+EXPOSE 3000
+
+# Команда для запуска фронтенда
+CMD ["pnpm", "start"]

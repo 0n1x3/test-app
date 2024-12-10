@@ -9,7 +9,8 @@
     "target": "ES2021",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
+    "baseUrl": "./src",
+    "rootDirs": ["./src", "../shared/src"],
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
@@ -18,9 +19,9 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@test-app/shared": ["../shared/src"]
+      "@test-app/shared": ["../../shared/src"]
     }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "../shared/src/**/*"],
   "exclude": ["node_modules", "dist"]
 } 
