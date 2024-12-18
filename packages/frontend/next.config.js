@@ -3,30 +3,19 @@ const nextConfig = {
   reactStrictMode: true,
   transpilePackages: ['@test-app/shared', '@tonconnect/ui-react'],
   output: 'standalone',
+  env: {
+    NEXT_PUBLIC_APP_URL: process.env.NODE_ENV === 'production' 
+      ? 'https://test.timecommunity.xyz' 
+      : 'http://localhost:3000'
+  },
   webpack: (config) => {
-    // Только необходимые fallbacks
     config.resolve.fallback = {
       ...config.resolve.fallback,
       net: false,
       fs: false,
       tls: false
     };
-
-    // Сохраняем оригинальные правила
-    const rules = config.module.rules;
-
-    // Очищаем module
-    config.module = {
-      ...config.module,
-      rules
-    };
-
     return config;
-  },
-  // Отключаем некоторые оптимизации
-  experimental: {
-    optimizeCss: false,
-    optimizePackageImports: []
   }
 }
 

@@ -1,18 +1,8 @@
 {
-  "url": "http://localhost:3000",
+  "url": "https://test.timecommunity.xyz",
   "name": "Test App",
-  "iconUrl": "https://ton.org/download/ton_symbol.png",
-  "termsOfUseUrl": "https://ton.org/terms",
-  "privacyPolicyUrl": "https://ton.org/privacy",
-  "manifestVersion": 2,
-  "bridgeUrl": "https://bridge.tonapi.io/bridge",
-  "items": [
-    {
-      "name": "ton_addr",
-      "required": true
-    }
-  ],
-  "capabilities": [
-    "ton_addr"
-  ]
+  "iconUrl": "https://test.timecommunity.xyz/icon.png",
+  "termsOfUseUrl": "https://test.timecommunity.xyz/terms",
+  "privacyPolicyUrl": "https://test.timecommunity.xyz/privacy",
+  "permissions": ["tonAddress"]
 } 
