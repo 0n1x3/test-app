@@ -1,28 +1,30 @@
 # Используем официальный образ Node.js
 FROM node:18-alpine
 
-# Устанавливаем рабочую директорию опять 
+# Устанавливаем рабочую директорию
 WORKDIR /app
 
 # Копируем файлы pnpm
-COPY package.json .
-COPY pnpm-lock.yaml .
-COPY pnpm-workspace.yaml .
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# Копируем package.json из shared и backend
-COPY packages/shared/package.json ./packages/shared/package.json
-COPY packages/backend/package.json ./packages/backend/package.json
+# Создаем структуру директорий
+RUN mkdir -p packages/shared packages/backend
+
+# Копируем package.json файлы
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/backend/package.json ./packages/backend/
 
 # Устанавливаем pnpm и зависимости
 RUN npm install -g pnpm
 RUN pnpm install --frozen-lockfile
 
-# Копируем исходный код shared и backend
-COPY packages/shared ./packages/shared
-COPY packages/backend ./packages/backend
+# Копируем исходный код (исключая node_modules)
+COPY packages/shared/src ./packages/shared/src
+COPY packages/shared/tsconfig.json ./packages/shared/
+COPY packages/backend/src ./packages/backend/src
+COPY packages/backend/tsconfig.json ./packages/backend/
 
 # Собираем shared и backend
-RUN cd packages/shared && pnpm install
 RUN pnpm --filter shared build
 RUN pnpm --filter backend build
 
