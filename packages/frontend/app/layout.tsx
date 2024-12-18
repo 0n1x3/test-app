@@ -1,5 +1,6 @@
 import './globals.css';
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
+import { TonProvider } from '@/providers/TonProvider';
 
 export const metadata: Metadata = {
   title: 'Test App',
@@ -13,7 +14,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ru">
-      <body>{children}</body>
+      <body>
+        <TonProvider>{children}</TonProvider>
+      </body>
     </html>
   );
 }

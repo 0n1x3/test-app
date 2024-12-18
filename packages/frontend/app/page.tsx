@@ -1,8 +1,9 @@
-export default function Home() {
+import { HomePage } from '@/components/HomePage';
+
+export default function Page() {
   return (
-    <main className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold">Test App</h1>
-      <p>Добро пожаловать!</p>
+    <main className="container mx-auto px-4 py-8">
+      <HomePage />
     </main>
   );
-}
+} 
