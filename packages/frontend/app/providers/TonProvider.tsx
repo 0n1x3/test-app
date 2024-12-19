@@ -10,7 +10,7 @@ export function TonProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const baseUrl = process.env.NODE_ENV === 'production'
       ? 'https://test.timecommunity.xyz'
-      : 'https://localhost:4000';
+      : 'https://dev.timecommunity.xyz:4000';
     
     const manifestFile = process.env.NODE_ENV === 'production'
       ? 'tonconnect-manifest.prod.json'
@@ -58,7 +58,7 @@ export function TonProvider({ children }: { children: React.ReactNode }) {
   const tonkeeper: UIWallet = {
     appName: 'tonkeeper',
     name: 'Tonkeeper',
-    imageUrl: 'https://localhost:4000/ton.png',
+    imageUrl: 'https://tonkeeper.com/assets/tonconnect-icon.png',
     aboutUrl: 'https://tonkeeper.com',
     universalLink: 'https://app.tonkeeper.com/ton-connect',
     bridgeUrl: 'https://bridge.tonapi.io/bridge',
@@ -72,7 +72,7 @@ export function TonProvider({ children }: { children: React.ReactNode }) {
       actionsConfiguration={{
         twaReturnUrl: process.env.NODE_ENV === 'production' 
           ? 'https://test.timecommunity.xyz'
-          : 'https://localhost:4000',
+          : 'https://dev.timecommunity.xyz:4000',
         skipRedirectToWallet: 'never'
       }}
       walletsListConfiguration={{

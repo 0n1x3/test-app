@@ -8,7 +8,7 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_APP_URL: process.env.NODE_ENV === 'production' 
       ? 'https://test.timecommunity.xyz' 
-      : 'https://localhost:4000'
+      : 'https://dev.timecommunity.xyz:4000'
   },
   webpack: (config) => {
     config.resolve.fallback = {

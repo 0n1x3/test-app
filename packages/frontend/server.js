@@ -12,8 +12,8 @@ console.log('Development mode:', dev);
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
-const certPath = path.join(__dirname, 'certificates/localhost.pem');
-const keyPath = path.join(__dirname, 'certificates/localhost-key.pem');
+const certPath = path.join(__dirname, 'certificates/dev.timecommunity.xyz.pem');
+const keyPath = path.join(__dirname, 'certificates/dev.timecommunity.xyz-key.pem');
 
 console.log('Certificate paths:');
 console.log('- Cert:', certPath);
@@ -84,13 +84,13 @@ try {
         console.error('Server error:', err);
       });
 
-      server.listen(4000, 'localhost', (err) => {
+      server.listen(4000, '0.0.0.0', (err) => {
         if (err) {
           console.error('Failed to start server:', err);
           process.exit(1);
         }
         console.log('Server started successfully');
-        console.log('> Ready on https://localhost:4000');
+        console.log('> Ready on https://dev.timecommunity.xyz:4000');
       });
     })
     .catch((err) => {

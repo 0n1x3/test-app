@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "next dev -p 3000",
-    "dev:https": "NODE_ENV=development HTTPS=true PORT=4000 node server.js",
+    "dev:https": "NODE_ENV=development HTTPS=true PORT=4000 HOSTNAME=dev.timecommunity.xyz node server.js",
     "build": "next build",
     "start": "next start -p 3000",
     "lint": "next lint"
