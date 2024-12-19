@@ -2,20 +2,21 @@
   "name": "@test-app/frontend",
   "version": "1.0.0",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3000",
+    "dev:https": "NODE_ENV=development HTTPS=true PORT=4000 node server.js",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 3000",
     "lint": "next lint"
   },
   "dependencies": {
+    "@orbs-network/ton-access": "^2.3.3",
     "@test-app/shared": "workspace:*",
     "@ton/core": "^0.59.0",
     "@ton/crypto": "^3.3.0",
     "@ton/ton": "^15.1.0",
-    "@orbs-network/ton-access": "^2.3.3",
-    "@tonconnect/sdk": "^3.0.0",
+    "@tonconnect/sdk": "^3.0.5",
     "@tonconnect/ui": "^2.0.0",
-    "@tonconnect/ui-react": "^2.0.0",
+    "@tonconnect/ui-react": "^2.0.9",
     "next": "14.1.0",
     "react": "18.2.0",
     "react-dom": "18.2.0"
@@ -24,10 +25,10 @@
     "@types/node": "^20.0.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
-    "typescript": "^5.0.0",
     "autoprefixer": "^10.4.17",
     "postcss": "^8.4.35",
-    "tailwindcss": "^3.4.1"
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.0.0"
   },
   "peerDependencies": {
     "react": "18.2.0",

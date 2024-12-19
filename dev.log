@@ -1,0 +1,33 @@
+
+> test-app@1.0.0 dev:https /home/onyxxx/dev/test/test-app
+> pnpm --filter frontend dev:https
+
+
+> @test-app/frontend@1.0.0 dev:https /home/onyxxx/dev/test/test-app/packages/frontend
+> next dev --experimental-https
+
+ ⚠ Self-signed certificates are currently an experimental feature, use at your own risk.
+   Attempting to generate self signed certificate. This may prompt for your password
+   CA Root certificate created in /home/onyxxx/.local/share/mkcert
+   Certificates created in /home/onyxxx/dev/test/test-app/packages/frontend/certificates
+   ▲ Next.js 14.1.0
+   - Local:        https://localhost:3000
+
+ ✓ Ready in 3.9s
+ ⚠ Found a change in next.config.js. Restarting the server to apply the changes...
+   ▲ Next.js 14.1.0
+   - Local:        https://localhost:3000
+
+ ⚠ Invalid next.config.js options detected: 
+ ⚠     Unrecognized key(s) in object: 'devServer'
+ ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+ ✓ Ready in 5.2s
+ ⚠ Found a change in next.config.js. Restarting the server to apply the changes...
+   ▲ Next.js 14.1.0
+   - Local:        https://localhost:3000
+
+ ⚠ Invalid next.config.js options detected: 
+ ⚠     Unrecognized key(s) in object: 'devServer'
+ ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+ ✓ Ready in 3.5s
+[?25h

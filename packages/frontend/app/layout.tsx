@@ -1,11 +1,5 @@
 import './globals.css';
-import type { Metadata } from 'next';
-import { TonProvider } from '@/providers/TonProvider';
-
-export const metadata: Metadata = {
-  title: 'Test App',
-  description: 'Test App Description',
-};
+import { TonProvider } from './providers/TonProvider';
 
 export default function RootLayout({
   children,
@@ -14,8 +8,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ru">
-      <body>
-        <TonProvider>{children}</TonProvider>
+      <body className="min-h-screen bg-gray-50">
+        <TonProvider>
+          <main className="container mx-auto px-4 py-8">
+            {children}
+          </main>
+        </TonProvider>
       </body>
     </html>
   );

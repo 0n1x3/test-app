@@ -1,8 +1,0 @@
-{
-  "url": "https://test.timecommunity.xyz",
-  "name": "Test App",
-  "iconUrl": "https://test.timecommunity.xyz/icon.png",
-  "termsOfUseUrl": "https://test.timecommunity.xyz/terms",
-  "privacyPolicyUrl": "https://test.timecommunity.xyz/privacy",
-  "permissions": ["tonAddress"]
-} 
