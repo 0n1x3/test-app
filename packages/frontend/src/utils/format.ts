@@ -7,7 +7,7 @@ export const formatTonAmount = (amount: number): string => {
 export const formatAddress = (address: string): string => {
   try {
     const addr = Address.parse(address);
-    const userFriendly = addr.toFriendly();
+    const userFriendly = addr.toString();
     return `${userFriendly.slice(0, 6)}...${userFriendly.slice(-4)}`;
   } catch {
     return address;
