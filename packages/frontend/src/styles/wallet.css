@@ -1,0 +1,107 @@
+.wallet-container {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 16px 0;
+}
+
+.balance {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 24px;
+}
+
+.amount {
+  font-weight: bold;
+  color: #fff;
+}
+
+.currency {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.address {
+  margin-top: 8px;
+  font-family: monospace;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+input[type="number"] {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 12px;
+  color: #fff;
+  font-size: 16px;
+  width: 100%;
+}
+
+.operations-section {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  margin: 16px;
+  padding: 16px;
+}
+
+.operations-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.operation-button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  background: #0098EA;
+  color: white;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.operation-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.withdraw-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.withdraw-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.amount-preview {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: right;
+}
+
+.error-message {
+  color: #ff4d4d;
+  font-size: 14px;
+  text-align: center;
+  padding: 8px;
+  background: rgba(255, 77, 77, 0.1);
+  border-radius: 8px;
+}
+
+/* Специальные стили для Telegram */
+.telegram-app .operations-section {
+  margin-bottom: env(safe-area-inset-bottom);
+}
+
+.telegram-app .operation-button:active {
+  opacity: 0.7;
+} 

@@ -5,6 +5,7 @@ import { useIsConnectionRestored } from '@tonconnect/ui-react';
 import { useEffect, useState, useCallback } from 'react';
 import { Address } from '@ton/core';
 import { useTonClient } from '@/hooks/useTonClient';
+import { formatTonAmount } from '@/utils/format';
 
 export function ConnectionStatus() {
   const { tonConnectUI } = useTonConnect();
@@ -49,7 +50,7 @@ export function ConnectionStatus() {
           </div>
           <div className="token-balance">
             <span className={loading ? 'updating' : ''}>
-              {Number(balance).toFixed(2)}
+              {formatTonAmount(Number(balance))}
             </span>
           </div>
         </div>

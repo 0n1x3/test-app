@@ -5,17 +5,33 @@ import { TonConnectButton } from '@tonconnect/ui-react';
 import { ConnectionStatus } from './ConnectionStatus';
 import { ContractOperations } from './ContractOperations';
 import { useTonConnect } from '@/hooks/useTonConnect';
+import { useEffect } from 'react';
+import { initTelegramApp, isTelegramWebAppAvailable } from '@/utils/telegram';
+import { formatAddress } from '@/utils/format';
 
 export function HomePage() {
   const connectionRestored = useIsConnectionRestored();
   const { tonConnectUI } = useTonConnect();
 
-  const formatAddress = (address: string) => {
-    if (!address) return '';
-    const prefix = address.slice(0, 4);
-    const suffix = address.slice(-4);
-    return `${prefix}...${suffix}`;
-  };
+  // Инициализация Telegram WebApp
+  useEffect(() => {
+    const isTelegram = isTelegramWebAppAvailable();
+    
+    if (isTelegram) {
+      document.body.classList.add('telegram-app');
+    }
+
+    const cleanup = initTelegramApp();
+    return () => {
+      if (cleanup) cleanup();
+      if (isTelegram) {
+        document.body.classList.remove('telegram-app');
+      }
+    };
+  }, []);
+
+  // Проверяем, запущено ли приложение в Telegram
+  const isTelegram = isTelegramWebAppAvailable();
 
   if (!connectionRestored) {
     return <div className="loading">Loading...</div>;
@@ -26,8 +42,9 @@ export function HomePage() {
       backgroundColor: '#000000',
       margin: 0,
       padding: 0,
-      minHeight: '100vh',
-      width: '100vw'
+      minHeight: isTelegram ? '100%' : '100vh',
+      width: '100vw',
+      overflow: isTelegram ? 'hidden' : 'auto'
     }}>
       <div className="app">
         <div className="wallet-container">
