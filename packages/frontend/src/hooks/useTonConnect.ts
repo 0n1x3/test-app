@@ -24,6 +24,6 @@ export function useTonConnect() {
 
   return {
     tonConnectUI,
-    sender: tonConnectUI.connected ? sender : null,
+    sender: tonConnectUI.connected && tonConnectUI.account ? sender : null,
   };
 }
