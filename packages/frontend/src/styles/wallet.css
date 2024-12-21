@@ -79,7 +79,19 @@ input[type="number"] {
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
+  color: #fff;
+  font-size: 16px;
+  caret-color: #fff;
+}
+
+.withdraw-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.withdraw-input:focus {
+  outline: none;
+  border-color: #0098EA;
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .amount-preview {

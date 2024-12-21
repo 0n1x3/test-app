@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { beginCell, toNano, Address } from '@ton/core';
 import { formatTonAmount } from '@/utils/format';
 import { isTelegramWebAppAvailable } from '@/utils/telegram';
+import { CONTRACT_ADDRESS } from '../config';
 
 export function ContractOperations() {
   const { sender } = useTonConnect();
@@ -22,7 +23,7 @@ export function ContractOperations() {
       setLoading(true);
       const address = sender.address as Address;
       await sender.send({
-        to: address,
+        to: Address.parse(CONTRACT_ADDRESS),
         value: toNano('0.1'),
         body: beginCell().endCell(),
       });
@@ -42,7 +43,7 @@ export function ContractOperations() {
       setLoading(true);
       const address = sender.address as Address;
       await sender.send({
-        to: address,
+        to: Address.parse(CONTRACT_ADDRESS),
         value: toNano('0.1'),
         body: beginCell()
           .storeUint(1, 32)
