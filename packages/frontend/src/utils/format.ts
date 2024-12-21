@@ -1,4 +1,4 @@
-import { Address } from 'ton-core';
+import { Address } from '@ton/core';
 
 export const formatTonAmount = (amount: number): string => {
   return amount.toFixed(2);
