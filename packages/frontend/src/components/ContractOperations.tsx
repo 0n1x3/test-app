@@ -2,7 +2,7 @@
 
 import { useTonConnect } from '@/hooks/useTonConnect';
 import { useState } from 'react';
-import { Address, beginCell, toNano } from 'ton-core';
+import { beginCell, toNano } from '@ton/core';
 
 export function ContractOperations() {
   const { sender } = useTonConnect();
@@ -47,35 +47,31 @@ export function ContractOperations() {
   };
 
   return (
-    <div className="wallet-section">
-      <div className="wallet-content">
-        <div className="token-list">
-          <div className="token-item">
-            <button
-              onClick={handleDeposit}
-              disabled={loading}
-              className="check-nft-button"
-            >
-              Внести TON
-            </button>
-          </div>
-          <div className="token-item">
-            <input
-              type="number"
-              value={withdrawAmount}
-              onChange={(e) => setWithdrawAmount(e.target.value)}
-              placeholder="Сумма для вывода"
-              className="token-input"
-              disabled={loading}
-            />
-            <button
-              onClick={handleWithdraw}
-              disabled={loading || !withdrawAmount}
-              className="check-nft-button"
-            >
-              Вывести TON
-            </button>
-          </div>
+    <div className="operations-section">
+      <div className="operations-content">
+        <button
+          onClick={handleDeposit}
+          disabled={loading || !sender}
+          className="operation-button"
+        >
+          Внести TON
+        </button>
+        <div className="withdraw-container">
+          <input
+            type="number"
+            value={withdrawAmount}
+            onChange={(e) => setWithdrawAmount(e.target.value)}
+            placeholder="Сумма для вывода"
+            className="withdraw-input"
+            disabled={loading}
+          />
+          <button
+            onClick={handleWithdraw}
+            disabled={loading || !withdrawAmount || !sender}
+            className="operation-button"
+          >
+            Вывести TON
+          </button>
         </div>
       </div>
     </div>

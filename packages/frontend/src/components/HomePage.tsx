@@ -10,24 +10,43 @@ export function HomePage() {
   const connectionRestored = useIsConnectionRestored();
   const { tonConnectUI } = useTonConnect();
 
+  const formatAddress = (address: string) => {
+    if (!address) return '';
+    const prefix = address.slice(0, 4);
+    const suffix = address.slice(-4);
+    return `${prefix}...${suffix}`;
+  };
+
   if (!connectionRestored) {
-    return <div>Loading...</div>;
+    return <div className="loading">Loading...</div>;
   }
 
   return (
-    <div className="cabinet">
-      <div className="cabinet-content">
-        <div className="cabinet-header">
-          <h1>Test App</h1>
-          <TonConnectButton />
+    <main style={{ 
+      backgroundColor: '#000000',
+      margin: 0,
+      padding: 0,
+      minHeight: '100vh',
+      width: '100vw'
+    }}>
+      <div className="app">
+        <div className="wallet-container">
+          {!tonConnectUI.connected ? (
+            <div className="connect-section">
+              <TonConnectButton />
+              <div className="connection-status">Не подключен</div>
+            </div>
+          ) : (
+            <>
+              <div className="wallet-address">
+                {formatAddress(tonConnectUI.account?.address || '')}
+              </div>
+              <ConnectionStatus />
+              <ContractOperations />
+            </>
+          )}
         </div>
-        {tonConnectUI.connected && (
-          <>
-            <ConnectionStatus />
-            <ContractOperations />
-          </>
-        )}
       </div>
-    </div>
+    </main>
   );
 } 

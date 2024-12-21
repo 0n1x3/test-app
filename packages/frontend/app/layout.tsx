@@ -1,6 +1,5 @@
 import './globals.css';
 import { TonProvider } from './providers/TonProvider';
-import { ConnectionStatus } from '@/components/ConnectionStatus';
 
 export default function RootLayout({
   children,
@@ -8,13 +7,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ru">
-      <body className="min-h-screen bg-gray-50">
+    <html lang="en">
+      <body style={{ backgroundColor: '#000000', margin: 0, padding: 0 }}>
         <TonProvider>
-          <ConnectionStatus />
-          <main className="container mx-auto px-4 py-8">
-            {children}
-          </main>
+          {children}
         </TonProvider>
       </body>
     </html>

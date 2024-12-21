@@ -3,7 +3,7 @@
 import { useTonConnect } from '@/hooks/useTonConnect';
 import { useIsConnectionRestored } from '@tonconnect/ui-react';
 import { useEffect, useState, useCallback } from 'react';
-import { Address } from 'ton-core';
+import { Address } from '@ton/core';
 import { useTonClient } from '@/hooks/useTonClient';
 
 export function ConnectionStatus() {
@@ -11,10 +11,10 @@ export function ConnectionStatus() {
   const isConnectionRestored = useIsConnectionRestored();
   const [balance, setBalance] = useState<string>('0');
   const [loading, setLoading] = useState(false);
-  const client = useTonClient();
+  const { client } = useTonClient();
 
   const getContractData = useCallback(async () => {
-    if (!tonConnectUI.account?.address) return;
+    if (!tonConnectUI.account?.address || !client) return;
     
     setLoading(true);
     try {
@@ -30,46 +30,30 @@ export function ConnectionStatus() {
   }, [tonConnectUI.account?.address, client]);
 
   useEffect(() => {
-    if (tonConnectUI.connected) {
+    if (tonConnectUI.connected && client) {
       getContractData();
     }
-  }, [tonConnectUI.connected, getContractData]);
+  }, [tonConnectUI.connected, client, getContractData]);
 
-  if (!isConnectionRestored) {
-    return <div className="wallet-section">Восстановление подключения...</div>;
+  if (!isConnectionRestored || !tonConnectUI.connected) {
+    return null;
   }
-  
+
   return (
     <div className="wallet-section">
-      {tonConnectUI.connected ? (
-        <div className="wallet-content">
-          <div className="token-list">
-            <div className="token-item">
-              <div className="token-info">
-                <div className="token-details">
-                  <span className="token-symbol">TON</span>
-                </div>
-              </div>
-              <div className="token-balance-container">
-                <span className={`token-balance ${loading ? 'updating' : 'loaded'}`}>
-                  {balance} TON
-                </span>
-              </div>
-            </div>
+      <div className="wallet-content">
+        <div className="token-item">
+          <div className="token-info">
+            <img src="/icons/ton.png" alt="TON" className="token-icon" />
+            <span className="token-symbol">TON</span>
           </div>
-          <button 
-            onClick={getContractData}
-            className="refresh-button"
-            disabled={loading}
-          >
-            ↻
-          </button>
+          <div className="token-balance">
+            <span className={loading ? 'updating' : ''}>
+              {Number(balance).toFixed(2)}
+            </span>
+          </div>
         </div>
-      ) : (
-        <div className="wallet-content">
-          <p>Не подключен</p>
-        </div>
-      )}
+      </div>
     </div>
   );
 } 
