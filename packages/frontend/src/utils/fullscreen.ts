@@ -7,22 +7,22 @@ export function setupFullscreen() {
   );
 
   if (!isMobile) {
-    // На десктопе отключаем расширение viewport и fullscreen
+    // На десктопе отключаем расширение viewport
     tg.setViewportSettings({
       viewportStableHeight: true,
       expandable: false
     });
     
-    // Выходим из fullscreen если он активен
+    // Если открыто в расширенном режиме - закрываем
     if (tg.isExpanded) {
-      tg.exitFullscreen();
+      tg.close();
     }
   }
 
   // Обрабатываем изменения viewport
   tg.onEvent('viewportChanged', () => {
     if (!isMobile && tg.isExpanded) {
-      tg.exitFullscreen();
+      tg.close();
     }
   });
 } 

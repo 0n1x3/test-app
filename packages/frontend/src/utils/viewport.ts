@@ -10,7 +10,10 @@ export function setupViewport() {
 
   const tg = window.Telegram?.WebApp;
   if (tg) {
-    // Устанавливаем стабильную высоту viewport и отключаем расширение
+    // Инициализируем приложение
+    tg.ready();
+
+    // Устанавливаем параметры viewport
     tg.setViewportSettings({
       viewportStableHeight: true,
       expandable: false
@@ -19,8 +22,9 @@ export function setupViewport() {
     // Отключаем закрытие по свайпу
     tg.disableClosingConfirmation();
 
-    // Сообщаем приложению что оно готово
-    tg.ready();
+    // Устанавливаем цвета в соответствии с темой
+    tg.setHeaderColor(tg.themeParams.bg_color);
+    tg.setBackgroundColor(tg.themeParams.secondary_bg_color);
   }
 
   // Обработчик изменения viewport

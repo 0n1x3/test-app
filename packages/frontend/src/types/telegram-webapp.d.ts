@@ -1,25 +1,29 @@
 declare global {
   interface TelegramWebApp {
+    ready: () => void;
     setViewportSettings: (params: { 
       viewportStableHeight?: boolean;
       expandable?: boolean;
     }) => void;
-    isExpanded: boolean;
-    expand: () => void;
-    close: () => void;
-    exitFullscreen: () => void;
-    onEvent: (eventType: string, callback: (params: { isStateStable: boolean }) => void) => void;
-    offEvent: (eventType: string, callback: (params: any) => void) => void;
-    ready: () => void;
-    MainButton: {
-      show: () => void;
-      hide: () => void;
-      setText: (text: string) => void;
-      onClick: (callback: () => void) => void;
-    };
     disableClosingConfirmation: () => void;
+    setHeaderColor: (color: string) => void;
+    setBackgroundColor: (color: string) => void;
+    themeParams: {
+      bg_color: string;
+      secondary_bg_color: string;
+      text_color: string;
+      hint_color: string;
+      link_color: string;
+      button_color: string;
+      button_text_color: string;
+    };
+    isExpanded: boolean;
     viewportHeight: number;
     viewportStableHeight: number;
+    expand: () => void;
+    close: () => void;
+    onEvent: (eventType: string, callback: (params: { isStateStable: boolean }) => void) => void;
+    offEvent: (eventType: string, callback: (params: any) => void) => void;
     platform: string;
   }
 
