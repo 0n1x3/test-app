@@ -6,14 +6,16 @@ import { Balance } from './Balance';
 
 export function HomePage() {
   return (
-    <main className="game-container">
-      <div className="content-wrapper">
-        <div className="header">
-          <UserProfile />
+    <div className="game-container">
+      <div className="safe-container">
+        <div className="content-wrapper">
+          <div className="header">
+            <UserProfile />
+          </div>
+          <Balance />
+          <GameModes />
         </div>
-        <Balance />
-        <GameModes />
       </div>
-    </main>
+    </div>
   );
 } 
