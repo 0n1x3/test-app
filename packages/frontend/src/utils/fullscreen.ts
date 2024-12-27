@@ -7,18 +7,16 @@ export function setupFullscreen() {
       navigator.userAgent
     );
 
-    // Обработчик для запроса полноэкранного режима
-    WebApp.onEvent('viewportChanged', () => {
-      if (!isMobile) {
-        // На десктопе принудительно отключаем полноэкранный режим
-        WebApp.isExpanded && WebApp.exitFullscreen();
-      }
-    });
+    if (!isMobile) {
+      // На десктопе отключаем расширение viewport
+      WebApp.setViewportSettings({
+        expandable: false
+      });
+    }
 
     // Настраиваем обработку полноэкранного режима
-    WebApp.onEvent('fullscreenChanged', (isFullscreen) => {
-      if (!isMobile && isFullscreen) {
-        // Если это десктоп и пытается войти в полноэкранный режим - отменяем
+    WebApp.onEvent('viewportChanged', () => {
+      if (!isMobile && WebApp.isExpanded) {
         WebApp.exitFullscreen();
       }
     });
