@@ -6,14 +6,23 @@ export function setupFullscreen() {
     navigator.userAgent
   );
 
-  // Принудительно отключаем расширение на десктопе
   if (!isMobile) {
+    // На десктопе отключаем расширение viewport и fullscreen
     tg.setViewportSettings({
+      viewportStableHeight: true,
       expandable: false
     });
-    // Если уже в полноэкранном режиме - выходим
+    
+    // Выходим из fullscreen если он активен
     if (tg.isExpanded) {
       tg.exitFullscreen();
     }
   }
+
+  // Обрабатываем изменения viewport
+  tg.onEvent('viewportChanged', () => {
+    if (!isMobile && tg.isExpanded) {
+      tg.exitFullscreen();
+    }
+  });
 } 

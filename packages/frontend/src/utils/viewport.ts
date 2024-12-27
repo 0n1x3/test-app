@@ -10,15 +10,25 @@ export function setupViewport() {
 
   const tg = window.Telegram?.WebApp;
   if (tg) {
-    // Отключаем свайп и фиксируем высоту
+    // Устанавливаем стабильную высоту viewport и отключаем расширение
     tg.setViewportSettings({
       viewportStableHeight: true,
       expandable: false
     });
-    
-    // Отключаем закрытие свайпом
+
+    // Отключаем закрытие по свайпу
     tg.disableClosingConfirmation();
+
+    // Сообщаем приложению что оно готово
+    tg.ready();
   }
+
+  // Обработчик изменения viewport
+  tg?.onEvent('viewportChanged', ({ isStateStable }) => {
+    if (isStateStable) {
+      setAppDimensions();
+    }
+  });
 
   setAppDimensions();
   window.addEventListener('resize', setAppDimensions);

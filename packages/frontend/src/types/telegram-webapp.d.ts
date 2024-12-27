@@ -8,8 +8,8 @@ declare global {
     expand: () => void;
     close: () => void;
     exitFullscreen: () => void;
-    onEvent: (eventType: string, callback: (params?: any) => void) => void;
-    offEvent: (eventType: string, callback: (params?: any) => void) => void;
+    onEvent: (eventType: string, callback: (params: { isStateStable: boolean }) => void) => void;
+    offEvent: (eventType: string, callback: (params: any) => void) => void;
     ready: () => void;
     MainButton: {
       show: () => void;
