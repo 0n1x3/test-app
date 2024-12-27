@@ -5,6 +5,7 @@ import '@/styles/globals.css';
 import '@/styles/components.css';
 import { TonProvider } from '@/providers/TonProvider';
 import { setupViewport } from '@/utils/viewport';
+import { setupFullscreen } from '@/utils/fullscreen';
 
 export default function RootLayout({
   children,
@@ -13,6 +14,7 @@ export default function RootLayout({
 }) {
   useEffect(() => {
     setupViewport();
+    setupFullscreen();
   }, []);
 
   return (

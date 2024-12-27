@@ -9,6 +9,14 @@ export function setupViewport() {
     doc.style.setProperty('--app-padding', padding);
   };
 
+  // Отключаем вертикальный свайп
+  if (window.Telegram?.WebApp) {
+    window.Telegram.WebApp.setViewportSettings({
+      viewportStableHeight: true, // Фиксирует высоту вьюпорта
+      expandable: false // Отключает возможность расширения приложения свайпом
+    });
+  }
+
   // Set initial dimensions
   setAppDimensions();
 
