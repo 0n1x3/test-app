@@ -1,0 +1,79 @@
+.withdraw-page {
+  @apply min-h-screen bg-black text-white overflow-x-hidden;
+  width: 100%;
+}
+
+.withdraw-container {
+  width: var(--app-max-width);
+  @apply mx-auto px-4;
+  padding-left: calc(var(--app-padding) + env(safe-area-inset-left));
+  padding-right: calc(var(--app-padding) + env(safe-area-inset-right));
+  padding-bottom: calc(env(safe-area-inset-bottom) + 1rem);
+}
+
+.withdraw-header {
+  @apply flex items-center gap-3;
+  padding-top: max(16px, env(safe-area-inset-top));
+  margin-bottom: 1rem;
+}
+
+.back-button {
+  @apply w-12 h-12 flex items-center justify-center text-white 
+         hover:bg-white/10 rounded-xl transition-colors;
+  margin-left: env(safe-area-inset-left);
+  font-size: 24px;
+}
+
+.warning-box {
+  @apply bg-[#1A1A1A] rounded-xl p-4 mb-6 flex items-start gap-3;
+}
+
+.warning-box p {
+  @apply text-sm text-gray-300;
+}
+
+.withdraw-form {
+  @apply space-y-6;
+}
+
+.form-group {
+  @apply space-y-2;
+}
+
+.form-label {
+  @apply text-sm text-gray-400;
+}
+
+.input-container {
+  @apply bg-[#1A1A1A] rounded-xl p-4 flex items-center gap-2;
+}
+
+.form-input {
+  @apply bg-transparent flex-1 outline-none text-white placeholder-gray-500;
+}
+
+.paste-button {
+  @apply text-orange-500 text-sm font-medium hover:text-orange-400 transition-colors;
+}
+
+.max-button {
+  @apply text-blue-500 text-sm font-medium hover:text-blue-400 transition-colors;
+}
+
+.currency-label {
+  @apply text-gray-400;
+}
+
+.info-container {
+  @apply flex justify-between text-sm text-gray-400;
+}
+
+.next-button {
+  @apply w-full bg-blue-600 text-white py-3 rounded-xl font-medium 
+         hover:bg-blue-700 transition-colors disabled:opacity-50 
+         disabled:hover:bg-blue-600;
+}
+
+.bot-link {
+  @apply text-center text-gray-400 text-sm mt-6;
+} 

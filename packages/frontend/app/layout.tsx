@@ -1,17 +1,24 @@
-import './globals.css';
-import { TonProvider } from './providers/TonProvider';
+'use client';
+
+import { useEffect } from 'react';
+import '@/styles/globals.css';
+import '@/styles/components.css';
+import { TonProvider } from '@/providers/TonProvider';
+import { setupViewport } from '@/utils/viewport';
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  useEffect(() => {
+    setupViewport();
+  }, []);
+
   return (
     <html lang="en">
-      <body style={{ backgroundColor: '#000000', margin: 0, padding: 0 }}>
-        <TonProvider>
-          {children}
-        </TonProvider>
+      <body>
+        <TonProvider>{children}</TonProvider>
       </body>
     </html>
   );

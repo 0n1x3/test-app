@@ -1,0 +1,61 @@
+.deposit-page {
+  @apply min-h-screen bg-black text-white overflow-x-hidden;
+  width: 100%;
+}
+
+.deposit-container {
+  width: var(--app-max-width);
+  @apply mx-auto px-4;
+  padding-left: calc(var(--app-padding) + env(safe-area-inset-left));
+  padding-right: calc(var(--app-padding) + env(safe-area-inset-right));
+  padding-bottom: calc(env(safe-area-inset-bottom) + 1rem);
+}
+
+.deposit-header {
+  @apply flex items-center gap-3;
+  padding-top: max(16px, env(safe-area-inset-top));
+  margin-bottom: 1rem;
+}
+
+.back-button {
+  @apply w-12 h-12 flex items-center justify-center text-white 
+         hover:bg-white/10 rounded-xl transition-colors;
+  margin-left: env(safe-area-inset-left);
+  font-size: 24px;
+}
+
+.warning-box {
+  @apply bg-[#1A1A1A] rounded-xl p-4 mb-6;
+}
+
+.warning-box p {
+  @apply text-sm text-gray-300;
+}
+
+.address-box {
+  @apply bg-[#1A1A1A] rounded-xl p-4 flex justify-between items-center gap-2;
+  width: 100%;
+}
+
+.address-box span {
+  @apply font-mono text-sm text-gray-300 break-all;
+}
+
+.copy-button {
+  @apply w-10 h-10 flex-shrink-0 flex items-center justify-center text-blue-400 hover:bg-white/10 rounded-xl transition-colors;
+}
+
+.qr-box {
+  @apply bg-[#1A1A1A] rounded-xl p-8 aspect-square mx-auto mb-6 
+         flex items-center justify-center;
+  width: min(200px, calc(var(--app-max-width) - 2 * var(--app-padding)));
+}
+
+/* Добавляем стили для лейблов и заголовков */
+.label {
+  @apply text-sm text-gray-400 mb-2;
+}
+
+.section-title {
+  @apply text-2xl font-bold;
+} 
