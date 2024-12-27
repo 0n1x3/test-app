@@ -1,10 +1,6 @@
 declare global {
   interface TelegramWebApp {
     ready: () => void;
-    setViewportSettings: (params: { 
-      viewportStableHeight?: boolean;
-      expandable?: boolean;
-    }) => void;
     disableClosingConfirmation: () => void;
     setHeaderColor: (color: string) => void;
     setBackgroundColor: (color: string) => void;

@@ -6,7 +6,6 @@ import '@/styles/globals.css';
 import '@/styles/components.css';
 import { TonProvider } from '@/providers/TonProvider';
 import { setupViewport } from '@/utils/viewport';
-import { setupFullscreen } from '@/utils/fullscreen';
 
 export default function RootLayout({
   children,
@@ -14,8 +13,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   useEffect(() => {
-    setupViewport();
-    setupFullscreen();
+    // Инициализируем только после загрузки скрипта
+    if (window.Telegram?.WebApp) {
+      setupViewport();
+    }
   }, []);
 
   return (
@@ -24,6 +25,11 @@ export default function RootLayout({
         <Script
           src="https://telegram.org/js/telegram-web-app.js"
           strategy="beforeInteractive"
+          onLoad={() => {
+            if (window.Telegram?.WebApp) {
+              setupViewport();
+            }
+          }}
         />
       </head>
       <body>

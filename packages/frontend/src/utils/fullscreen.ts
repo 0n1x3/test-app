@@ -7,13 +7,7 @@ export function setupFullscreen() {
   );
 
   if (!isMobile) {
-    // На десктопе отключаем расширение viewport
-    tg.setViewportSettings({
-      viewportStableHeight: true,
-      expandable: false
-    });
-    
-    // Если открыто в расширенном режиме - закрываем
+    // На десктопе закрываем расширенный режим
     if (tg.isExpanded) {
       tg.close();
     }

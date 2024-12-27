@@ -7,11 +7,6 @@ export const isTelegramWebAppAvailable = (): boolean => {
 export const initTelegramApp = (): (() => void) | void => {
   if (!tg) return () => {};
 
-  tg.setViewportSettings({
-    viewportStableHeight: true,
-    expandable: false
-  });
-
   tg.disableClosingConfirmation();
   tg.expand();
 
