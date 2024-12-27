@@ -1,5 +1,5 @@
-interface TelegramWebApp {
-  WebApp: {
+declare global {
+  interface TelegramWebApp {
     setViewportSettings: (params: { 
       viewportStableHeight?: boolean;
       expandable?: boolean;
@@ -9,6 +9,7 @@ interface TelegramWebApp {
     close: () => void;
     exitFullscreen: () => void;
     onEvent: (eventType: string, callback: (params?: any) => void) => void;
+    offEvent: (eventType: string, callback: (params?: any) => void) => void;
     ready: () => void;
     MainButton: {
       show: () => void;
@@ -17,9 +18,16 @@ interface TelegramWebApp {
       onClick: (callback: () => void) => void;
     };
     disableClosingConfirmation: () => void;
-  };
+    viewportHeight: number;
+    viewportStableHeight: number;
+    platform: string;
+  }
+
+  interface Window {
+    Telegram?: {
+      WebApp: TelegramWebApp;
+    }
+  }
 }
 
-interface Window {
-  Telegram?: TelegramWebApp;
-} 
+export {}; 

@@ -10,8 +10,9 @@ export function setupViewport() {
   };
 
   // Отключаем вертикальный свайп
-  if (window.Telegram?.WebApp) {
-    window.Telegram.WebApp.setViewportSettings({
+  const tg = window.Telegram?.WebApp;
+  if (tg) {
+    tg.setViewportSettings({
       viewportStableHeight: true
     });
   }
