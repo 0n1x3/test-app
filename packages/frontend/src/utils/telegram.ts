@@ -10,20 +10,18 @@ export const initTelegramApp = (): (() => void) | void => {
   tg.disableClosingConfirmation();
   tg.expand();
 
-  const expandApp = () => {
-    if (tg.viewportHeight < tg.viewportStableHeight) {
-      tg.expand();
-      setTimeout(expandApp, 100);
+  const setAppHeight = () => {
+    const height = `${tg.viewportStableHeight}px`;
+    document.documentElement.style.setProperty('--app-height', height);
+  };
+
+  const viewportHandler = ({ isStateStable }: { isStateStable: boolean }) => {
+    if (isStateStable) {
+      setAppHeight();
     }
   };
 
-  const viewportHandler = () => {
-    if (!tg.isExpanded) {
-      expandApp();
-    }
-  };
-
-  expandApp();
+  setAppHeight();
   tg.ready();
   tg.onEvent('viewportChanged', viewportHandler);
 

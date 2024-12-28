@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --app-height: 100%;
+  --app-height: 100vh;
   --app-max-width: min(100vw, 390px);
   --app-padding: 16px;
   --tg-header-height: 56px;
@@ -11,7 +11,7 @@
 
 body {
   @apply bg-black text-white;
-  min-height: var(--app-height);
+  height: var(--app-height);
   overflow: hidden;
 }
 
@@ -20,10 +20,10 @@ body {
     @apply w-full;
     width: var(--app-max-width);
     margin: 0 auto;
-    min-height: 100vh;
-    padding-top: var(--tg-header-height);
-    padding-bottom: env(safe-area-inset-bottom);
-    padding-left: calc(var(--app-padding) + env(safe-area-inset-left));
-    padding-right: calc(var(--app-padding) + env(safe-area-inset-right));
+    height: 100%;
+    padding: calc(var(--tg-header-height) + env(safe-area-inset-top)) 
+            calc(var(--app-padding) + env(safe-area-inset-right))
+            env(safe-area-inset-bottom)
+            calc(var(--app-padding) + env(safe-area-inset-left));
   }
 } 
