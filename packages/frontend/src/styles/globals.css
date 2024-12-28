@@ -16,22 +16,18 @@ body {
 
 @layer components {
   .safe-container {
-    @apply w-full;
+    @apply w-full mx-auto min-h-screen;
     width: var(--app-max-width);
-    margin: 0 auto;
-    min-height: 100vh;
-    padding: calc(var(--tg-header-height) + env(safe-area-inset-top))
-            calc(var(--app-padding) + env(safe-area-inset-right))
-            env(safe-area-inset-bottom)
-            calc(var(--app-padding) + env(safe-area-inset-left));
+    padding-top: max(env(safe-area-inset-top), var(--tg-header-height));
+    padding-right: calc(var(--app-padding) + env(safe-area-inset-right));
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: calc(var(--app-padding) + env(safe-area-inset-left));
   }
 
   @media (min-width: 768px) {
     .safe-container {
+      @apply mx-auto;
       max-width: 390px;
-      padding-left: 32px;
-      padding-right: 32px;
-      margin: 0 auto;
     }
   }
 
