@@ -26,6 +26,9 @@ declare global {
     };
     setHeaderColor: (color: string) => void;
     setBackgroundColor: (color: string) => void;
+    platform: string;
+    requestFullscreen: () => void;
+    exitFullscreen: () => void;
   }
 
   interface Window {

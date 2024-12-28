@@ -1,9 +1,7 @@
 export function setupViewport() {
   const setAppDimensions = () => {
     const doc = document.documentElement;
-    doc.style.setProperty('--app-height', `${window.innerHeight}px`);
     doc.style.setProperty('--app-max-width', `min(100vw, 390px)`);
-    
     const padding = window.innerWidth < 390 ? '12px' : '16px';
     doc.style.setProperty('--app-padding', padding);
   };
@@ -16,6 +14,19 @@ export function setupViewport() {
     // Отключаем закрытие по свайпу
     tg.disableVerticalSwipes();
     tg.enableClosingConfirmation();
+
+    // Определяем мобильное устройство
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
+
+    // На мобильных включаем fullscreen
+    if (isMobile && 'requestFullscreen' in tg) {
+      tg.requestFullscreen();
+    } else {
+      // На десктопе просто расширяем
+      tg.expand();
+    }
 
     // Устанавливаем цвета в соответствии с темой
     if (tg.themeParams) {
