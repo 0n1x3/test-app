@@ -3,37 +3,40 @@
 @tailwind utilities;
 
 :root {
-  --app-max-width: min(100vw, 390px);
-  --app-padding: 16px;
+  --tg-theme-bg-color: #000000;
+  --tg-viewport-height: 100vh;
+  --tg-viewport-stable-height: 100vh;
   --tg-header-height: 56px;
-  --tg-controls-height: 48px;
 }
 
 body {
-  @apply bg-black text-white;
-  overflow: hidden;
+  background: var(--tg-theme-bg-color);
+  margin: 0;
+  padding: 0;
+  min-height: var(--tg-viewport-stable-height);
+  overflow-x: hidden;
 }
 
-@layer components {
-  .safe-container {
-    @apply w-full mx-auto min-h-screen;
-    width: var(--app-max-width);
-    padding-top: max(env(safe-area-inset-top), var(--tg-header-height));
-    padding-right: calc(var(--app-padding) + env(safe-area-inset-right));
-    padding-bottom: env(safe-area-inset-bottom);
-    padding-left: calc(var(--app-padding) + env(safe-area-inset-left));
-  }
+.safe-area {
+  width: 100%;
+  max-width: 390px;
+  margin: 0 auto;
+  min-height: var(--tg-viewport-stable-height);
+}
 
-  @media (min-width: 768px) {
-    .safe-container {
-      @apply mx-auto;
-      max-width: 390px;
-    }
-  }
+.safe-area.mobile {
+  padding-top: var(--tg-header-height);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
 
-  @media (max-width: 767px) {
-    html[data-fullscreen="true"] .safe-container {
-      padding-top: calc(var(--tg-header-height) + var(--tg-controls-height) + env(safe-area-inset-top));
-    }
-  }
+.safe-area.desktop {
+  padding: 16px;
+}
+
+/* Контейнер для контента */
+.content-container {
+  width: 100%;
+  height: 100%;
 } 
