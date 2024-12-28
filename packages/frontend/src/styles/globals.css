@@ -6,6 +6,7 @@
   --app-max-width: min(100vw, 390px);
   --app-padding: 16px;
   --tg-header-height: 56px;
+  --tg-controls-height: 48px;
 }
 
 body {
@@ -19,9 +20,24 @@ body {
     width: var(--app-max-width);
     margin: 0 auto;
     min-height: 100vh;
-    padding-top: calc(var(--tg-header-height) + env(safe-area-inset-top));
-    padding-bottom: env(safe-area-inset-bottom);
-    padding-left: calc(var(--app-padding) + env(safe-area-inset-left));
-    padding-right: calc(var(--app-padding) + env(safe-area-inset-right));
+    padding: calc(var(--tg-header-height) + env(safe-area-inset-top))
+            calc(var(--app-padding) + env(safe-area-inset-right))
+            env(safe-area-inset-bottom)
+            calc(var(--app-padding) + env(safe-area-inset-left));
+  }
+
+  @media (min-width: 768px) {
+    .safe-container {
+      max-width: 390px;
+      padding-left: 32px;
+      padding-right: 32px;
+      margin: 0 auto;
+    }
+  }
+
+  @media (max-width: 767px) {
+    html[data-fullscreen="true"] .safe-container {
+      padding-top: calc(var(--tg-header-height) + var(--tg-controls-height) + env(safe-area-inset-top));
+    }
   }
 } 

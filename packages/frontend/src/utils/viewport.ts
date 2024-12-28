@@ -8,39 +8,38 @@ export function setupViewport() {
 
   const tg = window.Telegram?.WebApp;
   if (tg) {
-    // Сначала сообщаем что приложение готово
     tg.ready();
-
-    // Отключаем закрытие по свайпу
     tg.disableVerticalSwipes();
     tg.enableClosingConfirmation();
 
-    // Определяем мобильное устройство
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       navigator.userAgent
     );
 
-    // На мобильных включаем fullscreen
+    // Устанавливаем атрибут для определения режима
+    document.documentElement.dataset.fullscreen = 'false';
+
     if (isMobile && 'requestFullscreen' in tg) {
       tg.requestFullscreen();
+      document.documentElement.dataset.fullscreen = 'true';
     } else {
-      // На десктопе просто расширяем
       tg.expand();
     }
 
-    // Устанавливаем цвета в соответствии с темой
+    // Обработчик изменения режима
+    tg.onEvent('viewportChanged', ({ isStateStable }) => {
+      if (isStateStable) {
+        document.documentElement.dataset.fullscreen = 
+          isMobile && tg.isExpanded ? 'true' : 'false';
+        setAppDimensions();
+      }
+    });
+
     if (tg.themeParams) {
       tg.setHeaderColor(tg.themeParams.bg_color);
       tg.setBackgroundColor(tg.themeParams.secondary_bg_color);
     }
   }
-
-  // Обработчик изменения viewport
-  tg?.onEvent('viewportChanged', ({ isStateStable }) => {
-    if (isStateStable) {
-      setAppDimensions();
-    }
-  });
 
   setAppDimensions();
   window.addEventListener('resize', setAppDimensions);
