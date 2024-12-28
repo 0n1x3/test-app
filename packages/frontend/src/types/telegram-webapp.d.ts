@@ -1,10 +1,21 @@
 declare global {
   interface TelegramWebApp {
     ready: () => void;
-    disableClosingConfirmation: () => void;
-    setHeaderColor: (color: string) => void;
-    setBackgroundColor: (color: string) => void;
-    themeParams: {
+    expand: () => void;
+    close: () => void;
+    isExpanded: boolean;
+    viewportHeight: number;
+    viewportStableHeight: number;
+    enableClosingConfirmation: () => void;
+    disableVerticalSwipes: () => void;
+    onEvent: (eventType: string, eventHandler: (params: { isStateStable?: boolean }) => void) => void;
+    offEvent: (eventType: string, eventHandler: Function) => void;
+    initDataUnsafe: {
+      user?: {
+        id?: number;
+      };
+    };
+    themeParams?: {
       bg_color: string;
       secondary_bg_color: string;
       text_color: string;
@@ -13,14 +24,8 @@ declare global {
       button_color: string;
       button_text_color: string;
     };
-    isExpanded: boolean;
-    viewportHeight: number;
-    viewportStableHeight: number;
-    expand: () => void;
-    close: () => void;
-    onEvent: (eventType: string, callback: (params: { isStateStable: boolean }) => void) => void;
-    offEvent: (eventType: string, callback: (params: any) => void) => void;
-    platform: string;
+    setHeaderColor: (color: string) => void;
+    setBackgroundColor: (color: string) => void;
   }
 
   interface Window {

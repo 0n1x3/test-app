@@ -14,7 +14,8 @@ export function setupViewport() {
     tg.ready();
 
     // Отключаем закрытие по свайпу
-    tg.disableClosingConfirmation();
+    tg.disableVerticalSwipes();
+    tg.enableClosingConfirmation();
 
     // Устанавливаем цвета в соответствии с темой
     if (tg.themeParams) {

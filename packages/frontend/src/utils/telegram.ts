@@ -7,25 +7,32 @@ export const isTelegramWebAppAvailable = (): boolean => {
 export const initTelegramApp = (): (() => void) | void => {
   if (!tg) return () => {};
 
-  tg.disableClosingConfirmation();
-  tg.expand();
-
-  const setAppHeight = () => {
-    const height = `${tg.viewportStableHeight}px`;
-    document.documentElement.style.setProperty('--app-height', height);
-  };
-
-  const viewportHandler = ({ isStateStable }: { isStateStable: boolean }) => {
-    if (isStateStable) {
-      setAppHeight();
+  const expandApp = () => {
+    tg.expand();
+    
+    if (tg.viewportHeight < tg.viewportStableHeight) {
+      setTimeout(expandApp, 100);
     }
   };
 
-  setAppHeight();
+  expandApp();
   tg.ready();
-  tg.onEvent('viewportChanged', viewportHandler);
+
+  // Отключаем вертикальный свайп
+  tg.disableVerticalSwipes();
+  tg.enableClosingConfirmation();
+
+  const viewportChangedHandler = () => {
+    if (tg.isExpanded) {
+      console.log('Приложение развернуто на весь экран');
+    } else {
+      console.log('Приложение не развернуто на весь экран');
+    }
+  };
+
+  tg.onEvent('viewportChanged', viewportChangedHandler);
 
   return () => {
-    tg.offEvent('viewportChanged', viewportHandler);
+    tg.offEvent('viewportChanged', viewportChangedHandler);
   };
 }; 
