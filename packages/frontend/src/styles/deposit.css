@@ -4,16 +4,12 @@
 }
 
 .deposit-container {
-  width: var(--app-max-width);
+  width: 100%;
   @apply mx-auto px-4;
-  padding-left: calc(var(--app-padding) + env(safe-area-inset-left));
-  padding-right: calc(var(--app-padding) + env(safe-area-inset-right));
-  padding-bottom: calc(env(safe-area-inset-bottom) + 1rem);
 }
 
 .deposit-header {
   @apply flex items-center gap-3;
-  padding-top: max(16px, env(safe-area-inset-top));
   margin-bottom: 1rem;
 }
 
