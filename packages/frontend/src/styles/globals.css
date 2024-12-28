@@ -6,22 +6,23 @@
   --app-height: 100%;
   --app-max-width: min(100vw, 390px);
   --app-padding: 16px;
+  --tg-header-height: 56px;
 }
 
 body {
   @apply bg-black text-white;
   min-height: var(--app-height);
-  padding-top: var(--tg-viewport-stable-height, 0px);
-  padding-bottom: env(safe-area-inset-bottom);
+  overflow: hidden;
 }
 
 @layer components {
   .safe-container {
-    @apply w-full min-h-screen;
+    @apply w-full;
     width: var(--app-max-width);
     margin: 0 auto;
-    padding-top: var(--tg-viewport-height, 0px);
-    padding-bottom: calc(var(--tg-viewport-stable-height, 0px) + env(safe-area-inset-bottom));
+    min-height: 100vh;
+    padding-top: var(--tg-header-height);
+    padding-bottom: env(safe-area-inset-bottom);
     padding-left: calc(var(--app-padding) + env(safe-area-inset-left));
     padding-right: calc(var(--app-padding) + env(safe-area-inset-right));
   }

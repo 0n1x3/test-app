@@ -1,14 +1,18 @@
 .game-container {
-  @apply min-h-screen bg-black text-white overflow-x-hidden;
+  @apply min-h-screen bg-black text-white;
   width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 .content-wrapper {
-  width: var(--app-max-width);
-  @apply mx-auto px-4 py-4;
-  padding-left: calc(var(--app-padding) + env(safe-area-inset-left));
-  padding-right: calc(var(--app-padding) + env(safe-area-inset-right));
-  padding-bottom: calc(env(safe-area-inset-bottom) + 1rem);
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  padding-top: var(--tg-header-height);
 }
 
 .header {
