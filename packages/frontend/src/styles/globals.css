@@ -28,6 +28,9 @@ input, textarea {
   --tg-header-height: 72px;
   --app-max-width: 390px;
   --app-padding: 16px;
+  --mobile-top-padding: calc(env(safe-area-inset-top) + var(--tg-header-height) + 16px);
+  --desktop-top-padding: 4px;
+  --content-padding: var(--app-padding);
 }
 
 body {
@@ -75,8 +78,8 @@ body {
 
 /* Мобильные стили */
 .page-content.mobile {
-  padding: 0 var(--app-padding);
-  padding-top: calc(env(safe-area-inset-top) + var(--tg-header-height) + 16px);
+  padding: 0 var(--content-padding);
+  padding-top: var(--mobile-top-padding);
   padding-bottom: env(safe-area-inset-bottom);
   padding-left: env(safe-area-inset-left, var(--app-padding));
   padding-right: env(safe-area-inset-right, var(--app-padding));
@@ -84,15 +87,15 @@ body {
 
 /* Десктопные стили */
 .page-content.desktop {
-  padding: 0 var(--app-padding);
-  padding-top: 0;
+  padding: 0 var(--content-padding);
+  padding-top: var(--desktop-top-padding);
 }
 
 .content-container {
   width: 100%;
   max-width: var(--app-max-width);
   margin: 0 auto;
-  padding-top: 0; /* Явно обнуляем отступ */
+  padding-top: 0;
 }
 
 .header {
