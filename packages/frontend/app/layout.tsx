@@ -19,7 +19,10 @@ export default function RootLayout({
   useEffect(() => {
     const tg = window.Telegram?.WebApp;
     if (tg) {
-      // Устанавливаем корректную высоту вьюпорта
+      // Инициализация viewport
+      setupViewport();
+      
+      // Устанавливаем высоту и определяем платформу
       document.documentElement.style.setProperty(
         '--tg-viewport-height',
         `${tg.viewportHeight}px`
@@ -29,13 +32,12 @@ export default function RootLayout({
         `${tg.viewportStableHeight}px`
       );
       
-      // Проверяем платформу
+      // Устанавливаем высоту хедера в зависимости от платформы
       const isMobileApp = !['macos', 'windows', 'linux'].includes(tg.platform);
-      if (isMobileApp) {
-        document.documentElement.style.setProperty('--tg-header-height', '72px');
-      } else {
-        document.documentElement.style.setProperty('--tg-header-height', '32px');
-      }
+      document.documentElement.style.setProperty(
+        '--tg-header-height',
+        isMobileApp ? '72px' : '32px'
+      );
     }
   }, []);
 
