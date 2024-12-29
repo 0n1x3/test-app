@@ -6,8 +6,8 @@ export function GameModes() {
       <div className="game-card">
         <div className="game-card-content">
           <div>
-            <h2 className="game-card-title">Tournament</h2>
-            <p className="game-card-description">Compete for prizes</p>
+            <h2 className="game-card-title">Играть</h2>
+            <p className="game-card-description">Побеждай и зарабатывай</p>
           </div>
           <div className="game-card-indicator"></div>
         </div>
@@ -16,8 +16,8 @@ export function GameModes() {
       <div className="game-card">
         <div className="game-card-content">
           <div>
-            <h2 className="game-card-title">Practice</h2>
-            <p className="game-card-description">Improve your skills</p>
+            <h2 className="game-card-title">Турниры</h2>
+            <p className="game-card-description">Сразись за призы</p>
           </div>
           <div className="game-card-indicator"></div>
         </div>
@@ -26,8 +26,8 @@ export function GameModes() {
       <div className="game-card">
         <div className="game-card-content">
           <div>
-            <h2 className="game-card-title">Leaderboard</h2>
-            <p className="game-card-description">Check your ranking</p>
+            <h2 className="game-card-title">Лидерборд</h2>
+            <p className="game-card-description">Рейтинг лучших</p>
           </div>
           <div className="game-card-indicator"></div>
         </div>

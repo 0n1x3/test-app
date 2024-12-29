@@ -18,6 +18,8 @@
 
 .header {
   @apply flex justify-between items-center mb-8;
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
 }
 
 .title {
@@ -204,4 +206,17 @@
 
 .send-button {
   @apply w-full bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 transition-colors;
+}
+
+.coins-display {
+  @apply flex items-center gap-2 bg-[#1A1A1A] rounded-full py-1.5 px-3;
+}
+
+.coin-amount {
+  @apply text-red-500 font-bold;
+}
+
+.coin-icon {
+  @apply w-5 h-5 rounded-full bg-red-500 flex items-center justify-center text-white;
+  font-size: 12px;
 } 
