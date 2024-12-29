@@ -7,7 +7,9 @@
 
 .withdraw-container {
   width: 100%;
-  @apply mx-auto px-4;
+  max-width: var(--app-max-width);
+  margin: 0 auto;
+  padding: 0 var(--app-padding);
   padding-bottom: calc(env(safe-area-inset-bottom) + 16px);
 }
 

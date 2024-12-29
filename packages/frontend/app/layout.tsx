@@ -6,7 +6,7 @@ import '@/styles/globals.css';
 import '@/styles/components.css';
 import { TonProvider } from '@/providers/TonProvider';
 import { setupViewport } from '@/utils/viewport';
-import Head from 'next/head';
+import { AnimatePresence } from 'framer-motion';
 
 export default function RootLayout({
   children,
@@ -37,7 +37,11 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <TonProvider>{children}</TonProvider>
+        <TonProvider>
+          <AnimatePresence mode="wait">
+            {children}
+          </AnimatePresence>
+        </TonProvider>
       </body>
     </html>
   );
