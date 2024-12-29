@@ -49,12 +49,10 @@ body {
   height: var(--tg-viewport-stable-height);
   position: relative;
   overflow: hidden;
-  left: 0;
-  transform: none;
 }
 
 .safe-area.mobile {
-  padding-top: calc(var(--tg-header-height) + 16px);
+  padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
   padding-left: env(safe-area-inset-left, 16px);
   padding-right: env(safe-area-inset-right, 16px);
@@ -62,6 +60,14 @@ body {
 
 .safe-area.desktop {
   padding: 16px;
+}
+
+/* Добавляем стили для хедера */
+.header {
+  padding-top: var(--tg-header-height); /* Добавляем отступ для хедера */
+  @apply flex justify-between items-center;
+  width: 100%;
+  margin-bottom: 16px;
 }
 
 /* Контейнер для контента */
