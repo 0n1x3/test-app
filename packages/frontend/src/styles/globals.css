@@ -50,12 +50,14 @@ body {
   height: var(--tg-viewport-stable-height);
   position: relative;
   overflow: hidden;
+  padding: 0; /* Явно убираем все отступы */
 }
 
-/* Убираем паддинги из SafeArea, они теперь будут только в page-content */
+/* Убираем все паддинги из SafeArea */
 .safe-area.mobile,
 .safe-area.desktop {
   padding: 0;
+  margin: 0 auto;
 }
 
 /* Базовые стили для всех страниц */
@@ -74,7 +76,7 @@ body {
 /* Мобильные стили */
 .page-content.mobile {
   padding: 0 var(--app-padding);
-  padding-top: calc(env(safe-area-inset-top) + 72px); /* Отступ как на странице вывода */
+  padding-top: calc(env(safe-area-inset-top) + 72px); /* Базовый отступ для мобильных */
   padding-bottom: env(safe-area-inset-bottom);
   padding-left: env(safe-area-inset-left, var(--app-padding));
   padding-right: env(safe-area-inset-right, var(--app-padding));
@@ -82,9 +84,10 @@ body {
 
 /* Десктопные стили */
 .page-content.desktop {
-  padding: 12px var(--app-padding); /* Увеличиваем минимальный отступ */
+  padding: 0 var(--app-padding); /* Убираем верхний отступ для десктопа */
 }
 
+/* Контейнер контента */
 .content-container {
   width: 100%;
   max-width: var(--app-max-width);
@@ -102,16 +105,13 @@ body {
   margin-bottom: 16px;
 }
 
-/* Специальные стили для страниц */
-.deposit-page .page-content.mobile {
-  padding-top: calc(env(safe-area-inset-top) + 72px); /* Такой же отступ как на withdraw */
-}
-
-.withdraw-page .page-content.mobile {
-  padding-top: calc(env(safe-area-inset-top) + 72px); /* Эталонный отступ */
-}
-
-/* Десктопные стили для всех страниц */
+/* Десктопные стили */
 .desktop .content-container {
-  padding-top: 4px; /* Минимальный отступ для десктопа */
+  padding-top: 8px; /* Небольшой отступ только для контента на десктопе */
+}
+
+.user-profile {
+  @apply flex items-center gap-3;
+  margin-top: 0; /* Убираем возможный отступ */
+  padding-top: 0; /* Убираем возможный отступ */
 } 
