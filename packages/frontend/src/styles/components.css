@@ -54,6 +54,7 @@
 .user-profile {
   @apply flex items-center space-x-4;
   padding-top: env(safe-area-inset-top);
+  padding-left: env(safe-area-inset-left, 16px);
 }
 
 .user-avatar {

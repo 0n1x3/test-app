@@ -1,18 +1,14 @@
 .withdraw-page {
   @apply bg-black text-white;
   width: 100%;
-  height: var(--tg-viewport-stable-height);
+  height: 100%;
   position: relative;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
 .withdraw-container {
   width: 100%;
   @apply mx-auto px-4;
-  padding-top: env(safe-area-inset-top);
   padding-bottom: calc(env(safe-area-inset-bottom) + 16px);
-  min-height: var(--tg-viewport-stable-height);
 }
 
 .withdraw-header {
