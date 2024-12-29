@@ -8,12 +8,14 @@ import { SafeArea } from './SafeArea';
 export function HomePage() {
   return (
     <SafeArea>
-      <div className="content-container">
-        <div className="header">
-          <UserProfile />
+      <div className="page-container">
+        <div className="content-container">
+          <div className="header">
+            <UserProfile />
+          </div>
+          <Balance />
+          <GameModes />
         </div>
-        <Balance />
-        <GameModes />
       </div>
     </SafeArea>
   );

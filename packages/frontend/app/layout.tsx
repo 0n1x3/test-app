@@ -2,6 +2,7 @@
 
 import Script from 'next/script'
 import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import '@/styles/globals.css';
 import '@/styles/components.css';
 import { TonProvider } from '@/providers/TonProvider';
@@ -13,6 +14,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+
   useEffect(() => {
     if (window.Telegram?.WebApp) {
       setupViewport();
@@ -38,8 +41,10 @@ export default function RootLayout({
       </head>
       <body>
         <TonProvider>
-          <AnimatePresence mode="wait">
-            {children}
+          <AnimatePresence mode="wait" initial={false} onExitComplete={() => window.scrollTo(0, 0)}>
+            <div key={pathname} style={{ width: '100%', height: '100%' }}>
+              {children}
+            </div>
           </AnimatePresence>
         </TonProvider>
       </body>
