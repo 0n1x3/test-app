@@ -220,12 +220,12 @@
 }
 
 .coin-amount {
-  @apply text-red-500 font-bold text-base;
+  @apply text-white font-bold text-base;
   min-width: 40px;
   text-align: right;
 }
 
 .coin-icon {
-  @apply w-5 h-5 rounded-full bg-red-500/10 flex items-center justify-center;
-  color: #FF4B4B;
+  @apply w-5 h-5 rounded-full bg-white/10 flex items-center justify-center;
+  color: #FFFFFF;
 } 
