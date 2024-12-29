@@ -12,7 +12,7 @@ export function HomePage() {
     <SafeArea>
       <PageTransition>
         <PageContainer>
-          <div className="content-container">
+          <div className="content-container home-content">
             <div className="header">
               <UserProfile />
             </div>

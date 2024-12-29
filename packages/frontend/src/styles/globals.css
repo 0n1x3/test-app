@@ -82,9 +82,14 @@ body {
 /* Стили для десктопа */
 @media (min-width: 768px) {
   .page-content {
-    padding-top: var(--tg-header-height);
+    padding-top: 16px; /* Меньший отступ для десктопа */
     padding-left: var(--app-padding);
     padding-right: var(--app-padding);
+  }
+
+  /* Специальные стили для главной на десктопе */
+  .home-content {
+    padding-top: 16px !important; /* Переопределяем отступ для главной на десктопе */
   }
 }
 
@@ -97,10 +102,15 @@ body {
 .header {
   @apply flex justify-between items-center;
   width: 100%;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .balance-card {
   @apply bg-[#1A1A1A] rounded-xl p-4;
   margin-bottom: 16px;
+}
+
+/* Специальные стили для главной страницы на мобильных */
+.home-content {
+  padding-top: calc(env(safe-area-inset-top) + var(--tg-header-height) + 16px);
 } 
