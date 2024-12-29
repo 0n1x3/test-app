@@ -42,6 +42,7 @@ body {
   width: 100%;
 }
 
+/* Базовые настройки SafeArea */
 .safe-area {
   width: 100%;
   max-width: var(--app-max-width);
@@ -51,15 +52,10 @@ body {
   overflow: hidden;
 }
 
-.safe-area.mobile {
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left, 16px);
-  padding-right: env(safe-area-inset-right, 16px);
-}
-
+/* Убираем паддинги из SafeArea, они теперь будут только в page-content */
+.safe-area.mobile,
 .safe-area.desktop {
-  padding: 16px;
+  padding: 0;
 }
 
 /* Базовые стили для всех страниц */
@@ -77,7 +73,8 @@ body {
 
 /* Мобильные стили */
 .page-content.mobile {
-  padding-top: calc(env(safe-area-inset-top) + 56px); /* Уменьшаем базовый отступ */
+  padding: 0 var(--app-padding);
+  padding-top: calc(env(safe-area-inset-top) + 64px); /* Единый отступ для всех страниц */
   padding-bottom: env(safe-area-inset-bottom);
   padding-left: env(safe-area-inset-left, var(--app-padding));
   padding-right: env(safe-area-inset-right, var(--app-padding));
@@ -85,18 +82,13 @@ body {
 
 /* Десктопные стили */
 .page-content.desktop {
-  padding: 12px var(--app-padding); /* Минимальный отступ для десктопа */
+  padding: 8px var(--app-padding); /* Минимальный отступ для десктопа */
 }
 
 .content-container {
   width: 100%;
   max-width: var(--app-max-width);
   margin: 0 auto;
-}
-
-/* Дополнительный отступ только для главной на мобильных */
-.page-content.mobile .home-content {
-  padding-top: calc(env(safe-area-inset-top) + 72px); /* Увеличенный отступ для главной */
 }
 
 .header {
