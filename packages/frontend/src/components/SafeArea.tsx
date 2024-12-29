@@ -43,7 +43,14 @@ export function SafeArea({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <div className={`safe-area ${isMobile ? 'mobile' : 'desktop'}`}>
+    <div 
+      className={`safe-area ${isMobile ? 'mobile' : 'desktop'}`}
+      style={{ 
+        height: 'var(--tg-viewport-stable-height)',
+        position: 'relative',
+        overflow: 'hidden'
+      }}
+    >
       {children}
     </div>
   );
