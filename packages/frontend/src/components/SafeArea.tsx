@@ -7,7 +7,6 @@ export function SafeArea({ children }: { children: React.ReactNode }) {
     const tg = window.Telegram?.WebApp;
     if (!tg) return;
 
-    // Определяем мобильное устройство
     const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       navigator.userAgent
     );
@@ -23,31 +22,28 @@ export function SafeArea({ children }: { children: React.ReactNode }) {
       root.style.setProperty('--tg-viewport-stable-height', `${tg.viewportStableHeight}px`);
     };
 
-    // Предотвращаем зум
-    const preventZoom = (e: TouchEvent) => {
-      if (e.touches.length > 1) {
+    // Предотвращаем зум и нежелательные жесты
+    const preventGestures = (e: TouchEvent) => {
+      // Разрешаем скролл только внутри safe-area
+      if (!(e.target as Element)?.closest('.safe-area')) {
         e.preventDefault();
       }
     };
 
-    // Добавляем обработчики для предотвращения зума
-    document.addEventListener('touchstart', preventZoom, { passive: false });
-    document.addEventListener('touchmove', preventZoom, { passive: false });
+    document.addEventListener('touchstart', preventGestures, { passive: false });
+    document.addEventListener('touchmove', preventGestures, { passive: false });
 
     tg.onEvent('viewportChanged', handleViewportChanged);
     
     return () => {
       tg.offEvent('viewportChanged', handleViewportChanged);
-      document.removeEventListener('touchstart', preventZoom);
-      document.removeEventListener('touchmove', preventZoom);
+      document.removeEventListener('touchstart', preventGestures);
+      document.removeEventListener('touchmove', preventGestures);
     };
   }, []);
 
   return (
-    <div 
-      className={`safe-area ${isMobile ? 'mobile' : 'desktop'}`}
-      style={{ touchAction: 'pan-x pan-y' }} // Разрешаем только скролл
-    >
+    <div className={`safe-area ${isMobile ? 'mobile' : 'desktop'}`}>
       {children}
     </div>
   );

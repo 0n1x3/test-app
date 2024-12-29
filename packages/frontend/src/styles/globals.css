@@ -26,21 +26,33 @@ input, textarea {
   --tg-viewport-height: 100vh;
   --tg-viewport-stable-height: 100vh;
   --tg-header-height: 72px;
+  --app-max-width: 390px;
+  --app-padding: 16px;
 }
 
 body {
   @apply bg-black text-white;
   margin: 0;
   padding: 0;
-  min-height: var(--tg-viewport-stable-height);
+  height: var(--tg-viewport-stable-height);
   overflow-x: hidden;
+  /* Запрещаем скролл на body */
+  overflow-y: hidden;
+  position: fixed;
+  width: 100%;
 }
 
 .safe-area {
   width: 100%;
-  max-width: 390px;
+  max-width: var(--app-max-width);
   margin: 0 auto;
-  min-height: var(--tg-viewport-stable-height);
+  height: var(--tg-viewport-stable-height);
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .safe-area.mobile {

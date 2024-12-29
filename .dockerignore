@@ -8,3 +8,5 @@
 **/Dockerfile
 **/.dockerignore
 **/.DS_Store
+**/dev.log
+**/*.log
