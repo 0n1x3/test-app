@@ -5,12 +5,13 @@ import { UserProfile } from './UserProfile';
 import { Balance } from './Balance';
 import { SafeArea } from './SafeArea';
 import { PageTransition } from './PageTransition';
+import { PageContainer } from './PageContainer';
 
 export function HomePage() {
   return (
     <SafeArea>
       <PageTransition>
-        <div className="page-container">
+        <PageContainer>
           <div className="content-container">
             <div className="header">
               <UserProfile />
@@ -18,7 +19,7 @@ export function HomePage() {
             <Balance />
             <GameModes />
           </div>
-        </div>
+        </PageContainer>
       </PageTransition>
     </SafeArea>
   );
