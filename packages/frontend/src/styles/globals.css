@@ -47,12 +47,10 @@ body {
   max-width: var(--app-max-width);
   margin: 0 auto;
   height: var(--tg-viewport-stable-height);
-  position: fixed;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  position: relative;
+  overflow: hidden;
+  left: 0;
+  transform: none;
 }
 
 .safe-area.mobile {
