@@ -6,7 +6,7 @@ export function GameModes() {
       <div className="game-card">
         <div className="game-card-content">
           <div>
-            <h2 className="game-card-title">Играть</h2>
+            <h2 className="game-card-title">Игра</h2>
             <p className="game-card-description">Побеждай и зарабатывай</p>
           </div>
           <div className="game-card-indicator"></div>
