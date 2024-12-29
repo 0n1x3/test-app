@@ -17,8 +17,25 @@ export default function RootLayout({
   const pathname = usePathname();
 
   useEffect(() => {
-    if (window.Telegram?.WebApp) {
-      setupViewport();
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      // Устанавливаем корректную высоту вьюпорта
+      document.documentElement.style.setProperty(
+        '--tg-viewport-height',
+        `${tg.viewportHeight}px`
+      );
+      document.documentElement.style.setProperty(
+        '--tg-viewport-stable-height',
+        `${tg.viewportStableHeight}px`
+      );
+      
+      // Проверяем платформу
+      const isMobileApp = !['macos', 'windows', 'linux'].includes(tg.platform);
+      if (isMobileApp) {
+        document.documentElement.style.setProperty('--tg-header-height', '72px');
+      } else {
+        document.documentElement.style.setProperty('--tg-header-height', '32px');
+      }
     }
   }, []);
 

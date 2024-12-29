@@ -76,7 +76,8 @@ body {
 /* Мобильные стили */
 .page-content.mobile {
   padding: 0 var(--app-padding);
-  padding-top: calc(env(safe-area-inset-top) + 72px); /* Базовый отступ для мобильных */
+  /* Увеличиваем отступ для мобильных */
+  padding-top: calc(env(safe-area-inset-top) + var(--tg-header-height) + 16px);
   padding-bottom: env(safe-area-inset-bottom);
   padding-left: env(safe-area-inset-left, var(--app-padding));
   padding-right: env(safe-area-inset-right, var(--app-padding));
@@ -84,7 +85,7 @@ body {
 
 /* Десктопные стили */
 .page-content.desktop {
-  padding: 0 var(--app-padding); /* Убираем верхний отступ для десктопа */
+  padding: 0 var(--app-padding);
 }
 
 /* Контейнер контента */
@@ -107,7 +108,12 @@ body {
 
 /* Десктопные стили */
 .desktop .content-container {
-  padding-top: 8px; /* Небольшой отступ только для контента на десктопе */
+  padding-top: 16px; /* Фиксированный отступ для десктопа */
+}
+
+/* Мобильные стили */
+.mobile .content-container {
+  padding-top: 0; /* Убираем дополнительный отступ на мобильных */
 }
 
 .user-profile {
