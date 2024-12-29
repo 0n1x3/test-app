@@ -62,19 +62,19 @@ body {
   padding: 16px;
 }
 
-/* Добавляем стили для хедера */
+/* Обновляем стили для хедера */
 .header {
-  padding-top: var(--tg-header-height); /* Добавляем отступ для хедера */
   @apply flex justify-between items-center;
   width: 100%;
-  margin-bottom: 16px;
+  margin-bottom: 12px; /* Уменьшаем отступ между хедером и балансом */
 }
 
-/* Контейнер для контента */
+/* Обновляем контейнер для контента */
 .content-container {
   width: 100%;
   height: 100%;
   @apply bg-black text-white;
+  padding-top: var(--tg-header-height); /* Перемещаем padding-top сюда */
 }
 
 .page-container {
@@ -88,4 +88,10 @@ body {
   -webkit-backface-visibility: hidden;
   perspective: 1000;
   -webkit-perspective: 1000;
+}
+
+/* Обновляем стили для баланса */
+.balance-card {
+  @apply bg-[#1A1A1A] rounded-xl p-4;
+  margin-bottom: 16px; /* Добавляем фиксированный отступ снизу */
 } 
