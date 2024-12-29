@@ -60,7 +60,7 @@ body {
   margin: 0 auto;
 }
 
-/* Базовые стили для всех страниц */
+/* Базовые стили */
 .page-wrapper {
   width: 100%;
   height: 100%;
@@ -88,19 +88,11 @@ body {
   padding-top: 4px;
 }
 
-/* Контейнер контента */
 .content-container {
   width: 100%;
   max-width: var(--app-max-width);
   margin: 0 auto;
-}
-
-/* Удаляем все дополнительные отступы */
-.desktop .content-container,
-.mobile .content-container,
-.deposit-page,
-.withdraw-page {
-  padding-top: 0 !important; /* Принудительно убираем все отступы */
+  padding-top: 0; /* Явно обнуляем отступ */
 }
 
 .header {
@@ -114,18 +106,8 @@ body {
   margin-bottom: 16px;
 }
 
-/* Десктопные стили */
-.desktop .content-container {
-  padding-top: 8px; /* Уменьшенный отступ для десктопа */
-}
-
-/* Мобильные стили */
-.mobile .content-container {
-  padding-top: 0;
-}
-
 .user-profile {
   @apply flex items-center gap-3;
-  margin-top: 0; /* Убираем возможный отступ */
-  padding-top: 0; /* Убираем возможный отступ */
+  margin-top: 0;
+  padding-top: 0;
 } 
