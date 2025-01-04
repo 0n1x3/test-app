@@ -1,12 +1,12 @@
 'use client';
 
 import { TonConnectButton } from '@tonconnect/ui-react';
-import { useTonConnect } from '@/hooks/useTonConnect';
+import { useTonConnect } from '@/hooks/wallet/useTonConnect';
 import { useRouter } from 'next/navigation';
 import { CONTRACT_ADDRESS } from '@/config';
-import { SafeArea } from './SafeArea';
-import { PageTransition } from './PageTransition';
-import { PageContainer } from './PageContainer';
+import { SafeArea } from '@/components/_layout/SafeArea';
+import { PageTransition } from '@/components/_layout/PageTransition';
+import { PageContainer } from '@/components/_layout/PageContainer';
 
 export function DepositPage() {
   const { sender } = useTonConnect();

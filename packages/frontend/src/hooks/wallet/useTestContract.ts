@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { Address } from '@ton/core';
-import { useTonClient } from './useTonClient';
-import { useTonConnect } from './useTonConnect';
-import { TestContract } from '../wrappers/TestContract';
-import { CONTRACT_ADDRESS } from '../config';
+import { useTonClient } from '@/hooks/wallet/useTonClient';
+import { useTonConnect } from '@/hooks/wallet/useTonConnect';
+import { TestContract } from '@/wrappers/TestContract';
+import { CONTRACT_ADDRESS } from '@/config';
 
 export function useTestContract() {
   const { client } = useTonClient();

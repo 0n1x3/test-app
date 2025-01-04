@@ -1,6 +1,6 @@
 'use client';
 
-import { CoinsDisplay } from './CoinsDisplay';
+import { CoinsDisplay } from '../../_games/CoinsDisplay';
 
 export function UserProfile() {
   return (

@@ -1,11 +1,11 @@
 'use client';
 
-import { useTonConnect } from '@/hooks/useTonConnect';
+import { useTonConnect } from '@/hooks/wallet/useTonConnect';
 import { useState } from 'react';
 import { beginCell, toNano, Address } from '@ton/core';
 import { formatTonAmount } from '@/utils/format';
 import { isTelegramWebAppAvailable } from '@/utils/telegram';
-import { CONTRACT_ADDRESS } from '../config';
+import { CONTRACT_ADDRESS } from '@/config';
 
 export function ContractOperations() {
   const { sender } = useTonConnect();

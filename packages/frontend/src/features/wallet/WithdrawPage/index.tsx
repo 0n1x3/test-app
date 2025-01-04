@@ -3,10 +3,11 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { TonConnectButton } from '@tonconnect/ui-react';
-import { useTonConnect } from '@/hooks/useTonConnect';
-import { useTestContract } from '@/hooks/useTestContract';
-import { SafeArea } from './SafeArea';
-import { PageTransition } from './PageTransition';
+import { useTonConnect } from '@/hooks/wallet/useTonConnect';
+import { useTestContract } from '@/hooks/wallet/useTestContract';
+import { SafeArea } from '@/components/_layout/SafeArea';
+import { PageTransition } from '@/components/_layout/PageTransition';
+import { PageContainer } from '@/components/_layout/PageContainer';
 
 export function WithdrawPage() {
   const router = useRouter();
@@ -21,7 +22,7 @@ export function WithdrawPage() {
   return (
     <SafeArea>
       <PageTransition>
-        <div className="page-container">
+        <PageContainer>
           <div className="withdraw-page">
             <div className="withdraw-container">
               {/* Заголовок */}
@@ -101,7 +102,7 @@ export function WithdrawPage() {
               </div>
             </div>
           </div>
-        </div>
+        </PageContainer>
       </PageTransition>
     </SafeArea>
   );

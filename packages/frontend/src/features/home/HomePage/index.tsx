@@ -1,11 +1,11 @@
 'use client';
 
-import { GameModes } from './GameModes';
-import { UserProfile } from './UserProfile';
-import { Balance } from './Balance';
-import { SafeArea } from './SafeArea';
-import { PageTransition } from './PageTransition';
-import { PageContainer } from './PageContainer';
+import { GameModes } from '@/components/_games/GameModes';
+import { UserProfile } from '@/components/_user/UserProfile';
+import { Balance } from '@/components/_wallet/Balance';
+import { SafeArea } from '@/components/_layout/SafeArea';
+import { PageTransition } from '@/components/_layout/PageTransition';
+import { PageContainer } from '@/components/_layout/PageContainer';
 
 export function HomePage() {
   return (

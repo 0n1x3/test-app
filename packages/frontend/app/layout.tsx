@@ -4,8 +4,8 @@ import Script from 'next/script'
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import '@/styles/globals.css';
-import '@/styles/components.css';
-import { TonProvider } from '@/providers/TonProvider';
+import '@/styles/base/components.css';
+import { TonProvider } from '@/providers/ton';
 import { setupViewport } from '@/utils/viewport';
 import { AnimatePresence } from 'framer-motion';
 
