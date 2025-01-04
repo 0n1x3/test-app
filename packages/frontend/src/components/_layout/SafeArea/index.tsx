@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import './style.css';
 
@@ -12,16 +14,7 @@ export function SafeArea({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <div 
-      className={`safe-area ${isMobile ? 'mobile' : 'desktop'}`}
-      style={{ 
-        height: 'var(--tg-viewport-stable-height)',
-        position: 'relative',
-        overflow: 'hidden',
-        margin: 0,
-        padding: 0
-      }}
-    >
+    <div className={`safe-area ${isMobile ? 'mobile' : 'desktop'}`}>
       {children}
     </div>
   );

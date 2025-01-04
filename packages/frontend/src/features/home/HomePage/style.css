@@ -1,0 +1,17 @@
+.home-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.home-content .header {
+  padding: 0 var(--app-padding);
+}
+
+.home-content .balance {
+  padding: 0 var(--app-padding);
+}
+
+.home-content .game-modes {
+  padding: 0 var(--app-padding);
+}
