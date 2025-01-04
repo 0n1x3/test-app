@@ -7,7 +7,7 @@
 }
 
 .home-content .header {
-  padding: 16px var(--app-padding) 0;
+  padding: 0 var(--app-padding);
 }
 
 .home-content .balance {
@@ -17,4 +17,5 @@
 .home-content .game-modes {
   padding: 0 var(--app-padding);
   flex: 1;
+  padding-bottom: env(safe-area-inset-bottom);
 }
