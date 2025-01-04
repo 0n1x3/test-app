@@ -1,0 +1,22 @@
+.safe-area {
+  width: 100%;
+  max-width: var(--app-max-width);
+  margin: 0 auto;
+  height: var(--tg-viewport-stable-height);
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.safe-area.desktop {
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Скрываем скроллбар */
+.safe-area::-webkit-scrollbar {
+  display: none;
+}

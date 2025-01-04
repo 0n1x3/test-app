@@ -8,6 +8,7 @@ import { useTestContract } from '@/hooks/wallet/useTestContract';
 import { SafeArea } from '@/components/_layout/SafeArea';
 import { PageTransition } from '@/components/_layout/PageTransition';
 import { PageContainer } from '@/components/_layout/PageContainer';
+import './styles.css';
 
 export function WithdrawPage() {
   const router = useRouter();

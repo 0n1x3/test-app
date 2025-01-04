@@ -7,6 +7,7 @@ import { CONTRACT_ADDRESS } from '@/config';
 import { SafeArea } from '@/components/_layout/SafeArea';
 import { PageTransition } from '@/components/_layout/PageTransition';
 import { PageContainer } from '@/components/_layout/PageContainer';
+import './styles.css';
 
 export function DepositPage() {
   const { sender } = useTonConnect();
