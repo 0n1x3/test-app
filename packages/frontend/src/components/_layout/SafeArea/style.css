@@ -2,9 +2,7 @@
   width: 100%;
   height: var(--tg-viewport-stable-height);
   position: relative;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
+  overflow: hidden;
   background: var(--tg-theme-bg-color, #000000);
 }
 

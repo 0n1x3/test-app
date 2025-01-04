@@ -2,10 +2,12 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  flex: 1;
+  background: var(--tg-theme-bg-color, #000000);
 }
 
 .home-content .header {
-  padding: 0 var(--app-padding);
+  padding: 16px var(--app-padding) 0;
 }
 
 .home-content .balance {
@@ -14,4 +16,5 @@
 
 .home-content .game-modes {
   padding: 0 var(--app-padding);
+  flex: 1;
 }
