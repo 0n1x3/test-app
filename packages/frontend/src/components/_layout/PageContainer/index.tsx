@@ -2,6 +2,7 @@
 
 import { isMobile } from '@/utils/platform';
 import { useEffect, useState } from 'react';
+import './style.css';
 
 interface PageContainerProps {
   children: React.ReactNode;

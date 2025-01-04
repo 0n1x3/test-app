@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import './style.css';
 
 export function SafeArea({ children }: { children: React.ReactNode }) {
   const [isMobile, setIsMobile] = useState(false);
