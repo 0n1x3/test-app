@@ -56,13 +56,13 @@ html, body {
 
 /* Отступы для разных платформ */
 html[data-platform="mobile"][data-fullscreen="true"] {
-  --header-padding: calc(env(safe-area-inset-top) + 72px);
+  --header-padding: calc(env(safe-area-inset-top) + 64px);
 }
 
 html[data-platform="mobile"][data-fullscreen="false"] {
-  --header-padding: 24px;
+  --header-padding: 16px;
 }
 
 html[data-platform="desktop"] {
-  --header-padding: 16px;
+  --header-padding: 12px;
 } 
