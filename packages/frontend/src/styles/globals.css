@@ -16,6 +16,7 @@ html, body {
   padding: 0;
   height: 100%;
   overflow: hidden;
+  touch-action: none;
 }
 
 #__next {
@@ -53,9 +54,15 @@ html, body {
   color: rgba(255, 255, 255, 0.5);
 }
 
-/* Отступ только для мобильных устройств */
-@media (max-width: 390px) {
-  html[data-platform="mobile"] {
-    --header-padding: calc(env(safe-area-inset-top) + 72px);
-  }
+/* Отступы для разных платформ */
+html[data-platform="mobile"][data-fullscreen="true"] {
+  --header-padding: calc(env(safe-area-inset-top) + 72px);
+}
+
+html[data-platform="mobile"][data-fullscreen="false"] {
+  --header-padding: 24px;
+}
+
+html[data-platform="desktop"] {
+  --header-padding: 16px;
 } 

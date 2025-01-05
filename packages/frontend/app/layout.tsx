@@ -22,15 +22,15 @@ export default function RootLayout({
     if (tg) {
       setupViewport();
       
-      // Устанавливаем CSS-переменные в зависимости от платформы
       const isMobileApp = !['macos', 'windows', 'linux'].includes(tg.platform);
-      document.documentElement.style.setProperty(
-        '--mobile-top-padding',
-        isMobileApp ? 
-          'calc(env(safe-area-inset-top) + var(--tg-header-height) + 16px)' : 
-          '4px'
-      );
       document.documentElement.dataset.platform = isMobileApp ? 'mobile' : 'desktop';
+      
+      // Отключаем зум
+      document.addEventListener('touchstart', (e) => {
+        if (e.touches.length > 1) {
+          e.preventDefault();
+        }
+      }, { passive: false });
     }
   }, []);
 
@@ -44,11 +44,6 @@ export default function RootLayout({
         <Script
           src="https://telegram.org/js/telegram-web-app.js"
           strategy="beforeInteractive"
-          onLoad={() => {
-            if (window.Telegram?.WebApp) {
-              setupViewport();
-            }
-          }}
         />
       </head>
       <body>
