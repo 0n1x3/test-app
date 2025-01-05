@@ -9,7 +9,7 @@
 .wallet-tabs {
   display: flex;
   gap: 8px;
-  margin: 12px 0;
+  margin: 8px 0;
 }
 
 .tab-button {
@@ -182,7 +182,7 @@
 }
 
 .wallet-connect {
-  margin: 16px 0;
+  margin: 12px 0;
 }
 
 /* Стилизуем кнопку TonConnect как табы */

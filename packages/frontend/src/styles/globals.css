@@ -44,7 +44,7 @@ html, body {
 
 /* Общие стили для заголовков страниц */
 .page-header {
-  padding: 24px var(--app-padding) 16px;
+  padding: 16px var(--app-padding) 12px;
   text-align: center;
 }
 
@@ -57,6 +57,6 @@ html, body {
 /* Отступ для мобильных устройств */
 @media (max-width: 390px) {
   .page-header {
-    padding-top: calc(env(safe-area-inset-top) + 56px);
+    padding-top: calc(env(safe-area-inset-top) + 72px);
   }
 } 
