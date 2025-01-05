@@ -3,13 +3,13 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 0 var(--app-padding);
-  padding-bottom: calc(56px + env(safe-area-inset-bottom)); /* Учитываем высоту нижнего меню */
+  padding: 16px var(--app-padding);
+  padding-bottom: calc(88px + env(safe-area-inset-bottom)); /* Учитываем новую высоту меню */
 }
 
 .wallet-header {
-  padding-top: 16px;
   margin-bottom: 24px;
+  text-align: center;
 }
 
 .wallet-tabs {

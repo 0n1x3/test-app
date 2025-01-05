@@ -8,7 +8,7 @@ export function BottomNav() {
   const pathname = usePathname();
 
   const tabs = [
-    { id: 'game', label: 'Главная', icon: '🏠', path: '/' },
+    { id: 'game', label: 'Игра', icon: '🏠', path: '/' },
     { id: 'income', label: 'Доход', icon: '💰', path: '/income' },
     { id: 'tournament', label: 'Турниры', icon: '🏆', path: '/tournament' },
     { id: 'friends', label: 'Друзья', icon: '👥', path: '/friends' },

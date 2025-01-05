@@ -18,15 +18,11 @@ export function WalletPage() {
       <PageTransition>
         <PageContainer>
           <div className="wallet-page">
-            <Balance />
-
             <div className="wallet-header">
-              <h1 className="text-2xl font-bold">Кошелек</h1>
+              <h1 className="text-2xl text-gray-500">Кошелек</h1>
             </div>
-
-            <div className="wallet-connect">
-              <TonConnectButton />
-            </div>
+            
+            <Balance />
 
             <div className="wallet-tabs">
               <button

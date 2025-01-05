@@ -1,4 +1,5 @@
 'use client';
+import { TonConnectButton } from '@tonconnect/ui-react';
 
 export function Balance() {
   return (
@@ -13,6 +14,9 @@ export function Balance() {
             </div>
             <div className="balance-fiat">≈ $0.00 USD</div>
           </div>
+        </div>
+        <div className="wallet-connect">
+          <TonConnectButton />
         </div>
       </div>
     </div>
