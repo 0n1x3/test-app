@@ -54,9 +54,9 @@ html, body {
   color: rgba(255, 255, 255, 0.5);
 }
 
-/* Отступ для мобильных устройств */
+/* Отступ только для мобильных устройств */
 @media (max-width: 390px) {
-  .page-header {
+  html[data-platform="mobile"] .page-header {
     padding-top: calc(env(safe-area-inset-top) + 72px);
   }
 } 

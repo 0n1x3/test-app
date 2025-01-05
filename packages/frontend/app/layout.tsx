@@ -30,6 +30,7 @@ export default function RootLayout({
           'calc(env(safe-area-inset-top) + var(--tg-header-height) + 16px)' : 
           '4px'
       );
+      document.documentElement.dataset.platform = isMobileApp ? 'mobile' : 'desktop';
     }
   }, []);
 
@@ -38,7 +39,7 @@ export default function RootLayout({
       <head>
         <meta 
           name="viewport" 
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" 
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content" 
         />
         <Script
           src="https://telegram.org/js/telegram-web-app.js"

@@ -12,8 +12,6 @@
   width: 100%;
   max-width: var(--app-max-width);
   margin: 0 auto;
-  padding: 0 var(--app-padding);
-  @apply bg-black text-white;
 }
 
 .header {
@@ -84,7 +82,6 @@
 
 .balance-card {
   @apply bg-[#1A1A1A] rounded-xl p-4 mb-4;
-  margin-top: max(16px, env(safe-area-inset-top));
 }
 
 .balance-title {
@@ -128,10 +125,6 @@
 
 .balance-button.withdraw {
   @apply bg-[#2A2A2A] text-white hover:bg-[#333333];
-}
-
-.page-header {
-  @apply flex items-center gap-4 mb-6 pt-2;
 }
 
 .back-button {
