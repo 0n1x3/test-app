@@ -6,6 +6,31 @@
   padding: 0 var(--app-padding);
 }
 
+.wallet-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.wallet-connect {
+  width: auto;
+}
+
+/* Стилизуем кнопку TonConnect */
+.wallet-connect :global(.tc-button) {
+  padding: 8px 16px;
+  border-radius: 12px;
+  background: #1A1A1A;
+  color: #808080;
+  font-weight: 500;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.wallet-connect :global(.tc-button:hover) {
+  background: #2A2A2A;
+}
+
 .wallet-tabs {
   display: flex;
   gap: 8px;
@@ -179,23 +204,4 @@
 .submit-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
-
-.wallet-connect {
-  margin: 12px 0;
-}
-
-/* Стилизуем кнопку TonConnect как табы */
-.wallet-connect :global(.tc-button) {
-  width: 100%;
-  padding: 12px;
-  border-radius: 12px;
-  background: #1A1A1A;
-  color: #808080;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-
-.wallet-connect :global(.tc-button:hover) {
-  background: #2A2A2A;
 } 

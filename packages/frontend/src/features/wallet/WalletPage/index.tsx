@@ -22,11 +22,13 @@ export function WalletPage() {
           </div>
           
           <div className="wallet-page">
-            <Balance />
-
-            <div className="wallet-connect">
-              <TonConnectButton />
+            <div className="wallet-header">
+              <div className="wallet-connect">
+                <TonConnectButton />
+              </div>
             </div>
+
+            <Balance />
 
             <div className="wallet-tabs">
               <button
