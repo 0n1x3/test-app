@@ -24,6 +24,10 @@ export function WalletPage() {
             
             <Balance />
 
+            <div className="wallet-connect">
+              <TonConnectButton />
+            </div>
+
             <div className="wallet-tabs">
               <button
                 className={`tab-button ${activeTab === 'deposit' ? 'active' : ''}`}

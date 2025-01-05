@@ -184,4 +184,23 @@
 .submit-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.wallet-connect {
+  margin: 16px 0;
+}
+
+/* Стилизуем кнопку TonConnect как табы */
+.wallet-connect :global(.tc-button) {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  background: #1A1A1A;
+  color: #808080;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.wallet-connect :global(.tc-button:hover) {
+  background: #2A2A2A;
 } 

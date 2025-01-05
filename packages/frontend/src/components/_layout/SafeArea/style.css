@@ -10,8 +10,9 @@
   background: var(--app-bg-color);
 }
 
-.safe-area.mobile {
-  padding-top: 56px; /* Высота хедера Telegram */
+/* Отступ только для мобильных в fullscreen режиме */
+.safe-area.mobile[data-fullscreen="true"] {
+  padding-top: 56px;
 }
 
 .safe-area-content {
