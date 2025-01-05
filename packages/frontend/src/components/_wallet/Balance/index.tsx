@@ -4,12 +4,8 @@ import { useRouter } from 'next/navigation';
 export function Balance() {
   const router = useRouter();
 
-  const handleDeposit = () => {
-    router.push('/deposit');
-  };
-
-  const handleWithdraw = () => {
-    router.push('/withdraw');
+  const handleWallet = () => {
+    router.push('/wallet');
   };
 
   return (
@@ -25,10 +21,10 @@ export function Balance() {
             <div className="balance-fiat">≈ $0.00 USD</div>
           </div>
           <div className="balance-actions">
-            <button className="balance-button deposit" onClick={handleDeposit}>
+            <button className="balance-button deposit" onClick={handleWallet}>
               Deposit
             </button>
-            <button className="balance-button withdraw" onClick={handleWithdraw}>
+            <button className="balance-button withdraw" onClick={handleWallet}>
               Withdraw
             </button>
           </div>

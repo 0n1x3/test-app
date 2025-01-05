@@ -1,8 +1,8 @@
 'use client';
 
-import { WithdrawPage } from '@/features/wallet/WithdrawPage';
+import { WalletPage } from '@/features/wallet/WalletPage';
 import '@/styles/base/components.css';
 
 export default function Page() {
-  return <WithdrawPage />;
+  return <WalletPage />;
 } 

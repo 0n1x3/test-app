@@ -8,6 +8,7 @@ import '@/styles/base/components.css';
 import { TonProvider } from '@/providers/ton';
 import { setupViewport } from '@/utils/viewport';
 import { AnimatePresence } from 'framer-motion';
+import { BottomNav } from '@/components/_layout/BottomNav';
 
 export default function RootLayout({
   children,
@@ -56,6 +57,7 @@ export default function RootLayout({
               {children}
             </div>
           </AnimatePresence>
+          <BottomNav />
         </TonProvider>
       </body>
     </html>
