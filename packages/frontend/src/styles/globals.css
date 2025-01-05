@@ -4,11 +4,26 @@
 
 :root {
   --app-bg-color: #000000;
+  --app-max-width: 390px;
+  --app-padding: 16px;
 }
 
-body {
+html, body {
   background: var(--app-bg-color);
   color: #FFFFFF;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+#__next {
+  height: 100%;
+}
+
+/* Отключаем выделение текста на мобильных устройствах */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
 }
 
 /* Базовые стили компонентов */

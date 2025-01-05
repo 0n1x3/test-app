@@ -7,29 +7,30 @@
 .balance-container {
   display: flex;
   justify-content: space-between;
-  align-items: center; /* Выравниваем по центру */
-}
-
-.balance-title {
-  font-size: 14px;
-  color: #808080;
-  margin-bottom: 4px;
+  align-items: center;
 }
 
 .balance-main {
   display: flex;
   flex-direction: column;
+  gap: 4px;
+}
+
+.balance-title {
+  font-size: 14px;
+  color: #808080;
 }
 
 .balance-info {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 4px;
 }
 
 .balance-amount {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 600;
+  line-height: 1;
 }
 
 .balance-currency {
@@ -46,4 +47,5 @@
 .wallet-connect {
   display: flex;
   align-items: center;
+  margin-left: 16px;
 } 
