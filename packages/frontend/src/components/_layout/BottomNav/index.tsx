@@ -10,7 +10,7 @@ export function BottomNav() {
 
   const tabs = [
     { id: 'game', label: 'Игра', icon: 'solar:gamepad-minimalistic-linear', path: '/' },
-    { id: 'income', label: 'Доход', icon: 'solar:chart-line-linear', path: '/income' },
+    { id: 'income', label: 'Доход', icon: 'solar:money-bag-linear', path: '/income' },
     { id: 'tournament', label: 'Турниры', icon: 'solar:cup-star-linear', path: '/tournament' },
     { id: 'friends', label: 'Друзья', icon: 'solar:users-group-rounded-linear', path: '/friends' },
     { id: 'wallet', label: 'Кошелек', icon: 'solar:wallet-linear', path: '/wallet' },

@@ -5,7 +5,6 @@
   flex-direction: column;
   padding: 16px var(--app-padding);
   padding-bottom: calc(88px + env(safe-area-inset-bottom));
-  background: #000000;
 }
 
 .wallet-header {

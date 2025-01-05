@@ -1,0 +1,49 @@
+.balance-card {
+  background: #1A1A1A;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.balance-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Выравниваем по центру */
+}
+
+.balance-title {
+  font-size: 14px;
+  color: #808080;
+  margin-bottom: 4px;
+}
+
+.balance-main {
+  display: flex;
+  flex-direction: column;
+}
+
+.balance-info {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.balance-amount {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.balance-currency {
+  font-size: 16px;
+  color: #808080;
+}
+
+.balance-fiat {
+  font-size: 14px;
+  color: #808080;
+}
+
+/* Стили для кнопки подключения */
+.wallet-connect {
+  display: flex;
+  align-items: center;
+} 
