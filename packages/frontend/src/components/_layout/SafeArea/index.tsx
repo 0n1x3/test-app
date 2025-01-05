@@ -15,7 +15,9 @@ export function SafeArea({ children }: { children: React.ReactNode }) {
 
   return (
     <div className={`safe-area ${isMobile ? 'mobile' : 'desktop'}`}>
-      {children}
+      <div className="safe-area-content">
+        {children}
+      </div>
     </div>
   );
 } 

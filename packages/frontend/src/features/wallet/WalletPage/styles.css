@@ -4,26 +4,17 @@
   display: flex;
   flex-direction: column;
   padding: 16px var(--app-padding);
-  padding-bottom: calc(88px + env(safe-area-inset-bottom));
 }
 
 .wallet-header {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   text-align: center;
-}
-
-.balance-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 16px;
 }
 
 .wallet-tabs {
   display: flex;
   gap: 8px;
-  margin: 16px 0;
+  margin: 12px 0;
 }
 
 .tab-button {

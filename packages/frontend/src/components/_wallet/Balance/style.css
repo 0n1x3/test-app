@@ -1,8 +1,7 @@
 .balance-card {
   background: #1A1A1A;
-  border-radius: 16px;
-  padding: 16px;
-  margin-top: env(safe-area-inset-top);
+  border-radius: 12px;
+  padding: 12px 16px;
 }
 
 .balance-container {
@@ -14,33 +13,33 @@
 .balance-main {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .balance-title {
-  font-size: 14px;
+  font-size: 13px;
   color: #808080;
 }
 
 .balance-info {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 4px;
 }
 
 .balance-amount {
-  font-size: 28px;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: 500;
   line-height: 1;
 }
 
 .balance-currency {
-  font-size: 16px;
+  font-size: 14px;
   color: #808080;
 }
 
 .balance-fiat {
-  font-size: 14px;
+  font-size: 13px;
   color: #808080;
 }
 
@@ -48,5 +47,5 @@
 .wallet-connect {
   display: flex;
   align-items: center;
-  margin-left: 16px;
+  margin-left: 12px;
 } 
