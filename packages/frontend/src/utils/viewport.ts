@@ -12,18 +12,25 @@ export function setupViewport() {
     tg.disableVerticalSwipes();
     tg.enableClosingConfirmation();
 
-    const isMobileApp = !['macos', 'windows', 'linux'].includes(tg.platform);
-    document.documentElement.dataset.platform = isMobileApp ? 'mobile' : 'desktop';
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
 
-    document.documentElement.dataset.fullscreen = String(tg.isExpanded);
+    // Устанавливаем атрибут для определения режима
+    document.documentElement.dataset.fullscreen = 'false';
 
-    if (isMobileApp) {
+    if (isMobile && 'requestFullscreen' in tg) {
+      tg.requestFullscreen();
+      document.documentElement.dataset.fullscreen = 'true';
+    } else {
       tg.expand();
     }
 
+    // Обработчик изменения режима
     tg.onEvent('viewportChanged', ({ isStateStable }) => {
       if (isStateStable) {
-        document.documentElement.dataset.fullscreen = String(tg.isExpanded);
+        document.documentElement.dataset.fullscreen = 
+          isMobile && tg.isExpanded ? 'true' : 'false';
         setAppDimensions();
       }
     });
