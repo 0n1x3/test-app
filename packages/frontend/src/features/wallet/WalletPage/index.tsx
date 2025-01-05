@@ -17,11 +17,11 @@ export function WalletPage() {
     <SafeArea>
       <PageTransition>
         <PageContainer>
+          <div className="page-header">
+            <h1>Кошелек</h1>
+          </div>
+          
           <div className="wallet-page">
-            <div className="wallet-header">
-              <h1 className="text-2xl text-gray-500">Кошелек</h1>
-            </div>
-            
             <Balance />
 
             <div className="wallet-connect">

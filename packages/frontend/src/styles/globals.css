@@ -40,4 +40,16 @@ html, body {
 .user-profile {
   @apply flex items-center gap-3;
   margin-top: 16px;
+}
+
+/* Общие стили для заголовков страниц */
+.page-header {
+  padding: 16px var(--app-padding) 0;
+  text-align: center;
+}
+
+.page-header h1 {
+  font-size: 20px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
 } 
