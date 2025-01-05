@@ -10,11 +10,6 @@
   background: var(--app-bg-color);
 }
 
-/* Отступ только для мобильных в fullscreen режиме */
-.safe-area.mobile[data-fullscreen="true"] {
-  padding-top: 56px;
-}
-
 .safe-area-content {
   width: 100%;
   height: 100%;

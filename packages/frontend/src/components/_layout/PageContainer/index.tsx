@@ -11,18 +11,23 @@ interface PageContainerProps {
 
 export function PageContainer({ children, className = '' }: PageContainerProps) {
   const [platform, setPlatform] = useState<'mobile' | 'desktop'>('mobile');
+  const [isFullscreen, setIsFullscreen] = useState(false);
   
   useEffect(() => {
     const tg = window.Telegram?.WebApp;
-    // Проверяем платформу напрямую из Telegram WebApp
     if (tg?.platform) {
-      setPlatform(!['macos', 'windows', 'linux'].includes(tg.platform) ? 'mobile' : 'desktop');
+      const mobile = !['macos', 'windows', 'linux'].includes(tg.platform);
+      setPlatform(mobile ? 'mobile' : 'desktop');
+      setIsFullscreen(mobile && tg.isExpanded);
     }
   }, []);
 
   return (
-    <div className={`page-wrapper ${className}`} style={{ margin: 0, padding: 0 }}>
-      <div className={`page-content ${platform}`} style={{ margin: 0 }}>
+    <div className={`page-wrapper ${className}`}>
+      <div 
+        className={`page-content ${platform}`}
+        data-fullscreen={isFullscreen}
+      >
         {children}
       </div>
     </div>

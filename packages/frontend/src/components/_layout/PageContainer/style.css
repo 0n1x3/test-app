@@ -5,11 +5,19 @@
   background: #000000;
 }
 
-.content-container {
+.page-content {
   width: 100%;
   height: 100%;
   margin: 0 auto;
   max-width: var(--app-max-width, 390px);
   display: flex;
   flex-direction: column;
+}
+
+.page-content.mobile[data-fullscreen="true"] {
+  padding-top: 56px;
+}
+
+.page-content.desktop {
+  padding-top: 0;
 }
