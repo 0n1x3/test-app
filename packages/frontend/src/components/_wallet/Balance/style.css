@@ -2,6 +2,7 @@
   background: #1A1A1A;
   border-radius: 16px;
   padding: 16px;
+  margin-top: env(safe-area-inset-top);
 }
 
 .balance-container {
