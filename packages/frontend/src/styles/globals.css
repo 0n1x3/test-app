@@ -6,6 +6,8 @@
   --app-bg-color: #000000;
   --app-max-width: 390px;
   --app-padding: 16px;
+  --tg-viewport-height: 100vh;
+  --tg-viewport-stable-height: 100vh;
 }
 
 html, body {
@@ -13,7 +15,8 @@ html, body {
   color: #FFFFFF;
   margin: 0;
   padding: 0;
-  height: 100%;
+  height: var(--tg-viewport-stable-height);
+  overflow: hidden;
 }
 
 #__next {
@@ -24,6 +27,7 @@ html, body {
 * {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
+  box-sizing: border-box;
 }
 
 /* Базовые стили компонентов */

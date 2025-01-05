@@ -1,21 +1,37 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import './style.css';
+
+const pageVariants = {
+  initial: {
+    opacity: 0,
+    y: 20,
+  },
+  enter: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.3,
+      ease: [0.33, 1, 0.68, 1], // cubic-bezier
+    }
+  },
+  exit: {
+    opacity: 0,
+    y: -20,
+    transition: {
+      duration: 0.2,
+      ease: [0.33, 1, 0.68, 1],
+    }
+  }
+};
 
 export function PageTransition({ children }: { children: React.ReactNode }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.2 }}
-      style={{ 
-        width: '100%',
-        height: '100%',
-        margin: 0,
-        padding: 0
-      }}
+      variants={pageVariants}
+      initial="initial"
+      animate="enter"
+      exit="exit"
     >
       {children}
     </motion.div>

@@ -3,6 +3,7 @@
   height: 100%;
   position: relative;
   background: #000000;
+  overflow: hidden;
 }
 
 .content-container {
@@ -10,4 +11,7 @@
   height: 100%;
   margin: 0 auto;
   max-width: var(--app-max-width, 390px);
+  padding-top: 16px;
+  display: flex;
+  flex-direction: column;
 }
