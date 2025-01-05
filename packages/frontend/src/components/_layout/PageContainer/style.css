@@ -3,8 +3,6 @@
   height: 100%;
   position: relative;
   background: #000000;
-  padding: 0;
-  margin: 0;
 }
 
 .content-container {
@@ -14,13 +12,4 @@
   max-width: var(--app-max-width, 390px);
   display: flex;
   flex-direction: column;
-  padding: 0;
-}
-
-.page-content.mobile[data-fullscreen="true"] {
-  padding-top: 56px;
-}
-
-.page-content.desktop {
-  padding-top: 0;
 }
