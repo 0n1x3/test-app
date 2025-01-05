@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { TonConnectButton } from '@tonconnect/ui-react';
 import { Balance } from '@/components/_wallet/Balance';
 import { SafeArea } from '@/components/_layout/SafeArea';
 import { PageTransition } from '@/components/_layout/PageTransition';
@@ -17,11 +18,15 @@ export function WalletPage() {
       <PageTransition>
         <PageContainer>
           <div className="wallet-page">
+            <Balance />
+
             <div className="wallet-header">
               <h1 className="text-2xl font-bold">Кошелек</h1>
             </div>
 
-            <Balance />
+            <div className="wallet-connect">
+              <TonConnectButton />
+            </div>
 
             <div className="wallet-tabs">
               <button
