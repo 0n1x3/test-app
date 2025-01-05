@@ -4,18 +4,27 @@
   display: flex;
   flex-direction: column;
   padding: 16px var(--app-padding);
-  padding-bottom: calc(88px + env(safe-area-inset-bottom)); /* Учитываем новую высоту меню */
+  padding-bottom: calc(88px + env(safe-area-inset-bottom));
+  background: #000000;
 }
 
 .wallet-header {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   text-align: center;
+}
+
+.balance-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 .wallet-tabs {
   display: flex;
   gap: 8px;
-  margin: 24px 0;
+  margin: 16px 0;
 }
 
 .tab-button {

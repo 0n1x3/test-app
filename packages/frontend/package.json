@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@iconify/react": "^5.2.0",
     "@orbs-network/ton-access": "^2.3.3",
     "@test-app/shared": "workspace:*",
     "@ton/core": "^0.59.0",

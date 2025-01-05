@@ -4,8 +4,8 @@
   left: 16px;
   right: 16px;
   height: 56px;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
+  background: rgba(26, 26, 26, 0.8);
+  backdrop-filter: blur(20px);
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -23,7 +23,7 @@
   flex: 1;
   height: 100%;
   color: rgba(255, 255, 255, 0.5);
-  transition: color 0.2s;
+  transition: all 0.2s;
   font-size: 12px;
 }
 
@@ -32,10 +32,11 @@
 }
 
 .nav-icon {
-  font-size: 18px;
-  filter: grayscale(100%) brightness(200%);
+  font-size: 24px;
+  opacity: 0.5;
+  transition: all 0.2s;
 }
 
 .nav-item.active .nav-icon {
-  filter: none;
+  opacity: 1;
 } 

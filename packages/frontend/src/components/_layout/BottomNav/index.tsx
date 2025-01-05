@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter, usePathname } from 'next/navigation';
+import { Icon } from '@iconify/react';
 import './style.css';
 
 export function BottomNav() {
@@ -8,11 +9,11 @@ export function BottomNav() {
   const pathname = usePathname();
 
   const tabs = [
-    { id: 'game', label: 'Игра', icon: '🏠', path: '/' },
-    { id: 'income', label: 'Доход', icon: '💰', path: '/income' },
-    { id: 'tournament', label: 'Турниры', icon: '🏆', path: '/tournament' },
-    { id: 'friends', label: 'Друзья', icon: '👥', path: '/friends' },
-    { id: 'wallet', label: 'Кошелек', icon: '👛', path: '/wallet' },
+    { id: 'game', label: 'Игра', icon: 'solar:gamepad-minimalistic-linear', path: '/' },
+    { id: 'income', label: 'Доход', icon: 'solar:chart-line-linear', path: '/income' },
+    { id: 'tournament', label: 'Турниры', icon: 'solar:cup-star-linear', path: '/tournament' },
+    { id: 'friends', label: 'Друзья', icon: 'solar:users-group-rounded-linear', path: '/friends' },
+    { id: 'wallet', label: 'Кошелек', icon: 'solar:wallet-linear', path: '/wallet' },
   ];
 
   return (
@@ -23,7 +24,7 @@ export function BottomNav() {
           className={`nav-item ${pathname === tab.path ? 'active' : ''}`}
           onClick={() => router.push(tab.path)}
         >
-          <span className="nav-icon">{tab.icon}</span>
+          <Icon className="nav-icon" icon={tab.icon} />
           <span className="nav-label">{tab.label}</span>
         </button>
       ))}
