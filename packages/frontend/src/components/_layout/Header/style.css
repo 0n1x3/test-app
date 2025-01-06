@@ -1,7 +1,14 @@
 .header {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   width: 100%;
+  z-index: 100;
   padding: env(safe-area-inset-top) 0 0 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .header-content {
