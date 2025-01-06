@@ -18,32 +18,27 @@ export function HomePage() {
     {
       id: 'rps',
       title: 'Камень, ножницы, бумага',
-      icon: 'solar:hand-linear',
-      playCount: 34
+      icon: 'solar:scissors-linear'
     },
     {
       id: 'checkers',
       title: 'Шашки',
-      icon: 'solar:squares-four-linear',
-      playCount: 12
+      icon: 'solar:round-transfer-horizontal-linear'
     },
     {
       id: 'chess',
       title: 'Шахматы',
-      icon: 'solar:crown-linear',
-      playCount: 28
+      icon: 'solar:crown-minimalistic-linear'
     },
     {
       id: 'durak',
       title: 'Дурак',
-      icon: 'solar:cards-linear',
-      playCount: 45
+      icon: 'solar:playing-cards-linear'
     },
     {
       id: 'dice',
       title: 'Кубик',
-      icon: 'solar:widget-5-linear',
-      playCount: 67
+      icon: 'solar:square-alt-linear'
     }
   ];
 
@@ -63,11 +58,6 @@ export function HomePage() {
                     <Icon icon={game.icon} className="game-icon" />
                     <div className="game-details">
                       <div className="game-title">{game.title}</div>
-                      {game.playCount && (
-                        <div className="game-plays">
-                          {game.playCount} Play passes
-                        </div>
-                      )}
                     </div>
                   </div>
                   <button className="play-button">
