@@ -7,6 +7,10 @@
   --app-max-width: 390px;
   --app-padding: 16px;
   --header-padding: 16px;
+  --tc-button-background: #1A1A1A !important;
+  --tc-button-foreground: #808080 !important;
+  --tc-hover-background: #2A2A2A !important;
+  --tc-active-background: #2A2A2A !important;
 }
 
 html, body {
@@ -65,4 +69,17 @@ html[data-platform="mobile"][data-fullscreen="false"] {
 
 html[data-platform="desktop"] {
   --header-padding: 12px;
+}
+
+/* Стили для кнопки TonConnect */
+.tc-button {
+  padding: 8px 16px !important;
+  border-radius: 12px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s !important;
+}
+
+.tc-button:hover {
+  background: var(--tc-hover-background) !important;
 } 

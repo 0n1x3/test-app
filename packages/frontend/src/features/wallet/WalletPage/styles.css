@@ -16,21 +16,6 @@
   width: auto;
 }
 
-/* Стилизуем кнопку TonConnect */
-.wallet-connect :global(.tc-button) {
-  padding: 8px 16px;
-  border-radius: 12px;
-  background: #1A1A1A;
-  color: #808080;
-  font-weight: 500;
-  transition: all 0.2s;
-  font-size: 14px;
-}
-
-.wallet-connect :global(.tc-button:hover) {
-  background: #2A2A2A;
-}
-
 .wallet-tabs {
   display: flex;
   gap: 8px;
