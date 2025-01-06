@@ -1,6 +1,7 @@
 .header {
   position: relative;
   width: 100%;
+  padding: env(safe-area-inset-top) 0 0 0;
 }
 
 .header-content {
@@ -20,6 +21,7 @@
   font-size: 24px;
   opacity: 0.8;
   transition: opacity 0.2s;
+  margin-right: env(safe-area-inset-right);
 }
 
 .header-action:hover {

@@ -15,7 +15,7 @@ export function Header() {
           className="header-action"
           onClick={() => setIsSettingsOpen(true)}
         >
-          <Icon icon="solar:menu-dots-bold" />
+          <Icon icon="tdesign:setting-1-filled" />
         </button>
       </div>
 
