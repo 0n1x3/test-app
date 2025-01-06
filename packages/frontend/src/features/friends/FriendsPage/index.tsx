@@ -49,59 +49,69 @@ export function FriendsPage() {
   );
 
   return (
-    <div className="friends-page">
-      <div className="earnings-card">
-        <div className="earnings-subtitle">
-          Выплаты доли игровых комиссий в 1%
-        </div>
-        <div className="earnings-grid">
-          <div className="token-earning">
-            <img src="/assets/tokens/ton.png" alt="TON" className="token-icon" />
-            <span className="token-amount">{totalEarnings.ton.toFixed(2)}</span>
+    <SafeArea>
+      <PageTransition>
+        <PageContainer>
+          <div className="page-header">
+            <h1>Друзья</h1>
           </div>
-          <div className="token-earning">
-            <img src="/assets/tokens/usdt.png" alt="USDT" className="token-icon" />
-            <span className="token-amount">{totalEarnings.usdt.toFixed(2)}</span>
-          </div>
-          <div className="token-earning">
-            <img src="/assets/tokens/time.png" alt="TIME" className="token-icon" />
-            <span className="token-amount">{totalEarnings.time.toFixed(2)}</span>
-          </div>
-        </div>
-        <button className="claim-button">Claim</button>
-      </div>
-
-      <div className="friends-section">
-        <div className="section-title">Frens</div>
-        <div className="friends-list">
-          {friends.map(friend => (
-            <div key={friend.id} className="friend-item">
-              <div className="friend-info">
-                <img src={friend.avatar} alt={friend.name} className="friend-avatar" />
-                <span className="friend-name">{friend.name}</span>
+          
+          <div className="friends-page">
+            <div className="earnings-card">
+              <div className="earnings-subtitle">
+                Выплаты доли игровых комиссий в 1%
               </div>
-              <div className="friend-earnings">
-                <div className="token-earning small">
+              <div className="earnings-grid">
+                <div className="token-earning">
                   <img src="/assets/tokens/ton.png" alt="TON" className="token-icon" />
-                  <span>{friend.earnings.ton}</span>
+                  <span className="token-amount">{totalEarnings.ton.toFixed(2)}</span>
                 </div>
-                <div className="token-earning small">
+                <div className="token-earning">
                   <img src="/assets/tokens/usdt.png" alt="USDT" className="token-icon" />
-                  <span>{friend.earnings.usdt}</span>
+                  <span className="token-amount">{totalEarnings.usdt.toFixed(2)}</span>
                 </div>
-                <div className="token-earning small">
+                <div className="token-earning">
                   <img src="/assets/tokens/time.png" alt="TIME" className="token-icon" />
-                  <span>{friend.earnings.time}</span>
+                  <span className="token-amount">{totalEarnings.time.toFixed(2)}</span>
                 </div>
+              </div>
+              <button className="claim-button">Claim</button>
+            </div>
+
+            <div className="friends-section">
+              <div className="section-title">Frens</div>
+              <div className="friends-list">
+                {friends.map(friend => (
+                  <div key={friend.id} className="friend-item">
+                    <div className="friend-info">
+                      <img src={friend.avatar} alt={friend.name} className="friend-avatar" />
+                      <span className="friend-name">{friend.name}</span>
+                    </div>
+                    <div className="friend-earnings">
+                      <div className="token-earning small">
+                        <img src="/assets/tokens/ton.png" alt="TON" className="token-icon" />
+                        <span>{friend.earnings.ton}</span>
+                      </div>
+                      <div className="token-earning small">
+                        <img src="/assets/tokens/usdt.png" alt="USDT" className="token-icon" />
+                        <span>{friend.earnings.usdt}</span>
+                      </div>
+                      <div className="token-earning small">
+                        <img src="/assets/tokens/time.png" alt="TIME" className="token-icon" />
+                        <span>{friend.earnings.time}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
-        </div>
-      </div>
 
-      <button className="invite-button">
-        Invite frens
-      </button>
-    </div>
+            <button className="invite-button">
+              Invite frens
+            </button>
+          </div>
+        </PageContainer>
+      </PageTransition>
+    </SafeArea>
   );
 } 
