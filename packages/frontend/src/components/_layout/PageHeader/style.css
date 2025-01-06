@@ -3,7 +3,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px var(--app-padding);
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   position: sticky;
   top: 0;
   z-index: 10;
@@ -15,14 +15,14 @@
 /* На мобильных */
 @media (max-width: 768px) {
   .page-header {
-    padding-top: calc(48px + env(safe-area-inset-top));
+    padding-top: calc(52px + env(safe-area-inset-top));
   }
 }
 
 /* На десктопе */
 @media (min-width: 769px) {
   .page-header {
-    padding-top: 12px;
+    padding-top: 8px;
   }
 }
 

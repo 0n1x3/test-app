@@ -121,4 +121,15 @@
 
 .reward-icon {
   font-size: 18px;
+}
+
+.level-card,
+.tasks-section {
+  width: 100%;
+  padding: 0 var(--app-padding);
+}
+
+/* Убираем лишние отступы, если они есть */
+.income-page {
+  width: 100%;
 } 
