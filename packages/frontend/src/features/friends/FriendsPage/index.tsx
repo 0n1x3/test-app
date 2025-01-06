@@ -3,17 +3,116 @@
 import { SafeArea } from '@/components/_layout/SafeArea';
 import { PageTransition } from '@/components/_layout/PageTransition';
 import { PageContainer } from '@/components/_layout/PageContainer';
+import './style.css';
+
+interface Friend {
+  id: string;
+  name: string;
+  avatar: string;
+  earnings: {
+    ton: number;
+    usdt: number;
+    time: number;
+  };
+}
 
 export function FriendsPage() {
+  // Временные данные для демонстрации
+  const friends: Friend[] = [
+    {
+      id: '1',
+      name: 'TIME',
+      avatar: '/assets/tokens/time.png',
+      earnings: { ton: 1.05, usdt: 0, time: 1.17 }
+    },
+    {
+      id: '2',
+      name: 'Sleepton',
+      avatar: '/assets/avatars/default.png',
+      earnings: { ton: 0.01, usdt: 0, time: 0 }
+    },
+    {
+      id: '3',
+      name: 'vlad.fura',
+      avatar: '/assets/avatars/default.png',
+      earnings: { ton: 0, usdt: 0, time: 0 }
+    }
+  ];
+
+  const totalEarnings = friends.reduce(
+    (acc, friend) => ({
+      ton: acc.ton + friend.earnings.ton,
+      usdt: acc.usdt + friend.earnings.usdt,
+      time: acc.time + friend.earnings.time
+    }),
+    { ton: 0, usdt: 0, time: 0 }
+  );
+
   return (
     <SafeArea>
       <PageTransition>
         <PageContainer>
-          <div className="page-header">
-            <h1>Друзья</h1>
-          </div>
-          <div className="flex items-center justify-center flex-1">
-            {/* контент */}
+          <div className="friends-page">
+            {/* Карточка с общим заработком */}
+            <div className="earnings-card">
+              <div className="earnings-title">
+                Rebate
+                <div className="earnings-subtitle">
+                  Выплаты доли торговых комиссий в 1%
+                </div>
+              </div>
+              <div className="earnings-grid">
+                <div className="token-earning">
+                  <img src="/assets/tokens/ton.png" alt="TON" className="token-icon" />
+                  <span className="token-amount">{totalEarnings.ton.toFixed(2)}</span>
+                </div>
+                <div className="token-earning">
+                  <img src="/assets/tokens/usdt.png" alt="USDT" className="token-icon" />
+                  <span className="token-amount">{totalEarnings.usdt.toFixed(2)}</span>
+                </div>
+                <div className="token-earning">
+                  <img src="/assets/tokens/time.png" alt="TIME" className="token-icon" />
+                  <span className="token-amount">{totalEarnings.time.toFixed(2)}</span>
+                </div>
+              </div>
+              <button className="claim-button">
+                Claim
+              </button>
+            </div>
+
+            {/* Список друзей */}
+            <div className="friends-section">
+              <div className="section-title">Frens</div>
+              <div className="friends-list">
+                {friends.map(friend => (
+                  <div key={friend.id} className="friend-item">
+                    <div className="friend-info">
+                      <img src={friend.avatar} alt={friend.name} className="friend-avatar" />
+                      <span className="friend-name">{friend.name}</span>
+                    </div>
+                    <div className="friend-earnings">
+                      <div className="token-earning small">
+                        <img src="/assets/tokens/ton.png" alt="TON" className="token-icon" />
+                        <span>{friend.earnings.ton}</span>
+                      </div>
+                      <div className="token-earning small">
+                        <img src="/assets/tokens/usdt.png" alt="USDT" className="token-icon" />
+                        <span>{friend.earnings.usdt}</span>
+                      </div>
+                      <div className="token-earning small">
+                        <img src="/assets/tokens/time.png" alt="TIME" className="token-icon" />
+                        <span>{friend.earnings.time}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Кнопка приглашения */}
+            <button className="invite-button">
+              Invite frens
+            </button>
           </div>
         </PageContainer>
       </PageTransition>

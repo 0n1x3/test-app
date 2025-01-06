@@ -1,0 +1,128 @@
+.friends-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 var(--app-padding);
+}
+
+/* Карточка с заработком */
+.earnings-card {
+  background: #1A1A1A;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.earnings-title {
+  font-size: 15px;
+  color: #808080;
+  margin-bottom: 4px;
+}
+
+.earnings-subtitle {
+  font-size: 13px;
+  color: #808080;
+  margin-top: 4px;
+}
+
+.earnings-grid {
+  display: flex;
+  justify-content: space-between;
+  margin: 16px 0;
+}
+
+.token-earning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.token-earning.small {
+  font-size: 14px;
+}
+
+.token-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.token-amount {
+  font-size: 16px;
+  font-weight: 500;
+  color: #FFFFFF;
+}
+
+/* Кнопка Claim */
+.claim-button {
+  width: 100%;
+  padding: 12px;
+  background: #2196F3;
+  border-radius: 12px;
+  color: white;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+/* Секция друзей */
+.friends-section {
+  background: #1A1A1A;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.section-title {
+  font-size: 15px;
+  color: #808080;
+  margin-bottom: 16px;
+}
+
+.friends-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.friend-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.friend-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.friend-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.friend-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: #FFFFFF;
+}
+
+.friend-earnings {
+  display: flex;
+  gap: 16px;
+}
+
+/* Кнопка приглашения */
+.invite-button {
+  width: 100%;
+  padding: 12px;
+  background: #1A1A1A;
+  border-radius: 12px;
+  color: #2196F3;
+  font-weight: 500;
+  margin-top: auto;
+}
+
+.invite-button:hover {
+  background: #252525;
+} 

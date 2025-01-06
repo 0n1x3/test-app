@@ -9,7 +9,7 @@ export function BottomNav() {
   const pathname = usePathname();
 
   const tabs = [
-    { id: 'game', label: 'Игра', icon: 'solar:gamepad-minimalistic-linear', path: '/' },
+    { id: 'game', label: 'Игры', icon: 'solar:gamepad-minimalistic-linear', path: '/' },
     { id: 'income', label: 'Доход', icon: 'solar:hand-money-linear', path: '/income' },
     { id: 'tournament', label: 'Турниры', icon: 'solar:cup-star-linear', path: '/tournament' },
     { id: 'friends', label: 'Друзья', icon: 'solar:users-group-rounded-linear', path: '/friends' },

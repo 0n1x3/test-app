@@ -10,7 +10,7 @@ export function HomePage() {
       <PageTransition>
         <PageContainer>
           <div className="page-header">
-            <h1>Игра</h1>
+            <h1>Игры</h1>
           </div>
           <div className="flex items-center justify-center flex-1">
             {/* контент */}
