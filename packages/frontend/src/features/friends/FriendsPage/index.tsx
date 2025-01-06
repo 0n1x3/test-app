@@ -23,19 +23,19 @@ export function FriendsPage() {
       id: '1',
       name: 'TIME',
       avatar: '/assets/tokens/time.png',
-      earnings: { ton: 1.05, usdt: 0, time: 1.17 }
+      earnings: { ton: 1.05, usdt: 2.34, time: 1.17 }
     },
     {
       id: '2',
       name: 'Sleepton',
       avatar: '/assets/avatars/default.png',
-      earnings: { ton: 0.01, usdt: 0, time: 0 }
+      earnings: { ton: 0.51, usdt: 0.89, time: 0.32 }
     },
     {
       id: '3',
       name: 'vlad.fura',
       avatar: '/assets/avatars/default.png',
-      earnings: { ton: 0, usdt: 0, time: 0 }
+      earnings: { ton: 0.12, usdt: 0.45, time: 0.28 }
     }
   ];
 

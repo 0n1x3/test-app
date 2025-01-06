@@ -1,53 +1,58 @@
 .friends-page {
+  width: 100%;
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 16px;
   padding: 0 var(--app-padding);
+  overflow: hidden; /* Предотвращаем скролл */
 }
 
 /* Карточка с заработком */
 .earnings-card {
   background: #1A1A1A;
   border-radius: 12px;
-  padding: 16px;
+  padding: 14px;
+  margin-bottom: 12px;
 }
 
 .earnings-title {
   font-size: 15px;
   color: #808080;
-  margin-bottom: 4px;
 }
 
 .earnings-subtitle {
   font-size: 13px;
   color: #808080;
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 .earnings-grid {
   display: flex;
   justify-content: space-between;
-  margin: 16px 0;
+  margin: 12px 0;
 }
 
 .token-earning {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .token-earning.small {
   font-size: 14px;
+  color: #808080;
+  min-width: 70px; /* Фиксированная ширина для выравнивания */
+  justify-content: flex-end;
 }
 
 .token-icon {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
 }
 
 .token-amount {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 500;
   color: #FFFFFF;
 }
@@ -60,43 +65,46 @@
   border-radius: 12px;
   color: white;
   font-weight: 500;
-  margin-top: 8px;
+  margin-top: 4px;
 }
 
 /* Секция друзей */
 .friends-section {
   background: #1A1A1A;
   border-radius: 12px;
-  padding: 16px;
+  padding: 14px;
+  margin-bottom: 12px;
 }
 
 .section-title {
   font-size: 15px;
   color: #808080;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .friends-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .friend-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 2px;
 }
 
 .friend-info {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  min-width: 120px; /* Фиксированная ширина для выравнивания */
 }
 
 .friend-avatar {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   object-fit: cover;
 }
@@ -109,7 +117,8 @@
 
 .friend-earnings {
   display: flex;
-  gap: 16px;
+  gap: 12px;
+  align-items: center;
 }
 
 /* Кнопка приглашения */
@@ -120,7 +129,6 @@
   border-radius: 12px;
   color: #2196F3;
   font-weight: 500;
-  margin-top: auto;
 }
 
 .invite-button:hover {
