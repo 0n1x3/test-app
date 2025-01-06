@@ -33,12 +33,12 @@ export function HomePage() {
     {
       id: 'durak',
       title: 'Дурак',
-      icon: 'solar:playing-cards-linear'
+      icon: 'solar:cards-bold'
     },
     {
       id: 'dice',
       title: 'Кубик',
-      icon: 'solar:square-alt-linear'
+      icon: 'solar:cube-outline'
     }
   ];
 

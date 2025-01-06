@@ -1,0 +1,124 @@
+.income-page {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 var(--app-padding);
+  gap: 16px;
+}
+
+/* Карточка уровня */
+.level-card {
+  background: #1A1A1A;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.level-header {
+  margin-bottom: 16px;
+}
+
+.level-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 8px;
+}
+
+.level-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.progress-bar {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #2196F3;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 13px;
+  color: #808080;
+}
+
+.token-balance {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.token-icon {
+  font-size: 24px;
+}
+
+.balance-amount {
+  font-size: 24px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+/* Секция заданий */
+.tasks-section {
+  background: #1A1A1A;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.section-title {
+  font-size: 15px;
+  color: #808080;
+  margin-bottom: 12px;
+}
+
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.task-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.task-info {
+  flex: 1;
+  margin-right: 16px;
+}
+
+.task-title {
+  font-size: 14px;
+  color: #FFFFFF;
+  margin-bottom: 8px;
+}
+
+.task-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.task-reward {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #FF3B30;
+  font-weight: 500;
+}
+
+.reward-icon {
+  font-size: 18px;
+} 
