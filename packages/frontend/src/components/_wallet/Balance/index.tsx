@@ -20,20 +20,23 @@ export function Balance() {
     <div style={{
       background: '#1A1A1A',
       borderRadius: '12px',
-      padding: '16px',
+      padding: '12px',
       marginBottom: '16px',
     }}>
       {/* Общий баланс */}
       <div style={{
-        marginBottom: '16px',
-        paddingBottom: '16px',
+        marginBottom: '12px',
+        paddingBottom: '12px',
         borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-end'
       }}>
-        <div style={{ fontSize: '13px', color: '#808080', marginBottom: '4px' }}>
+        <div style={{ fontSize: '13px', color: '#808080' }}>
           Total Balance
         </div>
         <div style={{ 
-          fontSize: '28px', 
+          fontSize: '24px', 
           fontWeight: 600, 
           color: '#FFFFFF',
           letterSpacing: '-0.5px',
@@ -42,18 +45,18 @@ export function Balance() {
           gap: '4px'
         }}>
           ${totalUsdBalance.toFixed(2)}
-          <span style={{ fontSize: '20px', color: '#808080' }}>USD</span>
+          <span style={{ fontSize: '16px', color: '#808080' }}>USD</span>
         </div>
       </div>
       
       {/* Список токенов */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {tokens.map((token) => (
           <div key={token.symbol} style={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            padding: '4px'
+            padding: '2px'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <img 

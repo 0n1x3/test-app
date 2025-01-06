@@ -11,6 +11,8 @@
   --tc-button-foreground: #808080 !important;
   --tc-hover-background: #2A2A2A !important;
   --tc-active-background: #2A2A2A !important;
+  --tc-background: #1A1A1A !important;
+  --tc-foreground: #808080 !important;
 }
 
 html, body {
@@ -82,4 +84,22 @@ html[data-platform="desktop"] {
 
 .tc-button:hover {
   background: var(--tc-hover-background) !important;
+}
+
+/* Стили для кнопки TonConnect */
+:global(.tc-button) {
+  padding: 8px 16px !important;
+  border-radius: 12px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  background: var(--tc-background) !important;
+  color: var(--tc-foreground) !important;
+}
+
+:global(.tc-button:hover) {
+  background: #2A2A2A !important;
+}
+
+:global(.tc-button:active) {
+  background: #2A2A2A !important;
 } 
