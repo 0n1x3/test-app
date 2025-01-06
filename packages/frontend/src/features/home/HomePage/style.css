@@ -1,21 +1,65 @@
-.home-content {
+.games-page {
+  width: 100%;
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  flex: 1;
-  background: var(--tg-theme-bg-color, #000000);
-}
-
-.home-content .header {
   padding: 0 var(--app-padding);
 }
 
-.home-content .balance {
-  padding: 0 var(--app-padding);
+.games-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.home-content .game-modes {
-  padding: 0 var(--app-padding);
-  flex: 1;
-  padding-bottom: env(safe-area-inset-bottom);
+.game-card {
+  background: #1A1A1A;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
+
+.game-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.game-icon {
+  width: 32px;
+  height: 32px;
+  color: #FFFFFF;
+}
+
+.game-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.game-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: #FFFFFF;
+}
+
+.game-plays {
+  font-size: 13px;
+  color: #808080;
+}
+
+.play-button {
+  padding: 8px 16px;
+  background: #2196F3;
+  border-radius: 12px;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.play-button:hover {
+  background: #1976D2;
+} 

@@ -12,6 +12,9 @@ importers:
 
   .:
     dependencies:
+      '@iconify/react':
+        specifier: ^5.0.1
+        version: 5.2.0(react@18.2.0)
       '@nestjs/common':
         specifier: ^10.4.15
         version: 10.4.15(reflect-metadata@0.1.14)(rxjs@7.8.1)
