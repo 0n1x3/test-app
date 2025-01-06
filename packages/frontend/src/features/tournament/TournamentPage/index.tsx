@@ -5,6 +5,7 @@ import { PageTransition } from '@/components/_layout/PageTransition';
 import { PageContainer } from '@/components/_layout/PageContainer';
 import { Icon } from '@iconify/react';
 import './style.css';
+import { PageHeader } from '@/components/_layout/PageHeader';
 
 interface Tournament {
   id: string;
@@ -79,10 +80,7 @@ export function TournamentPage() {
     <SafeArea>
       <PageTransition>
         <PageContainer>
-          <div className="page-header">
-            <h1>Турниры</h1>
-          </div>
-          
+          <PageHeader title="Турниры" />
           <div className="tournaments-page">
             <div className="tournaments-list">
               {tournaments.map(tournament => (

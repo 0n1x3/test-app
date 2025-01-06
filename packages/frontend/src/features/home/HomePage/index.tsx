@@ -6,6 +6,7 @@ import { PageContainer } from '@/components/_layout/PageContainer';
 import { Icon } from '@iconify/react';
 import { useState } from 'react';
 import './style.css';
+import { PageHeader } from '@/components/_layout/PageHeader';
 
 interface Game {
   id: string;
@@ -49,16 +50,7 @@ export function HomePage() {
     <SafeArea>
       <PageTransition>
         <PageContainer>
-          <div className="page-header">
-            <h1>Игры</h1>
-            <button 
-              className="settings-button"
-              onClick={() => setIsSettingsOpen(true)}
-            >
-              <Icon icon="tdesign:setting-1-filled" />
-            </button>
-          </div>
-          
+          <PageHeader title="Игры" />
           <div className="games-page">
             <div className="games-list">
               {games.map(game => (
@@ -76,72 +68,6 @@ export function HomePage() {
               ))}
             </div>
           </div>
-
-          {isSettingsOpen && (
-            <>
-              <div className="overlay" onClick={() => setIsSettingsOpen(false)} />
-              <div className="settings-popup">
-                <div className="settings-header">
-                  <h2>Настройки</h2>
-                  <button 
-                    className="close-button"
-                    onClick={() => setIsSettingsOpen(false)}
-                  >
-                    <Icon icon="solar:close-circle-linear" />
-                  </button>
-                </div>
-
-                <div className="settings-content">
-                  <div className="settings-group">
-                    <div className="settings-item">
-                      <span>Музыка</span>
-                      <label className="switch">
-                        <input type="checkbox" />
-                        <span className="slider" />
-                      </label>
-                    </div>
-                    <div className="settings-item">
-                      <span>Звуки</span>
-                      <label className="switch">
-                        <input type="checkbox" />
-                        <span className="slider" />
-                      </label>
-                    </div>
-                    <div className="settings-item">
-                      <span>Вибрация</span>
-                      <label className="switch">
-                        <input type="checkbox" />
-                        <span className="slider" />
-                      </label>
-                    </div>
-                  </div>
-
-                  <div className="settings-group">
-                    <div className="settings-item">
-                      <span>Тема</span>
-                      <label className="switch">
-                        <input type="checkbox" />
-                        <span className="slider" />
-                      </label>
-                    </div>
-                    <div className="settings-item">
-                      <span>Язык</span>
-                      <select className="language-select">
-                        <option value="ru">Русский</option>
-                        <option value="en">English</option>
-                        <option value="zh">中文</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <button className="add-to-home">
-                    <Icon icon="solar:home-add-linear" />
-                    Добавить на главный экран
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
         </PageContainer>
       </PageTransition>
     </SafeArea>

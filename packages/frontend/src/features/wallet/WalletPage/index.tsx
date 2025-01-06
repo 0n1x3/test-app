@@ -9,6 +9,7 @@ import { PageContainer } from '@/components/_layout/PageContainer';
 import { DepositSection } from './DepositSection';
 import { WithdrawSection } from './WithdrawSection';
 import './styles.css';
+import { PageHeader } from '@/components/_layout/PageHeader';
 
 export function WalletPage() {
   const [activeTab, setActiveTab] = useState<'deposit' | 'withdraw'>('deposit');
@@ -17,10 +18,7 @@ export function WalletPage() {
     <SafeArea>
       <PageTransition>
         <PageContainer>
-          <div className="page-header">
-            <h1>Кошелек</h1>
-          </div>
-          
+          <PageHeader title="Кошелек" />
           <div className="wallet-page">
             <div className="wallet-header">
               <div className="wallet-connect">

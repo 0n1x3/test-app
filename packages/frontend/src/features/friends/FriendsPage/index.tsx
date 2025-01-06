@@ -4,6 +4,7 @@ import { SafeArea } from '@/components/_layout/SafeArea';
 import { PageTransition } from '@/components/_layout/PageTransition';
 import { PageContainer } from '@/components/_layout/PageContainer';
 import './style.css';
+import { PageHeader } from '@/components/_layout/PageHeader';
 
 interface Friend {
   id: string;
@@ -52,9 +53,7 @@ export function FriendsPage() {
     <SafeArea>
       <PageTransition>
         <PageContainer>
-          <div className="page-header">
-            <h1>Друзья</h1>
-          </div>
+          <PageHeader title="Друзья" />
           
           <div className="friends-page">
             <div className="earnings-card">
