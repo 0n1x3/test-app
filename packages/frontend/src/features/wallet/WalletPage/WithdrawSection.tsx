@@ -15,14 +15,6 @@ export function WithdrawSection() {
 
   return (
     <div className="withdraw-section">
-      <div className="warning-box">
-        <span className="warning-icon">⚠️</span>
-        <p>
-          Withdrawals are made only to an external TON wallet. 
-          Do not attempt to withdraw funds to your exchange platform account.
-        </p>
-      </div>
-
       <div className="form-group">
         <div className="label">Address</div>
         <div className="input-container">

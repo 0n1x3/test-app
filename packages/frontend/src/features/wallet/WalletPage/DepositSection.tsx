@@ -9,11 +9,6 @@ export function DepositSection() {
 
   return (
     <div className="deposit-section">
-      <div className="warning-box">
-        <span className="warning-icon">⚠️</span>
-        <p>Send only TON to this address. Sending other assets may result in permanent loss.</p>
-      </div>
-
       <div className="address-box">
         <div className="label">Wallet address</div>
         <div className="value-container">
