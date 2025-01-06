@@ -15,14 +15,14 @@
 /* На мобильных */
 @media (max-width: 768px) {
   .page-header {
-    padding-top: calc(64px + env(safe-area-inset-top));
+    padding-top: calc(72px + env(safe-area-inset-top));
   }
 }
 
 /* На десктопе */
 @media (min-width: 769px) {
   .page-header {
-    padding-top: 8px;
+    padding-top: 4px;
   }
 }
 
@@ -47,4 +47,52 @@
 
 .settings-button:hover {
   opacity: 1;
+}
+
+/* Стилизация селекта языка */
+.language-select {
+  width: 100%;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+  appearance: none;
+  cursor: pointer;
+}
+
+/* Стили для мобильного селекта */
+@media (max-width: 768px) {
+  .language-select {
+    background: #1A1A1A;
+  }
+  
+  /* Стилизуем нативные опции на мобильных */
+  .language-select option {
+    padding: 12px;
+    background: #1A1A1A;
+    color: white;
+    font-size: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Убираем стандартную стрелку и добавляем свою */
+  .settings-item:has(.language-select) {
+    position: relative;
+  }
+  
+  .settings-item:has(.language-select)::after {
+    content: '';
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid rgba(255, 255, 255, 0.5);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+    transform: translateY(-50%) rotate(45deg);
+    pointer-events: none;
+  }
 } 

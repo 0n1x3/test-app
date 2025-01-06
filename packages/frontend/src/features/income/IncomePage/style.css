@@ -8,10 +8,12 @@
 
 /* Карточка уровня */
 .level-card {
+  width: 100%;
   background: #1A1A1A;
   border-radius: 12px;
   padding: 16px;
   margin: 0 var(--app-padding);
+  box-sizing: border-box;
 }
 
 .level-header {
@@ -68,10 +70,12 @@
 
 /* Секция заданий */
 .tasks-section {
+  width: 100%;
   background: #1A1A1A;
   border-radius: 12px;
   padding: 16px;
   margin: 0 var(--app-padding);
+  box-sizing: border-box;
 }
 
 .section-title {
@@ -122,15 +126,4 @@
 
 .reward-icon {
   font-size: 18px;
-}
-
-.level-card,
-.tasks-section {
-  width: 100%;
-  padding: 0 var(--app-padding);
-}
-
-/* Убираем лишние отступы, если они есть */
-.income-page {
-  width: 100%;
 } 
