@@ -1,7 +1,7 @@
 .balance-card {
   background: #1A1A1A;
   border-radius: 12px;
-  padding: 16px;
+  padding: 14px;
 }
 
 .balance-header {
@@ -11,6 +11,7 @@
 .balance-title {
   font-size: 13px;
   color: #808080;
+  margin-bottom: 2px;
 }
 
 .balance-total {
@@ -22,13 +23,20 @@
 .tokens-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .token-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 6px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.token-item:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .token-info {
@@ -38,24 +46,26 @@
 }
 
 .token-logo {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
+  object-fit: cover;
 }
 
 .token-details {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
 }
 
 .token-amount {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
+  color: #FFFFFF;
 }
 
 .token-price {
-  font-size: 13px;
+  font-size: 12px;
   color: #808080;
 }
 

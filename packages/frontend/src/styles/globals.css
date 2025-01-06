@@ -48,7 +48,7 @@ html, body {
 
 /* Общие стили для заголовков страниц */
 .page-header {
-  padding: var(--header-padding) var(--app-padding) 12px;
+  padding: var(--header-padding) var(--app-padding) 8px;
   text-align: center;
 }
 
@@ -60,15 +60,15 @@ html, body {
 
 /* Отступы для разных платформ */
 html[data-platform="mobile"][data-fullscreen="true"] {
-  --header-padding: calc(env(safe-area-inset-top) + 56px);
+  --header-padding: calc(env(safe-area-inset-top) + 48px);
 }
 
 html[data-platform="mobile"][data-fullscreen="false"] {
-  --header-padding: 16px;
+  --header-padding: 12px;
 }
 
 html[data-platform="desktop"] {
-  --header-padding: 12px;
+  --header-padding: 8px;
 }
 
 /* Стили для кнопки TonConnect */
