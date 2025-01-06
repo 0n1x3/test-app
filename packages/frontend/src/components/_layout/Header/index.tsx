@@ -9,13 +9,15 @@ export function Header() {
 
   return (
     <div className="header">
-      <h1>Neometria</h1>
-      <button 
-        className="settings-button"
-        onClick={() => setIsSettingsOpen(true)}
-      >
-        <Icon icon="solar:settings-bold" />
-      </button>
+      <div className="header-content">
+        <h1>Neometria</h1>
+        <button 
+          className="header-action"
+          onClick={() => setIsSettingsOpen(true)}
+        >
+          <Icon icon="solar:menu-dots-bold" />
+        </button>
+      </div>
 
       {isSettingsOpen && (
         <>

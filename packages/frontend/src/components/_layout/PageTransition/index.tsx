@@ -37,8 +37,8 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
               animate: { backgroundColor: '#000', opacity: 0 },
             }}
             transition={{
-              duration: 0.3,
-              delay: index * 0.008,
+              duration: 0.2,
+              delay: index * 0.005,
               ease: 'easeOut',
             }}
             className="transition-cell"

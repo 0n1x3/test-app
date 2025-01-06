@@ -1,9 +1,29 @@
 .header {
   position: relative;
+  width: 100%;
+}
+
+.header-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px;
+  padding: 16px var(--app-padding);
+}
+
+.header-action {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  font-size: 24px;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.header-action:hover {
+  opacity: 1;
 }
 
 .settings-button {
