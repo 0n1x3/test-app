@@ -1,39 +1,50 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import './style.css';
 
-const pageVariants = {
-  initial: {
-    opacity: 0,
-    y: 20,
-  },
-  enter: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.3,
-      ease: [0.33, 1, 0.68, 1], // cubic-bezier
-    }
-  },
-  exit: {
-    opacity: 0,
-    y: -20,
-    transition: {
-      duration: 0.2,
-      ease: [0.33, 1, 0.68, 1],
-    }
-  }
-};
+const GRID_SIZE = 8;
 
 export function PageTransition({ children }: { children: React.ReactNode }) {
+  const [cells, setCells] = useState<number[]>([]);
+
+  useEffect(() => {
+    const total = GRID_SIZE * GRID_SIZE;
+    const randomOrder = Array.from({ length: total }, (_, i) => i)
+      .sort(() => Math.random() - 0.5);
+    setCells(randomOrder);
+  }, []);
+
   return (
-    <motion.div
-      variants={pageVariants}
-      initial="initial"
-      animate="enter"
-      exit="exit"
-    >
+    <div className="page-transition">
       {children}
-    </motion.div>
+      <motion.div
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        className="transition-grid"
+        style={{
+          gridTemplateColumns: `repeat(${GRID_SIZE}, 1fr)`,
+          gridTemplateRows: `repeat(${GRID_SIZE}, 1fr)`,
+        }}
+      >
+        {cells.map((index) => (
+          <motion.div
+            key={index}
+            variants={{
+              initial: { backgroundColor: '#000', opacity: 1 },
+              animate: { backgroundColor: '#000', opacity: 0 },
+            }}
+            transition={{
+              duration: 0.3,
+              delay: index * 0.008,
+              ease: 'easeOut',
+            }}
+            className="transition-cell"
+          />
+        ))}
+      </motion.div>
+    </div>
   );
 } 

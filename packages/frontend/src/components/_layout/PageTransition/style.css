@@ -1,7 +1,21 @@
 .page-transition {
+  position: relative;
   width: 100%;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  padding: 0;
+}
+
+.transition-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.transition-cell {
+  width: 100%;
+  height: 100%;
 }

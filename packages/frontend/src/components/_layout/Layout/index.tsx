@@ -3,6 +3,7 @@
 import { SafeArea } from '../SafeArea';
 import { BottomNav } from '../BottomNav';
 import { Header } from '../Header';
+import { PageTransition } from '../PageTransition';
 import './style.css';
 
 interface LayoutProps {
@@ -15,7 +16,9 @@ export function Layout({ children }: LayoutProps) {
       <SafeArea>
         <Header />
         <main className="main-content">
-          {children}
+          <PageTransition>
+            {children}
+          </PageTransition>
         </main>
         <BottomNav />
       </SafeArea>
