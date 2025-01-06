@@ -1,0 +1,44 @@
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px var(--app-padding);
+  margin-bottom: 16px;
+}
+
+/* На мобильных */
+@media (max-width: 768px) {
+  .page-header {
+    padding-top: calc(20px + env(safe-area-inset-top));
+  }
+}
+
+/* На десктопе */
+@media (min-width: 769px) {
+  .page-header {
+    padding-top: 16px;
+  }
+}
+
+.page-header h1 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.settings-button {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  font-size: 24px;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+  margin-right: env(safe-area-inset-right);
+}
+
+.settings-button:hover {
+  opacity: 1;
+} 
