@@ -11,7 +11,6 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: #000;
 }
 
 .transition-overlay {
@@ -24,6 +23,7 @@
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, 1fr);
   pointer-events: none;
+  background: transparent;
 }
 
 .transition-cell {
