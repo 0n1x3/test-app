@@ -1,17 +1,16 @@
 .friends-page {
   width: 100%;
-  flex: 1;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 0 var(--app-padding);
-  overflow: hidden; /* Предотвращаем скролл */
+  padding: var(--header-padding) var(--app-padding) 0;
 }
 
 /* Карточка с заработком */
 .earnings-card {
   background: #1A1A1A;
   border-radius: 12px;
-  padding: 14px;
+  padding: 12px;
   margin-bottom: 12px;
 }
 
@@ -23,31 +22,34 @@
 .earnings-subtitle {
   font-size: 13px;
   color: #808080;
-  margin-top: 2px;
+  margin-bottom: 12px;
+  text-align: center;
 }
 
 .earnings-grid {
-  display: flex;
-  justify-content: space-between;
-  margin: 12px 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 .token-earning {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
 }
 
 .token-earning.small {
-  font-size: 14px;
+  font-size: 13px;
   color: #808080;
-  min-width: 70px; /* Фиксированная ширина для выравнивания */
+  width: 60px; /* Уменьшили ширину */
   justify-content: flex-end;
 }
 
 .token-icon {
-  width: 20px;
-  height: 20px;
+  width: 18px; /* Уменьшили размер */
+  height: 18px;
   border-radius: 50%;
 }
 
@@ -116,8 +118,9 @@
 }
 
 .friend-earnings {
-  display: flex;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, 60px); /* Фиксированная ширина для каждого токена */
+  gap: 8px;
   align-items: center;
 }
 
