@@ -1,60 +1,47 @@
 .balance-card {
   background: #1A1A1A;
   border-radius: 12px;
-  padding: 14px;
+  padding: 16px;
 }
 
+/* Стили для общего баланса */
 .balance-header {
-  margin-bottom: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .balance-title {
   font-size: 13px;
   color: #808080;
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 }
 
 .balance-total {
-  font-size: 20px;
-  font-weight: 500;
+  font-size: 28px;
+  font-weight: 600;
   color: #FFFFFF;
+  letter-spacing: -0.5px;
 }
 
+/* Стили для списка токенов */
 .tokens-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .token-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px;
-  border-radius: 8px;
-}
-
-.token-item:hover {
-  background: rgba(255, 255, 255, 0.05);
+  padding: 4px;
 }
 
 .token-info {
   display: flex;
   align-items: center;
-  gap: 8px;
-}
-
-.token-logo {
-  width: 24px !important;
-  height: 24px !important;
-  min-width: 24px !important;
-  min-height: 24px !important;
-  border-radius: 50%;
-  object-fit: cover;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  backface-visibility: hidden;
-  transform: translateZ(0);
+  gap: 10px;
 }
 
 .token-details {
@@ -67,13 +54,12 @@
   font-size: 15px;
   font-weight: 500;
   color: #FFFFFF;
-  line-height: 1.2;
+  letter-spacing: -0.2px;
 }
 
 .token-price {
   font-size: 13px;
   color: #808080;
-  line-height: 1.2;
 }
 
 /* Стили для кнопки подключения */

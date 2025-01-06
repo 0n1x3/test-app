@@ -8,7 +8,6 @@ interface TokenBalance {
 }
 
 export function Balance() {
-  // Временные данные, потом заменим на реальные
   const tokens: TokenBalance[] = [
     { symbol: 'TON', amount: '0.00', usdPrice: 0, logo: '/assets/tokens/ton.png' },
     { symbol: 'USDT', amount: '0.00', usdPrice: 0, logo: '/assets/tokens/usdt.png' },
@@ -21,7 +20,10 @@ export function Balance() {
     <div className="balance-card">
       <div className="balance-header">
         <div className="balance-title">Total Balance</div>
-        <div className="balance-total">≈ ${totalUsdBalance.toFixed(2)} USD</div>
+        <div className="balance-total">
+          ${totalUsdBalance.toFixed(2)}
+          <span style={{ fontSize: '20px', color: '#808080' }}> USD</span>
+        </div>
       </div>
       
       <div className="tokens-list">
@@ -31,12 +33,11 @@ export function Balance() {
               <img 
                 src={token.logo} 
                 alt={token.symbol} 
-                className="token-logo"
                 style={{
-                  width: '24px',
-                  height: '24px',
-                  minWidth: '24px',
-                  minHeight: '24px',
+                  width: '36px',
+                  height: '36px',
+                  minWidth: '36px',
+                  minHeight: '36px',
                   borderRadius: '50%',
                   objectFit: 'cover'
                 }}
