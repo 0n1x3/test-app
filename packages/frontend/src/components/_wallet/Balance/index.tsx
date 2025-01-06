@@ -21,6 +21,7 @@ export function Balance() {
       background: '#1A1A1A',
       borderRadius: '12px',
       padding: '16px',
+      marginBottom: '16px',
     }}>
       {/* Общий баланс */}
       <div style={{
@@ -67,19 +68,22 @@ export function Balance() {
                   objectFit: 'cover'
                 }}
               />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                <div style={{ 
-                  fontSize: '15px', 
-                  fontWeight: 500, 
-                  color: '#FFFFFF',
-                  letterSpacing: '-0.2px' 
-                }}>
-                  {token.amount} {token.symbol}
-                </div>
-                <div style={{ fontSize: '13px', color: '#808080' }}>
-                  ≈ ${token.usdPrice.toFixed(2)}
-                </div>
+              <div style={{ 
+                fontSize: '15px', 
+                fontWeight: 500, 
+                color: '#FFFFFF',
+                letterSpacing: '-0.2px' 
+              }}>
+                {token.amount} {token.symbol}
               </div>
+            </div>
+            
+            <div style={{ 
+              fontSize: '15px', 
+              color: '#808080',
+              letterSpacing: '-0.2px'
+            }}>
+              ${token.usdPrice.toFixed(2)}
             </div>
           </div>
         ))}
