@@ -4,27 +4,34 @@
   height: 100%;
 }
 
-.page-content {
+.page-layer {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: #000000;
+}
+
+.page-layer.previous {
+  z-index: 1;
+}
+
+.page-layer.current {
+  z-index: 2;
 }
 
 .transition-grid {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   display: grid;
   pointer-events: none;
-  z-index: 1000;
 }
 
 .transition-cell {
   width: 100%;
   height: 100%;
+  background: #000;
 }
