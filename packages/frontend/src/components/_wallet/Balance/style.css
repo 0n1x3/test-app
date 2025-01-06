@@ -50,6 +50,10 @@
   height: 36px;
   border-radius: 50%;
   object-fit: cover;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 .token-details {
