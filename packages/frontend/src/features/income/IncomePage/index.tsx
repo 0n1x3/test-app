@@ -70,7 +70,7 @@ export function IncomePage() {
                 </div>
               </div>
               <div className="token-balance">
-                <Icon icon="ion:diamond" className="token-icon" style={{ color: '#FF3B30' }} />
+                <Icon icon="ion:diamond" className="token-icon" style={{ color: '#FFB300' }} />
                 <span className="balance-amount">1,234.56</span>
               </div>
             </div>
