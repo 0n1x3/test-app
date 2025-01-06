@@ -15,11 +15,11 @@ export function Layout({ children }: LayoutProps) {
     <div className="layout">
       <SafeArea>
         <Header />
-        <main className="main-content">
-          <PageTransition>
+        <PageTransition>
+          <main className="main-content">
             {children}
-          </PageTransition>
-        </main>
+          </main>
+        </PageTransition>
         <BottomNav />
       </SafeArea>
     </div>
