@@ -18,17 +18,17 @@ export function HomePage() {
     {
       id: 'rps',
       title: 'Камень, ножницы, бумага',
-      icon: 'solar:scissors-linear'
+      icon: 'mingcute:scissors-2-fill'
     },
     {
       id: 'checkers',
       title: 'Шашки',
-      icon: 'solar:round-transfer-horizontal-linear'
+      icon: 'mdi:checkers'
     },
     {
       id: 'chess',
       title: 'Шахматы',
-      icon: 'solar:crown-minimalistic-linear'
+      icon: 'fluent:chess-20-filled'
     },
     {
       id: 'durak',
