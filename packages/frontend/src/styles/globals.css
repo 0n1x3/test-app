@@ -60,7 +60,7 @@ html, body {
 
 /* Отступы для разных платформ */
 html[data-platform="mobile"][data-fullscreen="true"] {
-  --header-padding: calc(env(safe-area-inset-top) + 64px);
+  --header-padding: calc(env(safe-area-inset-top) + 56px);
 }
 
 html[data-platform="mobile"][data-fullscreen="false"] {
