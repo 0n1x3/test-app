@@ -80,10 +80,6 @@
   @apply text-sm text-blue-400;
 }
 
-.balance-card {
-  @apply bg-[#1A1A1A] rounded-xl p-4 mb-4;
-}
-
 .balance-title {
   @apply text-gray-400 text-sm mb-1;
 }

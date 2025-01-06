@@ -23,16 +23,15 @@
 .tokens-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .token-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px;
+  padding: 8px;
   border-radius: 8px;
-  transition: background 0.2s;
 }
 
 .token-item:hover {
@@ -42,12 +41,14 @@
 .token-info {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .token-logo {
-  width: 36px;
-  height: 36px;
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+  min-height: 24px !important;
   border-radius: 50%;
   object-fit: cover;
   -webkit-font-smoothing: antialiased;
@@ -59,18 +60,20 @@
 .token-details {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
 }
 
 .token-amount {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
   color: #FFFFFF;
+  line-height: 1.2;
 }
 
 .token-price {
-  font-size: 12px;
+  font-size: 13px;
   color: #808080;
+  line-height: 1.2;
 }
 
 /* Стили для кнопки подключения */

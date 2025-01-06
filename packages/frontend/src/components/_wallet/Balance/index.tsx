@@ -28,7 +28,19 @@ export function Balance() {
         {tokens.map((token) => (
           <div key={token.symbol} className="token-item">
             <div className="token-info">
-              <img src={token.logo} alt={token.symbol} className="token-logo" />
+              <img 
+                src={token.logo} 
+                alt={token.symbol} 
+                className="token-logo"
+                style={{
+                  width: '24px',
+                  height: '24px',
+                  minWidth: '24px',
+                  minHeight: '24px',
+                  borderRadius: '50%',
+                  objectFit: 'cover'
+                }}
+              />
               <div className="token-details">
                 <div className="token-amount">{token.amount} {token.symbol}</div>
                 <div className="token-price">≈ ${token.usdPrice.toFixed(2)}</div>
