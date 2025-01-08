@@ -28,13 +28,23 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
 
   const t = (key: string) => {
     const keys = key.split('.');
-    let value = translations[language];
+    let value: any = translations[language];
     
-    for (const k of keys) {
-      value = value?.[k];
+    try {
+      for (const k of keys) {
+        if (value && typeof value === 'object' && k in value) {
+          value = value[k];
+        } else {
+          console.warn(`Translation key not found: ${key}`);
+          return key;
+        }
+      }
+      
+      return typeof value === 'string' ? value : key;
+    } catch (error) {
+      console.warn(`Error getting translation for key: ${key}`, error);
+      return key;
     }
-    
-    return value || key;
   };
 
   return (
