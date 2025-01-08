@@ -68,7 +68,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   width: 300px;
-  background: rgba(26, 26, 26, 0.8);
+  background: rgba(26, 26, 26, 0.95);
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(20px);
@@ -123,20 +123,21 @@
 
 .language-buttons {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: space-between;
   width: 100%;
   gap: 8px;
 }
 
 .lang-button {
-  width: 100%;
-  padding: 12px;
+  flex: 1;
+  padding: 8px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: 8px;
   color: #808080;
-  font-size: 14px;
-  text-align: left;
+  font-size: 13px;
+  text-align: center;
   transition: all 0.2s;
 }
 

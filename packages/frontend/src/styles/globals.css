@@ -102,4 +102,13 @@ html[data-platform="desktop"] {
 
 :global(.tc-button:active) {
   background: #2A2A2A !important;
+}
+
+/* Добавляем стили для размытия при открытом меню */
+.settings-open .page-wrapper,
+.settings-open .bottom-nav,
+.settings-open .page-header {
+  background: rgba(26, 26, 26, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 } 

@@ -77,19 +77,19 @@ export function PageHeader({ title }: PageHeaderProps) {
                       className={`lang-button ${currentLang === 'ru' ? 'active' : ''}`}
                       onClick={() => setCurrentLang('ru')}
                     >
-                      Русский
+                      RU
                     </button>
                     <button 
                       className={`lang-button ${currentLang === 'en' ? 'active' : ''}`}
                       onClick={() => setCurrentLang('en')}
                     >
-                      English
+                      EN
                     </button>
                     <button 
                       className={`lang-button ${currentLang === 'zh' ? 'active' : ''}`}
                       onClick={() => setCurrentLang('zh')}
                     >
-                      中文
+                      中
                     </button>
                   </div>
                 </div>
