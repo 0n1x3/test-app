@@ -59,7 +59,7 @@
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  z-index: 1000;
+  z-index: 1001;
 }
 
 .settings-popup {
@@ -73,7 +73,7 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  z-index: 1001;
+  z-index: 1002;
   margin-top: 8px;
 }
 
@@ -108,18 +108,18 @@
 }
 
 .settings-content {
-  padding: 16px;
+  padding: 12px;
 }
 
 .settings-group {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .settings-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .settings-item.column {
@@ -129,28 +129,27 @@
 }
 
 .settings-label {
-  color: #808080;
+  color: #FFFFFF;
   font-size: 14px;
+  font-weight: normal;
 }
 
 .language-buttons {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  width: 100%;
-  gap: 8px;
+  justify-content: flex-end;
+  gap: 4px;
 }
 
 .lang-button {
-  flex: 1;
-  padding: 8px;
+  padding: 4px 8px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
+  border-radius: 6px;
   color: #808080;
-  font-size: 13px;
+  font-size: 12px;
   text-align: center;
-  transition: all 0.2s;
+  min-width: 36px;
 }
 
 .lang-button:hover {
@@ -174,4 +173,9 @@
   border-radius: 12px;
   color: white;
   font-weight: 500;
+}
+
+.page-wrapper,
+.bottom-nav {
+  z-index: 1;
 } 
