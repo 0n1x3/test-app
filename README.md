@@ -1,2 +1,2 @@
 # test-app
-Проверка работы github actions
+Проверка деплоя
