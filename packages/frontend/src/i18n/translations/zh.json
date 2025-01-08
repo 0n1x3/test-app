@@ -1,0 +1,75 @@
+{
+  "pages": {
+    "home": {
+      "title": "游戏",
+      "games": {
+        "rps": "石头剪刀布",
+        "checkers": "跳棋",
+        "chess": "国际象棋",
+        "durak": "傻瓜",
+        "dice": "骰子"
+      },
+      "playButton": "开始"
+    },
+    "income": {
+      "title": "收入",
+      "level": "等级",
+      "tasks": {
+        "title": "任务",
+        "progress": "进度",
+        "win3games": "连续赢3场",
+        "invite5friends": "邀请5位好友",
+        "play10games": "玩10场游戏"
+      },
+      "claim": "领取"
+    },
+    "tournament": {
+      "title": "比赛",
+      "participants": "参与者",
+      "prize": "奖励",
+      "joinButton": "参加",
+      "games": {
+        "chess": "快速象棋",
+        "durak": "傻瓜比赛",
+        "dice": "骰子挑战"
+      }
+    },
+    "friends": {
+      "title": "好友",
+      "inviteButton": "邀请好友",
+      "commissionShare": "1%游戏佣金分成",
+      "list": "好友列表",
+      "claim": "领取"
+    },
+    "wallet": {
+      "title": "钱包",
+      "deposit": "充值",
+      "withdraw": "提现",
+      "sections": {
+        "deposit": {
+          "title": "充值",
+          "selectMethod": "选择充值方式",
+          "minAmount": "最小金额"
+        },
+        "withdraw": {
+          "title": "提现",
+          "selectMethod": "选择提现方式",
+          "minAmount": "最小金额"
+        }
+      }
+    }
+  },
+  "settings": {
+    "title": "设置",
+    "music": "音乐",
+    "sounds": "音效",
+    "vibration": "震动",
+    "language": "语言",
+    "addToHome": "添加到主屏幕"
+  },
+  "common": {
+    "loading": "加载中...",
+    "error": "错误",
+    "retry": "重试"
+  }
+} 

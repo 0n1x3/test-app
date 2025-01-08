@@ -1,33 +1,56 @@
 'use client';
 
-import { useRouter, usePathname } from 'next/navigation';
 import { Icon } from '@iconify/react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useTranslation } from '@/providers/i18n';
 import './style.css';
 
 export function BottomNav() {
-  const router = useRouter();
   const pathname = usePathname();
-
-  const tabs = [
-    { id: 'game', label: 'Игры', icon: 'solar:gamepad-minimalistic-linear', path: '/' },
-    { id: 'income', label: 'Доход', icon: 'solar:hand-money-linear', path: '/income' },
-    { id: 'tournament', label: 'Турниры', icon: 'solar:cup-star-linear', path: '/tournament' },
-    { id: 'friends', label: 'Друзья', icon: 'solar:users-group-rounded-linear', path: '/friends' },
-    { id: 'wallet', label: 'Кошелек', icon: 'solar:wallet-linear', path: '/wallet' },
-  ];
+  const { t } = useTranslation();
 
   return (
     <nav className="bottom-nav">
-      {tabs.map((tab) => (
-        <button
-          key={tab.id}
-          className={`nav-item ${pathname === tab.path ? 'active' : ''}`}
-          onClick={() => router.push(tab.path)}
-        >
-          <Icon className="nav-icon" icon={tab.icon} />
-          <span className="nav-label">{tab.label}</span>
-        </button>
-      ))}
+      <Link 
+        href="/" 
+        className={`nav-item ${pathname === '/' ? 'active' : ''}`}
+      >
+        <Icon icon="solar:gamepad-minimalistic-linear" />
+        <span>{t('pages.home.title')}</span>
+      </Link>
+
+      <Link 
+        href="/income" 
+        className={`nav-item ${pathname === '/income' ? 'active' : ''}`}
+      >
+        <Icon icon="solar:dollar-minimalistic-linear" />
+        <span>{t('pages.income.title')}</span>
+      </Link>
+
+      <Link 
+        href="/tournament" 
+        className={`nav-item ${pathname === '/tournament' ? 'active' : ''}`}
+      >
+        <Icon icon="solar:cup-star-linear" />
+        <span>{t('pages.tournament.title')}</span>
+      </Link>
+
+      <Link 
+        href="/friends" 
+        className={`nav-item ${pathname === '/friends' ? 'active' : ''}`}
+      >
+        <Icon icon="solar:users-group-rounded-linear" />
+        <span>{t('pages.friends.title')}</span>
+      </Link>
+
+      <Link 
+        href="/wallet" 
+        className={`nav-item ${pathname === '/wallet' ? 'active' : ''}`}
+      >
+        <Icon icon="solar:wallet-linear" />
+        <span>{t('pages.wallet.title')}</span>
+      </Link>
     </nav>
   );
 } 

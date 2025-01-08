@@ -1,0 +1,75 @@
+{
+  "pages": {
+    "home": {
+      "title": "Игры",
+      "games": {
+        "rps": "Камень, ножницы, бумага",
+        "checkers": "Шашки",
+        "chess": "Шахматы",
+        "durak": "Дурак",
+        "dice": "Кубик"
+      },
+      "playButton": "Играть"
+    },
+    "income": {
+      "title": "Доход",
+      "level": "Уровень",
+      "tasks": {
+        "title": "Задания",
+        "progress": "Прогресс",
+        "win3games": "Выиграй 3 игры подряд",
+        "invite5friends": "Пригласи 5 друзей",
+        "play10games": "Сыграй 10 игр"
+      },
+      "claim": "Получить"
+    },
+    "tournament": {
+      "title": "Турниры",
+      "participants": "Участники",
+      "prize": "Приз",
+      "joinButton": "Участвовать",
+      "games": {
+        "chess": "Быстрые шахматы",
+        "durak": "Турнир по дураку",
+        "dice": "Кубик челлендж"
+      }
+    },
+    "friends": {
+      "title": "Друзья",
+      "inviteButton": "Пригласить друзей",
+      "commissionShare": "Выплаты доли игровых комиссий в 1%",
+      "list": "Frens",
+      "claim": "Claim"
+    },
+    "wallet": {
+      "title": "Кошелек",
+      "deposit": "Пополнить",
+      "withdraw": "Вывести",
+      "sections": {
+        "deposit": {
+          "title": "Пополнение",
+          "selectMethod": "Выберите способ пополнения",
+          "minAmount": "Минимальная сумма"
+        },
+        "withdraw": {
+          "title": "Вывод",
+          "selectMethod": "Выберите способ вывода",
+          "minAmount": "Минимальная сумма"
+        }
+      }
+    }
+  },
+  "settings": {
+    "title": "Настройки",
+    "music": "Музыка",
+    "sounds": "Звуки",
+    "vibration": "Виброотклик",
+    "language": "Язык",
+    "addToHome": "Добавить на главный экран"
+  },
+  "common": {
+    "loading": "Загрузка...",
+    "error": "Ошибка",
+    "retry": "Повторить"
+  }
+} 

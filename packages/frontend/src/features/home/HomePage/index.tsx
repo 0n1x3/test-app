@@ -4,6 +4,7 @@ import { SafeArea } from '@/components/_layout/SafeArea';
 import { PageContainer } from '@/components/_layout/PageContainer';
 import { PageHeader } from '@/components/_layout/PageHeader';
 import { Icon } from '@iconify/react';
+import { useTranslation } from '@/providers/i18n';
 import './style.css';
 
 interface Game {
@@ -14,31 +15,32 @@ interface Game {
 }
 
 export function HomePage() {
-  
+  const { t } = useTranslation();
+
   const games: Game[] = [
     {
       id: 'rps',
-      title: 'Камень, ножницы, бумага',
+      title: t('pages.home.games.rps'),
       icon: 'mingcute:scissors-2-fill'
     },
     {
       id: 'checkers',
-      title: 'Шашки',
+      title: t('pages.home.games.checkers'),
       icon: 'mdi:checkers'
     },
     {
       id: 'chess',
-      title: 'Шахматы',
+      title: t('pages.home.games.chess'),
       icon: 'fluent:chess-20-filled'
     },
     {
       id: 'durak',
-      title: 'Дурак',
+      title: t('pages.home.games.durak'),
       icon: 'mdi:cards-playing'
     },
     {
       id: 'dice',
-      title: 'Кубик',
+      title: t('pages.home.games.dice'),
       icon: 'ion:dice-sharp'
     }
   ];
@@ -46,7 +48,7 @@ export function HomePage() {
   return (
     <SafeArea>
       <PageContainer>
-        <PageHeader title="Игры" />
+        <PageHeader title={t('pages.home.title')} />
         <div className="games-page">
           <div className="games-list">
             {games.map(game => (
@@ -58,7 +60,7 @@ export function HomePage() {
                   </div>
                 </div>
                 <button className="play-button">
-                  Играть
+                  {t('pages.home.playButton')}
                 </button>
               </div>
             ))}

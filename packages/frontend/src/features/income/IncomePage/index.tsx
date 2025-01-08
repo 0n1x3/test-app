@@ -4,6 +4,7 @@ import { SafeArea } from '@/components/_layout/SafeArea';
 import { PageContainer } from '@/components/_layout/PageContainer';
 import { PageHeader } from '@/components/_layout/PageHeader';
 import { Icon } from '@iconify/react';
+import { useTranslation } from '@/providers/i18n';
 import './style.css';
 
 interface Task {
@@ -15,6 +16,7 @@ interface Task {
 }
 
 export function IncomePage() {
+  const { t } = useTranslation();
   const level = 5;
   const experience = 1250;
   const nextLevel = 2000;
@@ -23,21 +25,21 @@ export function IncomePage() {
   const tasks: Task[] = [
     {
       id: '1',
-      title: 'Выиграй 3 игры подряд',
+      title: t('pages.income.tasks.win3games'),
       reward: 100,
       progress: 1,
       total: 3
     },
     {
       id: '2',
-      title: 'Пригласи 5 друзей',
+      title: t('pages.income.tasks.invite5friends'),
       reward: 250,
       progress: 2,
       total: 5
     },
     {
       id: '3',
-      title: 'Сыграй 10 игр',
+      title: t('pages.income.tasks.play10games'),
       reward: 150,
       progress: 7,
       total: 10
@@ -47,11 +49,13 @@ export function IncomePage() {
   return (
     <SafeArea>
       <PageContainer>
-        <PageHeader title="Доход" />
+        <PageHeader title={t('pages.income.title')} />
         <div className="income-page">
           <div className="level-card">
             <div className="level-header">
-              <div className="level-title">Level {level}</div>
+              <div className="level-title">
+                {t('pages.income.level')} {level}
+              </div>
               <div className="level-progress">
                 <div className="progress-bar">
                   <div 
@@ -71,7 +75,7 @@ export function IncomePage() {
           </div>
           
           <div className="tasks-section">
-            <div className="section-title">Задания</div>
+            <div className="section-title">{t('pages.income.tasks.title')}</div>
             <div className="tasks-list">
               {tasks.map(task => (
                 <div key={task.id} className="task-card">
@@ -81,9 +85,7 @@ export function IncomePage() {
                       <div className="progress-bar">
                         <div 
                           className="progress-fill"
-                          style={{ 
-                            width: `${(task.progress / task.total) * 100}%` 
-                          }}
+                          style={{ width: `${(task.progress / task.total) * 100}%` }}
                         />
                       </div>
                       <div className="progress-text">

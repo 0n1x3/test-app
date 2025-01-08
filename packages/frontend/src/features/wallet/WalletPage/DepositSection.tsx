@@ -1,32 +1,16 @@
 'use client';
 
-import { useTonConnect } from '@/hooks/wallet/useTonConnect';
-import { CONTRACT_ADDRESS } from '@/config';
+import { useTranslation } from '@/providers/i18n';
+import './styles.css';
 
 export function DepositSection() {
-  const { sender } = useTonConnect();
-  const walletAddress = CONTRACT_ADDRESS;
+  const { t } = useTranslation();
 
   return (
     <div className="deposit-section">
-      <div className="address-box">
-        <div className="label">Wallet address</div>
-        <div className="value-container">
-          <span className="address-value">{walletAddress}</span>
-          <button 
-            onClick={() => navigator.clipboard.writeText(walletAddress)}
-            className="copy-button"
-          >
-            📋
-          </button>
-        </div>
-      </div>
-
-      <div className="qr-container">
-        <div className="label">Scan to deposit</div>
-        <div className="qr-box">
-          <span>QR Code</span>
-        </div>
+      <div className="section-title">{t('pages.wallet.sections.deposit.title')}</div>
+      <div className="deposit-methods">
+        {/* ... */}
       </div>
     </div>
   );

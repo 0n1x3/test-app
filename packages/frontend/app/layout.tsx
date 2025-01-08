@@ -8,6 +8,7 @@ import '@/styles/base/components.css';
 import { TonProvider } from '@/providers/ton';
 import { setupViewport } from '@/utils/viewport';
 import { BottomNav } from '@/components/_layout/BottomNav';
+import { I18nProvider } from '@/providers/i18n';
 
 export default function RootLayout({
   children,
@@ -42,14 +43,16 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <TonProvider>
-          <div className="app-container">
-            <div key={pathname} style={{ width: '100%', height: '100%' }}>
-              {children}
+        <I18nProvider>
+          <TonProvider>
+            <div className="app-container">
+              <div key={pathname} style={{ width: '100%', height: '100%' }}>
+                {children}
+              </div>
+              <BottomNav />
             </div>
-            <BottomNav />
-          </div>
-        </TonProvider>
+          </TonProvider>
+        </I18nProvider>
       </body>
     </html>
   );

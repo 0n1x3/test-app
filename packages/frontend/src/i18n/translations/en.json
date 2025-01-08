@@ -1,0 +1,75 @@
+{
+  "pages": {
+    "home": {
+      "title": "Games",
+      "games": {
+        "rps": "Rock, Paper, Scissors",
+        "checkers": "Checkers",
+        "chess": "Chess",
+        "durak": "Durak",
+        "dice": "Dice"
+      },
+      "playButton": "Play"
+    },
+    "income": {
+      "title": "Income",
+      "level": "Level",
+      "tasks": {
+        "title": "Tasks",
+        "progress": "Progress",
+        "win3games": "Win 3 games in a row",
+        "invite5friends": "Invite 5 friends",
+        "play10games": "Play 10 games"
+      },
+      "claim": "Claim"
+    },
+    "tournament": {
+      "title": "Tournaments",
+      "participants": "Participants",
+      "prize": "Prize",
+      "joinButton": "Join",
+      "games": {
+        "chess": "Speed Chess",
+        "durak": "Durak Tournament",
+        "dice": "Dice Challenge"
+      }
+    },
+    "friends": {
+      "title": "Friends",
+      "inviteButton": "Invite Friends",
+      "commissionShare": "1% Game Commission Share",
+      "list": "Friends",
+      "claim": "Claim"
+    },
+    "wallet": {
+      "title": "Wallet",
+      "deposit": "Deposit",
+      "withdraw": "Withdraw",
+      "sections": {
+        "deposit": {
+          "title": "Deposit",
+          "selectMethod": "Select deposit method",
+          "minAmount": "Minimum amount"
+        },
+        "withdraw": {
+          "title": "Withdraw",
+          "selectMethod": "Select withdraw method",
+          "minAmount": "Minimum amount"
+        }
+      }
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "music": "Music",
+    "sounds": "Sounds",
+    "vibration": "Vibration",
+    "language": "Language",
+    "addToHome": "Add to Home Screen"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "retry": "Retry"
+  }
+} 

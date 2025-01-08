@@ -4,6 +4,7 @@ import { SafeArea } from '@/components/_layout/SafeArea';
 import { PageContainer } from '@/components/_layout/PageContainer';
 import { PageHeader } from '@/components/_layout/PageHeader';
 import { Icon } from '@iconify/react';
+import { useTranslation } from '@/providers/i18n';
 import './style.css';
 
 interface Tournament {
@@ -24,11 +25,13 @@ interface Tournament {
 }
 
 export function TournamentPage() {
+  const { t } = useTranslation();
+
   const tournaments: Tournament[] = [
     {
       id: '1',
-      title: 'Быстрые шахматы',
-      game: 'Шахматы',
+      title: t('pages.tournament.games.chess'),
+      game: t('pages.home.games.chess'),
       gameIcon: 'solar:crown-minimalistic-linear',
       participants: {
         current: 14,
@@ -43,8 +46,8 @@ export function TournamentPage() {
     },
     {
       id: '2',
-      title: 'Турнир по дураку',
-      game: 'Дурак',
+      title: t('pages.tournament.games.durak'),
+      game: t('pages.home.games.durak'),
       gameIcon: 'mdi:cards-playing',
       participants: {
         current: 8,
@@ -59,8 +62,8 @@ export function TournamentPage() {
     },
     {
       id: '3',
-      title: 'Кубик челлендж',
-      game: 'Кубик',
+      title: t('pages.tournament.games.dice'),
+      game: t('pages.home.games.dice'),
       gameIcon: 'ion:dice-sharp',
       participants: {
         current: 24,
@@ -78,7 +81,7 @@ export function TournamentPage() {
   return (
     <SafeArea>
       <PageContainer>
-        <PageHeader title="Турниры" />
+        <PageHeader title={t('pages.tournament.title')} />
         <div className="tournaments-page">
           <div className="tournaments-list">
             {tournaments.map(tournament => (
@@ -97,20 +100,20 @@ export function TournamentPage() {
                   <div className="participants-info">
                     <Icon icon="solar:users-group-rounded-linear" />
                     <span>
-                      {tournament.participants.current}/{tournament.participants.max}
+                      {t('pages.tournament.participants')}: {tournament.participants.current}/{tournament.participants.max}
                     </span>
                   </div>
                   
                   <div className="prize-info">
                     <Icon icon={tournament.prize.tokenIcon} className="token-icon" />
                     <span className="prize-amount">
-                      {tournament.prize.amount} {tournament.prize.token}
+                      {t('pages.tournament.prize')}: {tournament.prize.amount} {tournament.prize.token}
                     </span>
                   </div>
                 </div>
                 
                 <button className="join-button">
-                  Участвовать
+                  {t('pages.tournament.joinButton')}
                 </button>
               </div>
             ))}

@@ -2,8 +2,10 @@
 
 import { SafeArea } from '@/components/_layout/SafeArea';
 import { PageContainer } from '@/components/_layout/PageContainer';
-import './style.css';
 import { PageHeader } from '@/components/_layout/PageHeader';
+import { Icon } from '@iconify/react';
+import { useTranslation } from '@/providers/i18n';
+import './style.css';
 
 interface Friend {
   id: string;
@@ -17,7 +19,8 @@ interface Friend {
 }
 
 export function FriendsPage() {
-  // Временные данные для демонстрации
+  const { t } = useTranslation();
+
   const friends: Friend[] = [
     {
       id: '1',
@@ -51,12 +54,12 @@ export function FriendsPage() {
   return (
     <SafeArea>
       <PageContainer>
-        <PageHeader title="Друзья" />
+        <PageHeader title={t('pages.friends.title')} />
         
         <div className="friends-page">
           <div className="earnings-card">
             <div className="earnings-subtitle">
-              Выплаты доли игровых комиссий в 1%
+              {t('pages.friends.commissionShare')}
             </div>
             <div className="earnings-grid">
               <div className="token-earning">
@@ -72,11 +75,11 @@ export function FriendsPage() {
                 <span className="token-amount">{totalEarnings.time.toFixed(2)}</span>
               </div>
             </div>
-            <button className="claim-button">Claim</button>
+            <button className="claim-button">{t('pages.friends.claim')}</button>
           </div>
 
           <div className="friends-section">
-            <div className="section-title">Frens</div>
+            <div className="section-title">{t('pages.friends.list')}</div>
             <div className="friends-list">
               {friends.map(friend => (
                 <div key={friend.id} className="friend-item">
@@ -104,7 +107,7 @@ export function FriendsPage() {
           </div>
 
           <button className="invite-button">
-            Invite frens
+            {t('pages.friends.inviteButton')}
           </button>
         </div>
       </PageContainer>

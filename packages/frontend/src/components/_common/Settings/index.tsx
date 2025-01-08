@@ -3,8 +3,11 @@
 import { Icon } from '@iconify/react';
 import { useState, useEffect } from 'react';
 import './style.css';
+import { useTranslation } from '@/providers/i18n';
+import type { Language } from '@/types/i18n';
 
 export function Settings() {
+  const { t, language, setLanguage } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -14,6 +17,11 @@ export function Settings() {
       document.body.classList.remove('settings-open');
     }
   }, [isOpen]);
+
+  const handleLanguageChange = (lang: Language) => {
+    setLanguage(lang);
+    localStorage.setItem('language', lang);
+  };
 
   return (
     <>
@@ -29,7 +37,7 @@ export function Settings() {
           <div className="overlay" onClick={() => setIsOpen(false)} />
           <div className="settings-popup">
             <div className="settings-header">
-              <h2>Настройки</h2>
+              <h2>{t('settings.title')}</h2>
               <button 
                 className="close-button"
                 onClick={() => setIsOpen(false)}
@@ -41,21 +49,21 @@ export function Settings() {
             <div className="settings-content">
               <div className="settings-group">
                 <div className="settings-item">
-                  <span>Музыка</span>
+                  <span>{t('settings.music')}</span>
                   <label className="switch">
                     <input type="checkbox" />
                     <span className="slider" />
                   </label>
                 </div>
                 <div className="settings-item">
-                  <span>Звуки</span>
+                  <span>{t('settings.sounds')}</span>
                   <label className="switch">
                     <input type="checkbox" />
                     <span className="slider" />
                   </label>
                 </div>
                 <div className="settings-item">
-                  <span>Виброотклик</span>
+                  <span>{t('settings.vibration')}</span>
                   <label className="switch">
                     <input type="checkbox" />
                     <span className="slider" />
@@ -65,23 +73,23 @@ export function Settings() {
 
               <div className="settings-group">
                 <div className="settings-item">
-                  <span>Язык</span>
+                  <span>{t('settings.language')}</span>
                   <div className="language-buttons">
                     <button 
-                      className={`lang-button ${currentLang === 'ru' ? 'active' : ''}`}
-                      onClick={() => setCurrentLang('ru')}
+                      className={`lang-button ${language === 'ru' ? 'active' : ''}`}
+                      onClick={() => handleLanguageChange('ru')}
                     >
                       RU
                     </button>
                     <button 
-                      className={`lang-button ${currentLang === 'en' ? 'active' : ''}`}
-                      onClick={() => setCurrentLang('en')}
+                      className={`lang-button ${language === 'en' ? 'active' : ''}`}
+                      onClick={() => handleLanguageChange('en')}
                     >
                       EN
                     </button>
                     <button 
-                      className={`lang-button ${currentLang === 'zh' ? 'active' : ''}`}
-                      onClick={() => setCurrentLang('zh')}
+                      className={`lang-button ${language === 'zh' ? 'active' : ''}`}
+                      onClick={() => handleLanguageChange('zh')}
                     >
                       中文
                     </button>
@@ -91,7 +99,7 @@ export function Settings() {
 
               <button className="add-to-home">
                 <Icon icon="solar:home-add-linear" />
-                Добавить на главный экран
+                {t('settings.addToHome')}
               </button>
             </div>
           </div>

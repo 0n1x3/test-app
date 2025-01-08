@@ -7,16 +7,18 @@ import { SafeArea } from '@/components/_layout/SafeArea';
 import { PageContainer } from '@/components/_layout/PageContainer';
 import { DepositSection } from './DepositSection';
 import { WithdrawSection } from './WithdrawSection';
-import './styles.css';
 import { PageHeader } from '@/components/_layout/PageHeader';
+import { useTranslation } from '@/providers/i18n';
+import './styles.css';
 
 export function WalletPage() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'deposit' | 'withdraw'>('deposit');
 
   return (
     <SafeArea>
       <PageContainer>
-        <PageHeader title="Кошелек" />
+        <PageHeader title={t('pages.wallet.title')} />
         <div className="wallet-page">
           <div className="wallet-header">
             <div className="wallet-connect">
@@ -31,13 +33,13 @@ export function WalletPage() {
               className={`tab-button ${activeTab === 'deposit' ? 'active' : ''}`}
               onClick={() => setActiveTab('deposit')}
             >
-              Пополнить
+              {t('pages.wallet.deposit')}
             </button>
             <button
               className={`tab-button ${activeTab === 'withdraw' ? 'active' : ''}`}
               onClick={() => setActiveTab('withdraw')}
             >
-              Вывести
+              {t('pages.wallet.withdraw')}
             </button>
           </div>
 
