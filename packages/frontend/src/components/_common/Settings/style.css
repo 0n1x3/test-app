@@ -10,6 +10,7 @@
   opacity: 0.8;
   transition: opacity 0.2s;
   margin-right: env(safe-area-inset-right);
+  z-index: 999;
 }
 
 .settings-button:hover {
@@ -25,7 +26,7 @@
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  z-index: 1001;
+  z-index: 998;
 }
 
 .settings-popup {
@@ -96,19 +97,6 @@
   font-weight: 500;
 }
 
-.settings-open .app-container {
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-}
-
-.settings-open .page-wrapper,
-.settings-open .bottom-nav {
-  background: rgba(26, 26, 26, 0.8);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-}
-
 body.settings-open {
   overflow: hidden;
 }
@@ -124,11 +112,4 @@ body.settings-open::before {
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: 998;
-}
-
-.settings-open .app-container,
-.settings-open .page-wrapper,
-.settings-open .bottom-nav {
-  position: relative;
-  z-index: 1;
 } 
