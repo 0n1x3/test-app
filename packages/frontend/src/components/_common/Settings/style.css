@@ -10,7 +10,7 @@
   opacity: 0.8;
   transition: opacity 0.2s;
   margin-right: env(safe-area-inset-right);
-  z-index: 999;
+  z-index: 9998;
 }
 
 .settings-button:hover {
@@ -26,25 +26,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
-  pointer-events: all;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: 9999;
+  isolation: isolate;
 }
 
 .settings-popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: relative;
   width: min(90%, 360px);
-  background: var(--surface-2);
+  background-color: var(--surface-2);
   border-radius: 16px;
   padding: 24px;
-  z-index: 1001;
   max-height: 85vh;
   overflow-y: auto;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
-  pointer-events: all;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .settings-header {
