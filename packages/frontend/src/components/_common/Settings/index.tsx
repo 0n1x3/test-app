@@ -1,10 +1,11 @@
 'use client';
 
-import { Icon } from '@iconify/react';
 import { useState, useEffect } from 'react';
-import './style.css';
+import { createPortal } from 'react-dom';
+import { Icon } from '@iconify/react';
 import { useTranslation } from '@/providers/i18n';
 import type { Language } from '@/types/i18n';
+import './style.css';
 
 export function Settings() {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,7 +34,7 @@ export function Settings() {
         <Icon icon="solar:settings-linear" />
       </button>
 
-      {isOpen && (
+      {isOpen && createPortal(
         <div className="settings-modal">
           <div className="settings-popup">
             <div className="settings-header">
@@ -100,7 +101,8 @@ export function Settings() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.getElementById('portal-root') || document.body
       )}
     </>
   );

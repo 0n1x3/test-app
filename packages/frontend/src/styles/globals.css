@@ -172,4 +172,19 @@ html[data-platform="desktop"] {
   position: relative;
   z-index: 1;
   overflow: hidden;
+}
+
+/* Добавим стили для модальных окон */
+#portal-root {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9990;
+  pointer-events: none;
+}
+
+#portal-root > * {
+  pointer-events: auto;
 } 
