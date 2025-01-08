@@ -47,7 +47,7 @@
 }
 
 .settings-group {
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .settings-item {
@@ -57,8 +57,8 @@
   margin-bottom: 8px;
 }
 
-.settings-group:last-child {
-  margin-bottom: 8px;
+.settings-item:last-child {
+  margin-bottom: 0;
 }
 
 .language-buttons {
@@ -97,4 +97,17 @@
   border-radius: 12px;
   color: white;
   font-weight: 500;
+}
+
+.settings-open .app-container {
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.settings-open .page-wrapper,
+.settings-open .bottom-nav {
+  background: rgba(26, 26, 26, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 } 
