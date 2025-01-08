@@ -1,22 +1,19 @@
 'use client';
 
 import { Icon } from '@iconify/react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import './style.css';
 import { useTranslation } from '@/providers/i18n';
 import type { Language } from '@/types/i18n';
 
 export function Settings() {
-  const { t, language, setLanguage } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const { t, language, setLanguage } = useTranslation();
 
-  useEffect(() => {
-    if (isOpen) {
-      document.body.classList.add('settings-open');
-    } else {
-      document.body.classList.remove('settings-open');
-    }
-  }, [isOpen]);
+  const toggleSettings = () => {
+    setIsOpen(!isOpen);
+    document.body.classList.toggle('settings-open');
+  };
 
   const handleLanguageChange = (lang: Language) => {
     setLanguage(lang);
@@ -25,16 +22,13 @@ export function Settings() {
 
   return (
     <>
-      <button 
-        className="settings-button"
-        onClick={() => setIsOpen(true)}
-      >
-        <Icon icon="tdesign:setting-1-filled" />
+      <button className="settings-button" onClick={toggleSettings}>
+        <Icon icon="solar:settings-linear" />
       </button>
 
       {isOpen && (
         <>
-          <div className="overlay" onClick={() => setIsOpen(false)} />
+          <div className="settings-overlay" />
           <div className="settings-popup">
             <div className="settings-header">
               <h2>{t('settings.title')}</h2>
