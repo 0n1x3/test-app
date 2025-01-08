@@ -12,6 +12,20 @@
   -webkit-backdrop-filter: blur(10px);
 }
 
+/* На мобильных */
+@media (max-width: 768px) {
+  .page-header {
+    padding-top: calc(env(safe-area-inset-top) + 48px);
+  }
+}
+
+/* На десктопе */
+@media (min-width: 769px) {
+  .page-header {
+    padding-top: 16px;
+  }
+}
+
 .page-header h1 {
   font-size: 24px;
   font-weight: 600;

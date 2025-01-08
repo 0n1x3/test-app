@@ -29,18 +29,17 @@
 }
 
 .settings-popup {
-  position: absolute;
-  top: 100%;
-  right: 50%;
-  transform: translateX(50%);
-  width: 300px;
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + 72px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(300px, calc(100% - 32px));
   background: rgba(26, 26, 26, 0.95);
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   z-index: 1002;
-  margin-top: 8px;
 }
 
 .settings-content {

@@ -84,7 +84,7 @@ export function Settings() {
                       className={`lang-button ${currentLang === 'zh' ? 'active' : ''}`}
                       onClick={() => setCurrentLang('zh')}
                     >
-                      中
+                      中文
                     </button>
                   </div>
                 </div>
