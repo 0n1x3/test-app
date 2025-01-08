@@ -27,6 +27,7 @@
   align-items: center;
   justify-content: center;
   z-index: 998;
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .settings-modal::before {
@@ -46,10 +47,11 @@
   width: min(90%, 360px);
   background: var(--surface-2);
   border-radius: 16px;
-  padding: 16px;
+  padding: 24px;
   z-index: 999;
-  max-height: 90vh;
+  max-height: 85vh;
   overflow-y: auto;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
 }
 
 .settings-header {
