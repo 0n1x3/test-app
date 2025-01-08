@@ -50,7 +50,10 @@ html, body {
 
 /* Общие стили для заголовков страниц */
 .page-header {
-  padding: var(--header-padding) var(--app-padding) 16px;
+  padding-top: calc(env(safe-area-inset-top) + 72px) !important;
+  padding-bottom: 16px;
+  padding-left: var(--app-padding);
+  padding-right: var(--app-padding);
   text-align: center;
 }
 
@@ -61,14 +64,8 @@ html, body {
 }
 
 /* Отступы для разных платформ */
-html[data-platform="mobile"][data-fullscreen="true"] {
-  --header-padding: calc(env(safe-area-inset-top) + 72px);
-}
-
-html[data-platform="mobile"][data-fullscreen="false"] {
-  --header-padding: calc(env(safe-area-inset-top) + 16px);
-}
-
+html[data-platform="mobile"][data-fullscreen="true"],
+html[data-platform="mobile"][data-fullscreen="false"],
 html[data-platform="desktop"] {
   --header-padding: 16px;
 }

@@ -7,7 +7,6 @@ import '@/styles/globals.css';
 import '@/styles/base/components.css';
 import { TonProvider } from '@/providers/ton';
 import { setupViewport } from '@/utils/viewport';
-import { AnimatePresence, motion } from 'framer-motion';
 import { BottomNav } from '@/components/_layout/BottomNav';
 
 export default function RootLayout({
@@ -22,7 +21,6 @@ export default function RootLayout({
     if (tg) {
       setupViewport();
       
-      // Отключаем зум
       document.addEventListener('touchstart', (e) => {
         if (e.touches.length > 1) {
           e.preventDefault();
@@ -46,28 +44,9 @@ export default function RootLayout({
       <body>
         <TonProvider>
           <div className="app-container">
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={pathname}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ 
-                  duration: 0.2,
-                  ease: 'easeInOut'
-                }}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  position: 'absolute',
-                  left: 0,
-                  right: 0,
-                  top: 0
-                }}
-              >
-                {children}
-              </motion.div>
-            </AnimatePresence>
+            <div key={pathname} style={{ width: '100%', height: '100%' }}>
+              {children}
+            </div>
             <BottomNav />
           </div>
         </TonProvider>
