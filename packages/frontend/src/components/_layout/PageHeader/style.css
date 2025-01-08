@@ -15,7 +15,7 @@
 /* На мобильных */
 @media (max-width: 768px) {
   .page-header {
-    padding-top: calc(env(safe-area-inset-top) + 48px);
+    padding-top: calc(env(safe-area-inset-top) + 72px);
   }
 }
 
