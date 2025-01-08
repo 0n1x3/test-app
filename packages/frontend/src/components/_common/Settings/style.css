@@ -17,8 +17,21 @@
   opacity: 1;
 }
 
-.settings-overlay {
+.settings-modal {
   position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 998;
+}
+
+.settings-modal::before {
+  content: '';
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -26,15 +39,10 @@
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  z-index: 997;
-  pointer-events: none;
 }
 
 .settings-popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: relative;
   width: min(90%, 360px);
   background: var(--surface-2);
   border-radius: 16px;

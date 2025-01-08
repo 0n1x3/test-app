@@ -1,7 +1,7 @@
 'use client';
 
 import { Icon } from '@iconify/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './style.css';
 import { useTranslation } from '@/providers/i18n';
 import type { Language } from '@/types/i18n';
@@ -10,32 +10,35 @@ export function Settings() {
   const [isOpen, setIsOpen] = useState(false);
   const { t, language, setLanguage } = useTranslation();
 
-  const toggleSettings = () => {
-    setIsOpen(!isOpen);
-    document.body.classList.toggle('settings-open');
-  };
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('settings-open');
+    } else {
+      document.body.classList.remove('settings-open');
+    }
+  }, [isOpen]);
 
   const handleLanguageChange = (lang: Language) => {
     setLanguage(lang);
     localStorage.setItem('language', lang);
   };
 
+  const handleClose = () => {
+    setIsOpen(false);
+  };
+
   return (
     <>
-      <button className="settings-button" onClick={toggleSettings}>
+      <button className="settings-button" onClick={() => setIsOpen(true)}>
         <Icon icon="solar:settings-linear" />
       </button>
 
       {isOpen && (
-        <>
-          <div className="settings-overlay" />
+        <div className="settings-modal">
           <div className="settings-popup">
             <div className="settings-header">
               <h2>{t('settings.title')}</h2>
-              <button 
-                className="close-button"
-                onClick={() => setIsOpen(false)}
-              >
+              <button className="close-button" onClick={handleClose}>
                 <Icon icon="solar:close-circle-linear" />
               </button>
             </div>
@@ -97,7 +100,7 @@ export function Settings() {
               </button>
             </div>
           </div>
-        </>
+        </div>
       )}
     </>
   );
