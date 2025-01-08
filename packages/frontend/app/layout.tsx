@@ -18,23 +18,21 @@ export default function RootLayout({
   const pathname = usePathname();
 
   useEffect(() => {
-    const tg = window.Telegram?.WebApp;
-    if (tg) {
-      setupViewport();
-      
-      const isMobileApp = !['macos', 'windows', 'linux'].includes(tg.platform);
-      document.documentElement.dataset.platform = isMobileApp ? 'mobile' : 'desktop';
-      
-      document.addEventListener('touchstart', (e) => {
-        if (e.touches.length > 1) {
-          e.preventDefault();
-        }
-      }, { passive: false });
+    const script = document.querySelector('script[src*="telegram-web-app.js"]');
+    if (script) {
+      script.addEventListener('load', () => {
+        setupViewport();
+      });
     }
+    return () => {
+      if (script) {
+        script.removeEventListener('load', setupViewport);
+      }
+    };
   }, []);
 
   return (
-    <html lang="en" data-platform="desktop">
+    <html lang="en" data-platform="mobile" data-fullscreen="true">
       <head>
         <meta 
           name="viewport" 
@@ -51,11 +49,21 @@ export default function RootLayout({
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={pathname}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                style={{ width: '100%', height: '100%' }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.05 }}
+                transition={{ 
+                  duration: 0.15,
+                  ease: [0.32, 0.72, 0, 1]
+                }}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  position: 'absolute',
+                  left: 0,
+                  right: 0,
+                  top: 0
+                }}
               >
                 {children}
               </motion.div>

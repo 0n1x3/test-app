@@ -1,6 +1,8 @@
 export function setupViewport() {
+  const doc = document.documentElement;
+  
+  // Устанавливаем размеры приложения
   const setAppDimensions = () => {
-    const doc = document.documentElement;
     doc.style.setProperty('--app-max-width', `min(100vw, 390px)`);
     const padding = window.innerWidth < 390 ? '12px' : '16px';
     doc.style.setProperty('--app-padding', padding);
@@ -16,21 +18,20 @@ export function setupViewport() {
       navigator.userAgent
     );
 
-    // Устанавливаем атрибут для определения режима
-    document.documentElement.dataset.fullscreen = 'false';
+    // Устанавливаем атрибуты сразу
+    doc.dataset.platform = isMobile ? 'mobile' : 'desktop';
+    doc.dataset.fullscreen = isMobile && tg.isExpanded ? 'true' : 'false';
 
     if (isMobile && 'requestFullscreen' in tg) {
       tg.requestFullscreen();
-      document.documentElement.dataset.fullscreen = 'true';
     } else {
       tg.expand();
     }
 
-    // Обработчик изменения режима
+    // Обновляем при изменении viewport
     tg.onEvent('viewportChanged', ({ isStateStable }) => {
       if (isStateStable) {
-        document.documentElement.dataset.fullscreen = 
-          isMobile && tg.isExpanded ? 'true' : 'false';
+        doc.dataset.fullscreen = isMobile && tg.isExpanded ? 'true' : 'false';
         setAppDimensions();
       }
     });
