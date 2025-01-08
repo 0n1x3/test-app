@@ -26,32 +26,25 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 998;
   background: rgba(0, 0, 0, 0.5);
-}
-
-.settings-modal::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  pointer-events: all;
 }
 
 .settings-popup {
-  position: relative;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: min(90%, 360px);
   background: var(--surface-2);
   border-radius: 16px;
   padding: 24px;
-  z-index: 999;
+  z-index: 1001;
   max-height: 85vh;
   overflow-y: auto;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  pointer-events: all;
 }
 
 .settings-header {
@@ -142,12 +135,4 @@
 
 body.settings-open {
   overflow: hidden;
-}
-
-.settings-modal {
-  pointer-events: all;
-}
-
-.settings-popup {
-  pointer-events: all;
 } 
