@@ -30,16 +30,13 @@
 
 .settings-popup {
   position: fixed;
-  top: calc(env(safe-area-inset-top) + 92px);
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(300px, calc(100% - 32px));
-  background: rgba(26, 26, 26, 0.95);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  z-index: 1002;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--surface-2);
+  border-radius: 16px 16px 0 0;
+  padding: 16px;
+  z-index: 999;
 }
 
 .settings-content {
@@ -126,8 +123,7 @@ body.settings-open::before {
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  z-index: 1000;
-  pointer-events: none;
+  z-index: 998;
 }
 
 .settings-open .app-container,
