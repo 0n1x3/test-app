@@ -50,11 +50,11 @@ html, body {
 
 /* Общие стили для заголовков страниц */
 .page-header {
-  padding-bottom: 8px;
+  padding-bottom: 4px;
   padding-left: var(--app-padding);
   padding-right: var(--app-padding);
   text-align: center;
-  margin-bottom: 4px;
+  margin-bottom: 0;
 }
 
 .page-header h1 {
@@ -110,27 +110,23 @@ html[data-platform="desktop"] {
   background: #2A2A2A !important;
 }
 
-/* Добавляем стили для размытия при открытом меню */
-.settings-open .page-wrapper,
-.settings-open .bottom-nav,
-.settings-open .page-header {
-  background: rgba(26, 26, 26, 0.8);
+/* Обновляем стили для размытия */
+.settings-open body {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.settings-open .app-container {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
 
+/* Убираем дублирующие стили */
 .app-container {
   width: 100%;
   height: 100%;
   position: relative;
   z-index: 1;
   overflow: hidden;
-}
-
-.settings-open .app-container {
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
 }
 
 /* Обновляем z-index структуру */
