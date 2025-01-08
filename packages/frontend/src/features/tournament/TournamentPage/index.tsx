@@ -1,11 +1,10 @@
 'use client';
 
 import { SafeArea } from '@/components/_layout/SafeArea';
-import { PageTransition } from '@/components/_layout/PageTransition';
 import { PageContainer } from '@/components/_layout/PageContainer';
+import { PageHeader } from '@/components/_layout/PageHeader';
 import { Icon } from '@iconify/react';
 import './style.css';
-import { PageHeader } from '@/components/_layout/PageHeader';
 
 interface Tournament {
   id: string;
@@ -78,48 +77,46 @@ export function TournamentPage() {
 
   return (
     <SafeArea>
-      <PageTransition>
-        <PageContainer>
-          <PageHeader title="Турниры" />
-          <div className="tournaments-page">
-            <div className="tournaments-list">
-              {tournaments.map(tournament => (
-                <div key={tournament.id} className="tournament-card">
-                  <div className="tournament-header">
-                    <div className="tournament-game">
-                      <Icon icon={tournament.gameIcon} className="game-icon" />
-                      <span>{tournament.game}</span>
-                    </div>
-                    <div className="tournament-time">{tournament.startTime}</div>
+      <PageContainer>
+        <PageHeader title="Турниры" />
+        <div className="tournaments-page">
+          <div className="tournaments-list">
+            {tournaments.map(tournament => (
+              <div key={tournament.id} className="tournament-card">
+                <div className="tournament-header">
+                  <div className="tournament-game">
+                    <Icon icon={tournament.gameIcon} className="game-icon" />
+                    <span>{tournament.game}</span>
                   </div>
-                  
-                  <div className="tournament-title">{tournament.title}</div>
-                  
-                  <div className="tournament-info">
-                    <div className="participants-info">
-                      <Icon icon="solar:users-group-rounded-linear" />
-                      <span>
-                        {tournament.participants.current}/{tournament.participants.max}
-                      </span>
-                    </div>
-                    
-                    <div className="prize-info">
-                      <Icon icon={tournament.prize.tokenIcon} className="token-icon" />
-                      <span className="prize-amount">
-                        {tournament.prize.amount} {tournament.prize.token}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <button className="join-button">
-                    Участвовать
-                  </button>
+                  <div className="tournament-time">{tournament.startTime}</div>
                 </div>
-              ))}
-            </div>
+                
+                <div className="tournament-title">{tournament.title}</div>
+                
+                <div className="tournament-info">
+                  <div className="participants-info">
+                    <Icon icon="solar:users-group-rounded-linear" />
+                    <span>
+                      {tournament.participants.current}/{tournament.participants.max}
+                    </span>
+                  </div>
+                  
+                  <div className="prize-info">
+                    <Icon icon={tournament.prize.tokenIcon} className="token-icon" />
+                    <span className="prize-amount">
+                      {tournament.prize.amount} {tournament.prize.token}
+                    </span>
+                  </div>
+                </div>
+                
+                <button className="join-button">
+                  Участвовать
+                </button>
+              </div>
+            ))}
           </div>
-        </PageContainer>
-      </PageTransition>
+        </div>
+      </PageContainer>
     </SafeArea>
   );
 } 

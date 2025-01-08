@@ -1,12 +1,10 @@
 'use client';
 
 import { SafeArea } from '@/components/_layout/SafeArea';
-import { PageTransition } from '@/components/_layout/PageTransition';
 import { PageContainer } from '@/components/_layout/PageContainer';
-import { Icon } from '@iconify/react';
-import { useState } from 'react';
-import './style.css';
 import { PageHeader } from '@/components/_layout/PageHeader';
+import { Icon } from '@iconify/react';
+import './style.css';
 
 interface Game {
   id: string;
@@ -16,7 +14,6 @@ interface Game {
 }
 
 export function HomePage() {
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   
   const games: Game[] = [
     {
@@ -48,28 +45,26 @@ export function HomePage() {
 
   return (
     <SafeArea>
-      <PageTransition>
-        <PageContainer>
-          <PageHeader title="Игры" />
-          <div className="games-page">
-            <div className="games-list">
-              {games.map(game => (
-                <div key={game.id} className="game-card">
-                  <div className="game-info">
-                    <Icon icon={game.icon} className="game-icon" />
-                    <div className="game-details">
-                      <div className="game-title">{game.title}</div>
-                    </div>
+      <PageContainer>
+        <PageHeader title="Игры" />
+        <div className="games-page">
+          <div className="games-list">
+            {games.map(game => (
+              <div key={game.id} className="game-card">
+                <div className="game-info">
+                  <Icon icon={game.icon} className="game-icon" />
+                  <div className="game-details">
+                    <div className="game-title">{game.title}</div>
                   </div>
-                  <button className="play-button">
-                    Играть
-                  </button>
                 </div>
-              ))}
-            </div>
+                <button className="play-button">
+                  Играть
+                </button>
+              </div>
+            ))}
           </div>
-        </PageContainer>
-      </PageTransition>
+        </div>
+      </PageContainer>
     </SafeArea>
   );
 } 
