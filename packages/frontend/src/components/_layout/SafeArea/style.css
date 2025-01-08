@@ -8,13 +8,6 @@
   right: 0;
   bottom: 0;
   background: var(--app-bg-color);
-  transition: backdrop-filter 0.2s;
-}
-
-.settings-open .safe-area {
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
 }
 
 .safe-area-content {

@@ -111,4 +111,36 @@ html[data-platform="desktop"] {
   background: rgba(26, 26, 26, 0.8);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+}
+
+.app-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+  transition: all 0.2s;
+}
+
+.settings-open .app-container {
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Обновляем z-index структуру */
+.settings-popup {
+  z-index: 1002;
+}
+
+.overlay {
+  z-index: 1001;
+}
+
+.page-header {
+  z-index: 1000;
+}
+
+.bottom-nav,
+.page-wrapper {
+  z-index: 1;
 } 

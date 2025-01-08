@@ -48,12 +48,14 @@ export default function RootLayout({
       </head>
       <body>
         <TonProvider>
-          <AnimatePresence mode="wait" initial={false} onExitComplete={() => window.scrollTo(0, 0)}>
-            <div key={pathname} style={{ width: '100%', height: '100%' }}>
-              {children}
-            </div>
-          </AnimatePresence>
-          <BottomNav />
+          <div className="app-container">
+            <AnimatePresence mode="wait" initial={false} onExitComplete={() => window.scrollTo(0, 0)}>
+              <div key={pathname} style={{ width: '100%', height: '100%' }}>
+                {children}
+              </div>
+            </AnimatePresence>
+            <BottomNav />
+          </div>
         </TonProvider>
       </body>
     </html>
