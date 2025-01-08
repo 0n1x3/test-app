@@ -4,29 +4,28 @@ FROM node:18-alpine
 # Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Копируем файлы pnpm
+# Копируем файлы package.json
 COPY package.json .
 COPY pnpm-lock.yaml .
 COPY pnpm-workspace.yaml .
-
-# Копируем package.json из shared и frontend
 COPY packages/shared/package.json ./packages/shared/package.json
 COPY packages/frontend/package.json ./packages/frontend/package.json
 
-# Устанавливаем pnpm и зависимости
-RUN npm install -g pnpm
+# Используем альтернативный способ установки pnpm
+RUN wget -qO /bin/pnpm "https://github.com/pnpm/pnpm/releases/latest/download/pnpm-linuxstatic-x64" && \
+    chmod +x /bin/pnpm
+
+# Или можно использовать npm с указанием registry
+# RUN npm install -g pnpm --registry=https://registry.npmjs.org
+
 RUN pnpm install --frozen-lockfile
 
-# Копируем исходный код shared и frontend
+# Копируем исходники
 COPY packages/shared ./packages/shared
 COPY packages/frontend ./packages/frontend
 
-# Собираем shared и frontend
-RUN pnpm --filter shared build
+# Собираем приложение
 RUN pnpm --filter frontend build
 
-# Указываем порт
-EXPOSE 3000
-
-# Запускаем frontend
+# Запускаем
 CMD ["pnpm", "--filter", "frontend", "start"]
