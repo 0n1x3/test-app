@@ -30,7 +30,7 @@
 
 .settings-popup {
   position: fixed;
-  top: calc(env(safe-area-inset-top) + 72px);
+  top: calc(env(safe-area-inset-top) + 92px);
   left: 50%;
   transform: translateX(-50%);
   width: min(300px, calc(100% - 32px));
@@ -110,4 +110,29 @@
   background: rgba(26, 26, 26, 0.8);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+}
+
+body.settings-open {
+  overflow: hidden;
+}
+
+body.settings-open::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.settings-open .app-container,
+.settings-open .page-wrapper,
+.settings-open .bottom-nav {
+  position: relative;
+  z-index: 1;
 } 

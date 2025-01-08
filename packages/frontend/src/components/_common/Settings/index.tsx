@@ -6,7 +6,6 @@ import './style.css';
 
 export function Settings() {
   const [isOpen, setIsOpen] = useState(false);
-  const [currentLang, setCurrentLang] = useState('ru');
 
   useEffect(() => {
     if (isOpen) {
