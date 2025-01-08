@@ -4,9 +4,7 @@
   left: 16px;
   right: 16px;
   height: 56px;
-  background: rgba(26, 26, 26, 0.8);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: #1A1A1A;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -14,6 +12,14 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   z-index: 100;
+  transition: backdrop-filter 0.2s;
+}
+
+/* Добавляем размытие только когда открыто меню настроек */
+.settings-open .bottom-nav {
+  background: rgba(26, 26, 26, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .nav-item {
@@ -45,4 +51,4 @@
 
 .nav-label {
   font-size: 12px;
-} 
+}

@@ -3,6 +3,13 @@
   height: 100%;
   position: relative;
   background: #000000;
+  transition: backdrop-filter 0.2s;
+}
+
+.settings-open .page-wrapper {
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .content-container {

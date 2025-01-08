@@ -3,7 +3,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px var(--app-padding);
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   position: sticky;
   top: 0;
   z-index: 10;
@@ -50,67 +50,6 @@
   opacity: 1;
 }
 
-/* Стилизация селекта языка */
-.language-select {
-  width: 100%;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: none;
-  border-radius: 8px;
-  color: white;
-  font-size: 14px;
-  appearance: none;
-  cursor: pointer;
-}
-
-/* Стили для мобильного селекта */
-@media (max-width: 768px) {
-  .language-select {
-    background: #1A1A1A;
-  }
-  
-  /* Стилизуем нативные опции на мобильных */
-  .language-select option {
-    padding: 12px;
-    background: #1A1A1A;
-    color: white;
-    font-size: 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  
-  /* Убираем стандартную стрелку и добавляем свою */
-  .settings-item:has(.language-select) {
-    position: relative;
-  }
-  
-  .settings-item:has(.language-select)::after {
-    content: '';
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 10px;
-    height: 10px;
-    border-right: 2px solid rgba(255, 255, 255, 0.5);
-    border-bottom: 2px solid rgba(255, 255, 255, 0.5);
-    transform: translateY(-50%) rotate(45deg);
-    pointer-events: none;
-  }
-} 
-
-.settings-popup {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  width: 300px;
-  background: #1A1A1A;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  z-index: 1001;
-}
-
 .overlay {
   position: fixed;
   top: 0;
@@ -121,4 +60,105 @@
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   z-index: 1000;
+}
+
+.settings-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  background: rgba(26, 26, 26, 0.8);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 1001;
+}
+
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.settings-header h2 {
+  font-size: 18px;
+  font-weight: 500;
+  color: #FFFFFF;
+}
+
+.close-button {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 24px;
+}
+
+.settings-content {
+  padding: 16px;
+}
+
+.settings-group {
+  margin-bottom: 24px;
+}
+
+.settings-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.settings-item.column {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.settings-label {
+  color: #808080;
+  font-size: 14px;
+}
+
+.language-buttons {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 8px;
+}
+
+.lang-button {
+  width: 100%;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: #808080;
+  font-size: 14px;
+  text-align: left;
+  transition: all 0.2s;
+}
+
+.lang-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.lang-button.active {
+  background: #2196F3;
+  color: white;
+  border-color: #2196F3;
+}
+
+.add-to-home {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  background: #2196F3;
+  border-radius: 12px;
+  color: white;
+  font-weight: 500;
 } 

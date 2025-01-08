@@ -1,7 +1,7 @@
 'use client';
 
 import { Icon } from '@iconify/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './style.css';
 
 interface PageHeaderProps {
@@ -10,6 +10,15 @@ interface PageHeaderProps {
 
 export function PageHeader({ title }: PageHeaderProps) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [currentLang, setCurrentLang] = useState('ru');
+
+  useEffect(() => {
+    if (isSettingsOpen) {
+      document.body.classList.add('settings-open');
+    } else {
+      document.body.classList.remove('settings-open');
+    }
+  }, [isSettingsOpen]);
 
   return (
     <div className="page-header">
@@ -52,7 +61,7 @@ export function PageHeader({ title }: PageHeaderProps) {
                   </label>
                 </div>
                 <div className="settings-item">
-                  <span>Вибрация</span>
+                  <span>Виброотклик</span>
                   <label className="switch">
                     <input type="checkbox" />
                     <span className="slider" />
@@ -61,20 +70,28 @@ export function PageHeader({ title }: PageHeaderProps) {
               </div>
 
               <div className="settings-group">
-                <div className="settings-item">
-                  <span>Тема</span>
-                  <label className="switch">
-                    <input type="checkbox" />
-                    <span className="slider" />
-                  </label>
-                </div>
-                <div className="settings-item">
-                  <span>Язык</span>
-                  <select className="language-select">
-                    <option value="ru">Русский</option>
-                    <option value="en">English</option>
-                    <option value="zh">中文</option>
-                  </select>
+                <div className="settings-item column">
+                  <span className="settings-label">Язык</span>
+                  <div className="language-buttons">
+                    <button 
+                      className={`lang-button ${currentLang === 'ru' ? 'active' : ''}`}
+                      onClick={() => setCurrentLang('ru')}
+                    >
+                      Русский
+                    </button>
+                    <button 
+                      className={`lang-button ${currentLang === 'en' ? 'active' : ''}`}
+                      onClick={() => setCurrentLang('en')}
+                    >
+                      English
+                    </button>
+                    <button 
+                      className={`lang-button ${currentLang === 'zh' ? 'active' : ''}`}
+                      onClick={() => setCurrentLang('zh')}
+                    >
+                      中文
+                    </button>
+                  </div>
                 </div>
               </div>
 
