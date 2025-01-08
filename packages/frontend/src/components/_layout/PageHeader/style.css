@@ -2,7 +2,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px var(--app-padding);
+  padding: var(--header-padding) var(--app-padding) 16px;
   margin-bottom: 8px;
   position: sticky;
   top: 0;
@@ -10,20 +10,6 @@
   background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-}
-
-/* На мобильных */
-@media (max-width: 768px) {
-  .page-header {
-    padding-top: calc(env(safe-area-inset-top) + 72px);
-  }
-}
-
-/* На десктопе */
-@media (min-width: 769px) {
-  .page-header {
-    padding-top: 16px;
-  }
 }
 
 .page-header h1 {
