@@ -2,28 +2,26 @@
   width: 100%;
   height: 100%;
   position: relative;
-  background: #000000;
-  transition: backdrop-filter 0.2s;
+  z-index: 1;
 }
 
-.settings-open .page-wrapper {
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-}
-
-.content-container {
+.page-content {
   width: 100%;
-  height: 100%;
+  max-width: var(--app-max-width);
   margin: 0 auto;
-  max-width: var(--app-max-width, 390px);
-  display: flex;
-  flex-direction: column;
+  padding: 0 var(--app-padding);
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeIn 0.3s ease forwards;
 }
 
-.page-container {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
