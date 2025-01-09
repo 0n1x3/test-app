@@ -87,6 +87,8 @@ jobs:
             echo '    restart: always' >> docker-compose.yml
             echo '    ports:' >> docker-compose.yml
             echo '      - "3005:3005"' >> docker-compose.yml
+            echo '    environment:' >> docker-compose.yml
+            echo '      - MONGODB_URI=${{ secrets.MONGODB_URI }}' >> docker-compose.yml
             echo '' >> docker-compose.yml
             echo '  frontend:' >> docker-compose.yml
             echo '    image: 0n1x3/test-app-frontend:latest' >> docker-compose.yml
