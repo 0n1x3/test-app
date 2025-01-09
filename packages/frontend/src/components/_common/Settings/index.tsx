@@ -18,13 +18,19 @@ export function Settings() {
     };
   }, []);
 
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      setShowSettings(false);
+    }
+  };
+
   const handleLanguageChange = (lang: Language) => {
     setLanguage(lang);
     localStorage.setItem('language', lang);
   };
 
   return (
-    <div className="settings-modal">
+    <div className="settings-modal" onClick={handleBackdropClick}>
       <div className="settings-popup">
         <div className="settings-profile">
           <img 
@@ -36,6 +42,9 @@ export function Settings() {
             <div className="profile-name">Евгений TIME</div>
             <div className="profile-id">ID: 1001054</div>
           </div>
+          <button className="close-button" onClick={() => setShowSettings(false)}>
+            <Icon icon="solar:close-circle-linear" />
+          </button>
         </div>
 
         <div className="settings-divider" />
