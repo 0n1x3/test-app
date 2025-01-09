@@ -130,11 +130,11 @@ html[data-platform="desktop"] {
   position: fixed !important;
   inset: 0 !important;
   display: flex !important;
-  align-items: flex-start !important;
+  align-items: center !important;
   justify-content: center !important;
   z-index: 9999;
-  padding-top: 0 !important;
-  margin-top: calc(env(safe-area-inset-top) + var(--header-height, 72px)) !important;
+  padding: 0 !important;
+  margin: 0 !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
   width: 100% !important;
@@ -144,18 +144,19 @@ html[data-platform="desktop"] {
   transition: backdrop-filter 0.2s ease-out, background-color 0.2s ease-out;
 }
 
-/* Добавляем стили для контента при открытом модальном окне */
-body.settings-open .app-container {
+/* Обновляем стили для контента при открытом модальном окне */
+body.settings-open .app-container,
+body.settings-open .bottom-nav {
   filter: blur(8px);
   transition: filter 0.2s ease-out;
 }
 
-/* Убираем размытие с самого модального окна */
+/* Обновляем стили для попапа */
 .settings-popup {
   filter: none !important;
   position: relative !important;
   width: min(90%, 360px) !important;
-  margin: 48px auto 0 !important;
+  margin: 0 auto !important;
   background-color: var(--surface-2, #1A1A1A);
   border-radius: 16px;
   padding: 24px;
@@ -163,6 +164,15 @@ body.settings-open .app-container {
   overflow-y: auto;
   left: 0 !important;
   right: 0 !important;
+}
+
+/* Обновляем стили для разных платформ */
+html[data-platform="mobile"] .settings-popup {
+  margin-top: calc(env(safe-area-inset-top) + 48px) !important;
+}
+
+html[data-platform="desktop"] .settings-popup {
+  margin: 0 auto !important;
 }
 
 /* Определяем высоту шапки для разных страниц */
@@ -205,4 +215,22 @@ body.settings-open .app-container {
     -webkit-backdrop-filter: blur(8px);
     background-color: rgba(0, 0, 0, 0.6);
   }
+}
+
+/* Обновляем стили для нижнего меню */
+.bottom-nav {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  height: 56px;
+  background: #1A1A1A;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding-bottom: env(safe-area-inset-bottom);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  z-index: 1;
+  transition: filter 0.2s ease-out;
 } 
