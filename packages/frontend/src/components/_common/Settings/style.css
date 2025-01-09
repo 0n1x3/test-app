@@ -18,31 +18,10 @@
 }
 
 .settings-modal {
-  position: fixed;
-  top: env(safe-area-inset-top);
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  background-color: rgba(0, 0, 0, 0.75);
-  z-index: 9999;
-  isolation: isolate;
   animation: fadeIn 0.2s ease-out;
-  padding-top: 72px;
 }
 
 .settings-popup {
-  position: relative;
-  width: min(90%, 360px);
-  margin-top: 48px;
-  background-color: var(--surface-2, #1A1A1A);
-  border-radius: 16px;
-  padding: 24px;
-  max-height: calc(100vh - 200px);
-  overflow-y: auto;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.1);
   animation: slideUp 0.3s ease-out;
 }

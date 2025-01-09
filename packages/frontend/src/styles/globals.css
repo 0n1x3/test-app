@@ -140,4 +140,41 @@ html[data-platform="desktop"] {
 [data-route="/friends"] .settings-modal,
 [data-route="/wallet"] .settings-modal {
   --settings-top-offset: 100px;
+}
+
+/* Базовые стили модального окна */
+.settings-modal {
+  position: fixed !important; /* Принудительно фиксируем */
+  inset: 0 !important; /* Растягиваем на весь экран */
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: 9999;
+  padding-top: 0 !important; /* Сбрасываем padding */
+  margin-top: calc(env(safe-area-inset-top) + var(--header-height, 72px)) !important;
+}
+
+/* Стили для контейнера настроек */
+.settings-popup {
+  position: relative !important;
+  width: min(90%, 360px) !important;
+  margin-top: 48px !important;
+  background-color: var(--surface-2, #1A1A1A);
+  border-radius: 16px;
+  padding: 24px;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+
+/* Определяем высоту шапки для разных страниц */
+[data-route="/"],
+[data-route="/home"] {
+  --header-height: 120px;
+}
+
+[data-route="/income"],
+[data-route="/friends"],
+[data-route="/wallet"] {
+  --header-height: 72px;
 } 

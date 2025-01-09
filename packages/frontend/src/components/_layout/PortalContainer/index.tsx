@@ -10,21 +10,21 @@ export function PortalContainer() {
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
+    // Сначала монтируем
     setMounted(true);
-    // Добавляем небольшую задержку для гарантии загрузки стилей
-    const timer = setTimeout(() => {
+    
+    // Затем ждем следующего тика для применения стилей
+    requestAnimationFrame(() => {
       setIsHydrated(true);
-    }, 100);
-
-    return () => clearTimeout(timer);
+    });
   }, []);
 
-  // Не рендерим ничего до полной гидратации
+  // Не рендерим до полной гидратации
   if (!mounted || !isHydrated) return null;
 
   return (
-    <>
+    <div className="portal-container">
       {showSettings && <Settings />}
-    </>
+    </div>
   );
 } 
