@@ -1,15 +1,55 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Icon } from '@iconify/react';
 import { useTranslation } from '@/providers/i18n';
 import { useModal } from '@/providers/modal';
 import type { Language } from '@/types/i18n';
+import type { TelegramWebApp } from '@/types/telegram';
 import './style.css';
 
 export function Settings() {
   const { setShowSettings } = useModal();
   const { t, language, setLanguage } = useTranslation();
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    const initUser = async () => {
+      try {
+        const webApp = window.Telegram?.WebApp;
+        if (!webApp) return;
+
+        const initDataStr = (webApp as any).initData;
+        const userData = webApp.initDataUnsafe.user;
+
+        if (!userData) {
+          console.error('No user data available');
+          return;
+        }
+
+        console.log('Telegram Data:', initDataStr);
+        
+        const response = await fetch('https://test.timecommunity.xyz/api/users/init', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            initData: initDataStr,
+            user: userData
+          }),
+        });
+        
+        const data = await response.json();
+        console.log('Response:', data);
+        setUserData(data);
+      } catch (error) {
+        console.error('Error initializing user:', error);
+      }
+    };
+
+    initUser();
+  }, []);
 
   useEffect(() => {
     document.body.classList.add('settings-open');

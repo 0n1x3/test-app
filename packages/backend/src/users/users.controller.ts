@@ -6,6 +6,12 @@ import { TelegramGuard } from '../guards/telegram.guard';
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
+  @Get('test')
+  async testConnection() {
+    console.log('MongoDB URI:', process.env.MONGODB_URI);
+    return { status: 'ok', message: 'API is working' };
+  }
+
   @Post('init')
   @UseGuards(TelegramGuard)
   async initUser(@Body() data: { 
@@ -17,19 +23,11 @@ export class UsersController {
       photo_url?: string;
     }
   }) {
+    console.log('Received user data:', data);
     return this.usersService.findOrCreate({
       id: data.user.id,
       username: data.user.username || data.user.first_name,
       photoUrl: data.user.photo_url
-    });
-  }
-
-  @Get('test')
-  async testUser() {
-    return this.usersService.findOrCreate({
-      id: 12345,
-      username: "test_user",
-      photoUrl: "https://example.com/photo.jpg"
     });
   }
 }
