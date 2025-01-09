@@ -59,6 +59,7 @@ export default function RootLayout({
             </div>
           </TonProvider>
         </I18nProvider>
+        <div id="portal-root" />
       </body>
     </html>
   );

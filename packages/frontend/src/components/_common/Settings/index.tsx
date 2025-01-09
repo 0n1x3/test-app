@@ -4,13 +4,14 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Icon } from '@iconify/react';
 import { useTranslation } from '@/providers/i18n';
+import { usePortal } from '@/hooks/usePortal';
 import type { Language } from '@/types/i18n';
 import './style.css';
 
 export function Settings() {
   const [isOpen, setIsOpen] = useState(false);
   const { t, language, setLanguage } = useTranslation();
-  const portalRoot = typeof window !== 'undefined' ? document.getElementById('portal-root') : null;
+  const portalRoot = usePortal();
 
   useEffect(() => {
     if (isOpen) {
