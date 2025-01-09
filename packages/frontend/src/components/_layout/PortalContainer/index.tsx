@@ -7,12 +7,20 @@ import { useModal } from '@/providers/modal';
 export function PortalContainer() {
   const { showSettings } = useModal();
   const [mounted, setMounted] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    // Добавляем небольшую задержку для гарантии загрузки стилей
+    const timer = setTimeout(() => {
+      setIsHydrated(true);
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, []);
 
-  if (!mounted) return null;
+  // Не рендерим ничего до полной гидратации
+  if (!mounted || !isHydrated) return null;
 
   return (
     <>
