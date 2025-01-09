@@ -65,7 +65,7 @@ html, body {
 
 /* Отступы для разных платформ */
 html[data-platform="mobile"] .page-header {
-  padding-top: calc(env(safe-area-inset-top) + 72px);
+  padding-top: calc(env(safe-area-inset-top) + 82px);
 }
 
 html[data-platform="desktop"] .page-header {
@@ -74,7 +74,7 @@ html[data-platform="desktop"] .page-header {
 
 /* Обновляем отступы для разных платформ */
 html[data-platform="mobile"][data-fullscreen="true"] {
-  --header-padding: 16px;
+  --header-padding: 26px;
 }
 
 html[data-platform="mobile"][data-fullscreen="false"],
