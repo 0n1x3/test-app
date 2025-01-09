@@ -56,7 +56,20 @@
           "selectMethod": "Выберите способ вывода",
           "minAmount": "Минимальная сумма"
         }
-      }
+      },
+      "totalBalance": "Общий баланс",
+      "walletAddress": "Адрес кошелька",
+      "scanToDeposit": "Отсканируйте для пополнения",
+      "qrCode": "QR-код",
+      "address": "Адрес",
+      "amount": "Сумма",
+      "enterAddress": "Введите адрес",
+      "enterAmount": "Введите сумму",
+      "paste": "Вставить",
+      "max": "Макс",
+      "minimum": "Минимум",
+      "available": "Доступно",
+      "next": "Далее"
     }
   },
   "settings": {

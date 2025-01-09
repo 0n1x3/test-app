@@ -1,5 +1,8 @@
 'use client';
 
+import { useTranslation } from '@/providers/i18n';
+import './style.css';
+
 interface TokenBalance {
   symbol: string;
   amount: string;
@@ -8,6 +11,8 @@ interface TokenBalance {
 }
 
 export function Balance() {
+  const { t } = useTranslation();
+  
   const tokens: TokenBalance[] = [
     { symbol: 'TON', amount: '0.00', usdPrice: 0, logo: '/assets/tokens/ton.png' },
     { symbol: 'USDT', amount: '0.00', usdPrice: 0, logo: '/assets/tokens/usdt.png' },
@@ -17,75 +22,34 @@ export function Balance() {
   const totalUsdBalance = tokens.reduce((acc, token) => acc + token.usdPrice, 0);
 
   return (
-    <div style={{
-      background: '#1A1A1A',
-      borderRadius: '12px',
-      padding: '12px',
-      marginBottom: '16px',
-    }}>
-      {/* Общий баланс */}
-      <div style={{
-        marginBottom: '12px',
-        paddingBottom: '12px',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'flex-end'
-      }}>
-        <div style={{ fontSize: '13px', color: '#808080' }}>
-          Total Balance
+    <div className="balance-card">
+      <div className="balance-header">
+        <div className="balance-title">
+          {t('wallet.totalBalance')}
         </div>
-        <div style={{ 
-          fontSize: '24px', 
-          fontWeight: 600, 
-          color: '#FFFFFF',
-          letterSpacing: '-0.5px',
-          display: 'flex',
-          alignItems: 'baseline',
-          gap: '4px'
-        }}>
+        <div className="balance-total">
           ${totalUsdBalance.toFixed(2)}
-          <span style={{ fontSize: '16px', color: '#808080' }}>USD</span>
+          <span className="currency">USD</span>
         </div>
       </div>
       
-      {/* Список токенов */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      <div className="tokens-list">
         {tokens.map((token) => (
-          <div key={token.symbol} style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '2px'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div key={token.symbol} className="token-item">
+            <div className="token-info">
               <img 
                 src={token.logo} 
                 alt={token.symbol}
-                style={{
-                  width: '36px',
-                  height: '36px',
-                  minWidth: '36px',
-                  minHeight: '36px',
-                  borderRadius: '50%',
-                  objectFit: 'cover'
-                }}
+                className="token-logo"
               />
-              <div style={{ 
-                fontSize: '15px', 
-                fontWeight: 500, 
-                color: '#FFFFFF',
-                letterSpacing: '-0.2px' 
-              }}>
-                {token.amount} {token.symbol}
+              <div className="token-details">
+                <div className="token-amount">
+                  {token.amount} {token.symbol}
+                </div>
               </div>
             </div>
             
-            <div style={{ 
-              fontSize: '15px', 
-              color: '#808080',
-              letterSpacing: '-0.2px'
-            }}>
+            <div className="token-price">
               ${token.usdPrice.toFixed(2)}
             </div>
           </div>

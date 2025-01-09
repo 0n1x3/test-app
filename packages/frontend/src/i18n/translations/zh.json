@@ -56,7 +56,20 @@
           "selectMethod": "选择提现方式",
           "minAmount": "最小金额"
         }
-      }
+      },
+      "totalBalance": "总余额",
+      "walletAddress": "钱包地址",
+      "scanToDeposit": "扫描充值",
+      "qrCode": "二维码",
+      "address": "地址",
+      "amount": "金额",
+      "enterAddress": "输入地址",
+      "enterAmount": "输入金额",
+      "paste": "粘贴",
+      "max": "最大",
+      "minimum": "最小",
+      "available": "可用",
+      "next": "下一步"
     }
   },
   "settings": {

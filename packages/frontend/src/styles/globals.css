@@ -135,13 +135,18 @@ html[data-platform="desktop"] {
   z-index: 9999;
   padding: 0 !important;
   margin: 0 !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
   width: 100% !important;
+}
+
+/* Добавляем отдельный фоновый слой */
+.settings-modal::before {
+  content: '';
+  position: fixed;
+  inset: 0;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   background-color: rgba(0, 0, 0, 0.6);
-  transition: all 0.2s ease-out;
+  z-index: -1;
 }
 
 /* Обновляем стили для контента при открытом модальном окне */
@@ -238,5 +243,8 @@ html[data-platform="desktop"] .settings-popup {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   z-index: 2;
-  transition: filter 0.2s ease-out, opacity 0.2s ease-out;
+}
+
+body.settings-open .bottom-nav {
+  opacity: 0.8;
 } 

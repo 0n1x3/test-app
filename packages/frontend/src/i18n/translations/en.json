@@ -56,7 +56,20 @@
           "selectMethod": "Select withdraw method",
           "minAmount": "Minimum amount"
         }
-      }
+      },
+      "totalBalance": "Total Balance",
+      "walletAddress": "Wallet Address",
+      "scanToDeposit": "Scan to Deposit",
+      "qrCode": "QR Code",
+      "address": "Address",
+      "amount": "Amount",
+      "enterAddress": "Enter address",
+      "enterAmount": "Enter amount",
+      "paste": "Paste",
+      "max": "Max",
+      "minimum": "Minimum",
+      "available": "Available",
+      "next": "Next"
     }
   },
   "settings": {
