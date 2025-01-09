@@ -143,9 +143,9 @@ html[data-platform="desktop"] {
   content: '';
   position: fixed;
   inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  background-color: rgba(0, 0, 0, 0.6);
   z-index: -1;
 }
 
@@ -243,8 +243,12 @@ html[data-platform="desktop"] .settings-popup {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   z-index: 2;
+  transition: opacity 0.2s ease-out;
 }
 
+/* Стили для нижнего меню при открытом модальном окне */
 body.settings-open .bottom-nav {
-  opacity: 0.8;
+  opacity: 0.6;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 } 

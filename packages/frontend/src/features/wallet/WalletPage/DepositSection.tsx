@@ -12,7 +12,7 @@ export function DepositSection() {
   return (
     <div className="deposit-section">
       <div className="address-box">
-        <div className="label">{t('wallet.walletAddress')}</div>
+        <div className="label">{t('pages.wallet.walletAddress')}</div>
         <div className="value-container">
           <span className="address-value">{walletAddress}</span>
           <button 
@@ -25,9 +25,9 @@ export function DepositSection() {
       </div>
 
       <div className="qr-container">
-        <div className="label">{t('wallet.scanToDeposit')}</div>
+        <div className="label">{t('pages.wallet.scanToDeposit')}</div>
         <div className="qr-box">
-          <span>{t('wallet.qrCode')}</span>
+          <span>{t('pages.wallet.qrCode')}</span>
         </div>
       </div>
     </div>

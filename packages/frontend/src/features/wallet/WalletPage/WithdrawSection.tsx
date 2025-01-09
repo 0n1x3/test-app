@@ -18,16 +18,16 @@ export function WithdrawSection() {
   return (
     <div className="withdraw-section">
       <div className="form-group">
-        <div className="label">{t('wallet.address')}</div>
+        <div className="label">{t('pages.wallet.address')}</div>
         <div className="input-container">
           <input
             type="text"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-            placeholder={t('wallet.enterAddress')}
+            placeholder={t('pages.wallet.enterAddress')}
             className="input-field"
           />
-          <button className="paste-button">{t('wallet.paste')}</button>
+          <button className="paste-button">{t('pages.wallet.paste')}</button>
         </div>
       </div>
 

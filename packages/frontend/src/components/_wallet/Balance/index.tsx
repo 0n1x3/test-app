@@ -25,7 +25,7 @@ export function Balance() {
     <div className="balance-card">
       <div className="balance-header">
         <div className="balance-title">
-          {t('wallet.totalBalance')}
+          {t('pages.wallet.totalBalance')}
         </div>
         <div className="balance-total">
           ${totalUsdBalance.toFixed(2)}

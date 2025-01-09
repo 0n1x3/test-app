@@ -2,40 +2,49 @@
   background: #1A1A1A;
   border-radius: 12px;
   padding: 16px;
+  margin-bottom: 16px;
 }
 
-/* Стили для общего баланса */
 .balance-header {
-  margin-bottom: 16px;
-  padding-bottom: 16px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
 }
 
 .balance-title {
   font-size: 13px;
   color: #808080;
-  margin-bottom: 4px;
 }
 
 .balance-total {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 600;
   color: #FFFFFF;
   letter-spacing: -0.5px;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
 }
 
-/* Стили для списка токенов */
+.balance-total .currency {
+  font-size: 16px;
+  color: #808080;
+}
+
 .tokens-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
 }
 
 .token-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 4px;
+  padding: 2px;
 }
 
 .token-info {
@@ -44,10 +53,13 @@
   gap: 10px;
 }
 
-.token-details {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+.token-logo {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .token-amount {
@@ -58,8 +70,9 @@
 }
 
 .token-price {
-  font-size: 13px;
+  font-size: 15px;
   color: #808080;
+  letter-spacing: -0.2px;
 }
 
 /* Стили для кнопки подключения */
