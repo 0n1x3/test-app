@@ -18,6 +18,12 @@ export default function RootLayout({
   const pathname = usePathname();
 
   useEffect(() => {
+    if (!document.getElementById('portal-root')) {
+      const portalRoot = document.createElement('div');
+      portalRoot.id = 'portal-root';
+      document.body.appendChild(portalRoot);
+    }
+    
     const tg = window.Telegram?.WebApp;
     if (tg) {
       setupViewport();

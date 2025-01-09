@@ -10,6 +10,7 @@ import './style.css';
 export function Settings() {
   const [isOpen, setIsOpen] = useState(false);
   const { t, language, setLanguage } = useTranslation();
+  const portalRoot = typeof window !== 'undefined' ? document.getElementById('portal-root') : null;
 
   useEffect(() => {
     if (isOpen) {
@@ -34,7 +35,7 @@ export function Settings() {
         <Icon icon="solar:settings-linear" />
       </button>
 
-      {isOpen && createPortal(
+      {isOpen && portalRoot && createPortal(
         <div className="settings-modal">
           <div className="settings-popup">
             <div className="settings-header">
@@ -102,7 +103,7 @@ export function Settings() {
             </div>
           </div>
         </div>,
-        document.getElementById('portal-root') || document.body
+        portalRoot
       )}
     </>
   );
