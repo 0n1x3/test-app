@@ -9,6 +9,8 @@ import { TonProvider } from '@/providers/ton';
 import { setupViewport } from '@/utils/viewport';
 import { BottomNav } from '@/components/_layout/BottomNav';
 import { I18nProvider } from '@/providers/i18n';
+import { ModalProvider } from '@/providers/modal';
+import { PortalContainer } from '@/components/_layout/PortalContainer';
 
 export default function RootLayout({
   children,
@@ -51,12 +53,15 @@ export default function RootLayout({
       <body>
         <I18nProvider>
           <TonProvider>
-            <div className="app-container">
-              <div key={pathname} style={{ width: '100%', height: '100%' }}>
-                {children}
+            <ModalProvider>
+              <div className="app-container">
+                <div key={pathname} style={{ width: '100%', height: '100%' }}>
+                  {children}
+                </div>
+                <BottomNav />
               </div>
-              <BottomNav />
-            </div>
+              <PortalContainer />
+            </ModalProvider>
           </TonProvider>
         </I18nProvider>
         <div id="portal-root" />

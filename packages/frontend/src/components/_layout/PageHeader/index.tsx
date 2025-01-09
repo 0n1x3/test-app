@@ -1,6 +1,6 @@
 'use client';
 
-import { Settings } from '@/components/_common/Settings';
+import { SettingsButton } from '@/components/_common/SettingsButton';
 import './style.css';
 
 interface PageHeaderProps {
@@ -11,7 +11,7 @@ export function PageHeader({ title }: PageHeaderProps) {
   return (
     <div className="page-header">
       <h1>{title}</h1>
-      <Settings />
+      <SettingsButton />
     </div>
   );
 } 
