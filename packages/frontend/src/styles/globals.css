@@ -54,7 +54,7 @@ html, body {
   padding-left: var(--app-padding);
   padding-right: var(--app-padding);
   text-align: center;
-  margin-bottom: 0;
+  margin-bottom: 5px;
 }
 
 .page-header h1 {
@@ -65,7 +65,7 @@ html, body {
 
 /* Отступы для разных платформ */
 html[data-platform="mobile"] .page-header {
-  padding-top: calc(env(safe-area-inset-top) + 72px);
+  padding-top: calc(env(safe-area-inset-top) + 82px);
 }
 
 html[data-platform="desktop"] .page-header {
@@ -136,9 +136,10 @@ html[data-platform="desktop"] {
   padding: 0 !important;
   margin: 0 !important;
   width: 100% !important;
+  pointer-events: none;
 }
 
-/* Добавляем отдельный фоновый слой */
+/* Обновляем фоновый слой */
 .settings-modal::before {
   content: '';
   position: fixed;
@@ -147,23 +148,23 @@ html[data-platform="desktop"] {
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: -1;
+  pointer-events: auto;
 }
 
 /* Обновляем стили для контента при открытом модальном окне */
 body.settings-open .app-container {
   filter: blur(8px);
-  transition: filter 0.2s ease-out;
 }
 
 /* Отдельные стили для нижнего меню при открытом модальном окне */
 body.settings-open .bottom-nav {
-  filter: blur(8px);
   opacity: 0.6;
-  transition: filter 0.2s ease-out, opacity 0.2s ease-out;
+  filter: none;
 }
 
 /* Обновляем стили для попапа */
 .settings-popup {
+  pointer-events: auto;
   filter: none !important;
   position: relative !important;
   width: min(90%, 360px) !important;
@@ -246,9 +247,17 @@ html[data-platform="desktop"] .settings-popup {
   transition: opacity 0.2s ease-out;
 }
 
-/* Стили для нижнего меню при открытом модальном окне */
-body.settings-open .bottom-nav {
-  opacity: 0.6;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+/* Обновляем отступы для контента */
+.app-container {
+  padding-top: 5px;
+}
+
+/* Обновляем отступы для разных платформ */
+html[data-platform="mobile"][data-fullscreen="true"] {
+  --header-padding: 26px;
+}
+
+html[data-platform="mobile"][data-fullscreen="false"],
+html[data-platform="desktop"] {
+  --header-padding: 16px;
 } 
