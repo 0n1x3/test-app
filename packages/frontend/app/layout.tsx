@@ -50,7 +50,7 @@ export default function RootLayout({
           strategy="beforeInteractive"
         />
       </head>
-      <body>
+      <body data-route={pathname}>
         <I18nProvider>
           <TonProvider>
             <ModalProvider>

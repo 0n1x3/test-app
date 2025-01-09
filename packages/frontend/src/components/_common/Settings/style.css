@@ -24,12 +24,13 @@
   right: 0;
   bottom: 0;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.75);
   z-index: 9999;
   isolation: isolate;
   animation: fadeIn 0.2s ease-out;
+  padding-top: calc(env(safe-area-inset-top) + 120px);
 }
 
 .settings-popup {
@@ -38,7 +39,7 @@
   background-color: var(--surface-2, #1A1A1A);
   border-radius: 16px;
   padding: 24px;
-  max-height: 85vh;
+  max-height: calc(85vh - 120px);
   overflow-y: auto;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -146,11 +147,29 @@ body.settings-open {
 
 @keyframes slideUp {
   from {
-    transform: translateY(20px);
+    transform: translateY(40px);
     opacity: 0;
   }
   to {
     transform: translateY(0);
     opacity: 1;
   }
+}
+
+@media screen and (max-height: 600px) {
+  .settings-modal {
+    padding-top: calc(env(safe-area-inset-top) + 80px);
+  }
+  
+  .settings-popup {
+    max-height: calc(90vh - 80px);
+  }
+}
+
+html[data-platform="mobile"] .settings-modal {
+  padding-top: calc(env(safe-area-inset-top) + 120px);
+}
+
+html[data-platform="desktop"] .settings-modal {
+  padding-top: 120px;
 } 

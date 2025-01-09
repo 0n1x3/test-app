@@ -123,4 +123,21 @@ html[data-platform="desktop"] {
 
 #portal-root > * {
   pointer-events: auto;
+}
+
+/* Глобальные стили для модального окна */
+.settings-modal {
+  --settings-top-offset: 120px;
+}
+
+/* Стили для разных состояний приложения */
+[data-route="/"] .settings-modal,
+[data-route="/home"] .settings-modal {
+  --settings-top-offset: 120px;
+}
+
+[data-route="/income"] .settings-modal,
+[data-route="/friends"] .settings-modal,
+[data-route="/wallet"] .settings-modal {
+  --settings-top-offset: 100px;
 } 
