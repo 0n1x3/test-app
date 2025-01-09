@@ -10,6 +10,7 @@ import './style.css';
 interface Friend {
   id: string;
   name: string;
+  isDefaultAvatar?: boolean;
   avatar: string;
   earnings: {
     ton: number;
@@ -26,18 +27,21 @@ export function FriendsPage() {
       id: '1',
       name: 'TIME',
       avatar: '/assets/tokens/time.png',
+      isDefaultAvatar: false,
       earnings: { ton: 1.05, usdt: 2.34, time: 1.17 }
     },
     {
       id: '2',
       name: 'Sleepton',
       avatar: '/assets/avatars/default.png',
+      isDefaultAvatar: true,
       earnings: { ton: 0.51, usdt: 0.89, time: 0.32 }
     },
     {
       id: '3',
       name: 'vlad.fura',
       avatar: '/assets/avatars/default.png',
+      isDefaultAvatar: true,
       earnings: { ton: 0.12, usdt: 0.45, time: 0.28 }
     }
   ];
@@ -84,7 +88,20 @@ export function FriendsPage() {
               {friends.map(friend => (
                 <div key={friend.id} className="friend-item">
                   <div className="friend-info">
-                    <img src={friend.avatar} alt={friend.name} className="friend-avatar" />
+                    {friend.isDefaultAvatar ? (
+                      <div className="friend-avatar default">
+                        <Icon 
+                          icon="solar:user-circle-linear" 
+                          className="avatar-icon"
+                        />
+                      </div>
+                    ) : (
+                      <img 
+                        src={friend.avatar} 
+                        alt={friend.name} 
+                        className="friend-avatar" 
+                      />
+                    )}
                     <span className="friend-name">{friend.name}</span>
                   </div>
                   <div className="friend-earnings">

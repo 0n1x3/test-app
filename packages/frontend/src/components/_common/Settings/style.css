@@ -226,8 +226,17 @@ html[data-platform="desktop"] .settings-modal {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
   border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.avatar-icon {
+  width: 32px;
+  height: 32px;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .profile-info {

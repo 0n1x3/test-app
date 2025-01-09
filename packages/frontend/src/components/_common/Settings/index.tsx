@@ -33,11 +33,12 @@ export function Settings() {
     <div className="settings-modal" onClick={handleBackdropClick}>
       <div className="settings-popup">
         <div className="settings-profile">
-          <img 
-            src="/assets/avatar-placeholder.png" 
-            alt="Profile" 
-            className="profile-avatar"
-          />
+          <div className="profile-avatar">
+            <Icon 
+              icon="solar:user-circle-linear" 
+              className="avatar-icon"
+            />
+          </div>
           <div className="profile-info">
             <div className="profile-name">Евгений TIME</div>
             <div className="profile-id">ID: 1001054</div>
