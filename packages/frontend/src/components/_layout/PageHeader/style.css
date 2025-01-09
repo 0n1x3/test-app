@@ -2,8 +2,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--header-padding) var(--app-padding) 16px;
-  margin-bottom: 8px;
+  padding: var(--header-padding) var(--app-padding) 0;
+  margin-bottom: 0;
   position: sticky;
   top: 0;
   z-index: 10;

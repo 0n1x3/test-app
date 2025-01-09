@@ -137,6 +137,7 @@ html[data-platform="desktop"] {
   margin: 0 !important;
   width: 100% !important;
   pointer-events: none;
+  transform: translateZ(0);
 }
 
 /* Обновляем фоновый слой */
@@ -149,6 +150,7 @@ html[data-platform="desktop"] {
   -webkit-backdrop-filter: blur(8px);
   z-index: -1;
   pointer-events: auto;
+  transform: translateZ(0);
 }
 
 /* Обновляем стили для контента при открытом модальном окне */
@@ -159,9 +161,7 @@ body.settings-open .app-container {
 /* Отдельные стили для нижнего меню при открытом модальном окне */
 body.settings-open .bottom-nav {
   opacity: 0.6;
-  filter: none;
-  visibility: visible !important;
-  pointer-events: none;
+  transform: translateZ(0);
 }
 
 /* Обновляем стили для попапа */
@@ -247,8 +247,9 @@ html[data-platform="desktop"] .settings-popup {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   z-index: 99;
-  transition: opacity 0.3s ease;
-  will-change: opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000;
 }
 
 /* Обновляем отступы для контента */
