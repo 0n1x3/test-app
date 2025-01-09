@@ -127,7 +127,7 @@ body.settings-open {
 
 @keyframes slideUp {
   from {
-    transform: translateY(40px);
+    transform: translateY(60px);
     opacity: 0;
   }
   to {
@@ -194,4 +194,59 @@ html[data-platform="desktop"] .settings-modal {
 
 .settings-item .switch input:checked + .slider:before {
   transform: translateX(20px);
+}
+
+.settings-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.profile-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.profile-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-id {
+  font-size: 13px;
+  color: #808080;
+}
+
+.settings-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 0 -24px 16px;
+}
+
+@media (min-width: 768px) {
+  .settings-popup {
+    max-height: calc(100vh - 240px);
+  }
+
+  .settings-profile {
+    margin: -8px -8px 16px;
+    border-radius: 8px;
+  }
 } 

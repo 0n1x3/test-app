@@ -26,12 +26,19 @@ export function Settings() {
   return (
     <div className="settings-modal">
       <div className="settings-popup">
-        <div className="settings-header">
-          <h2>{t('settings.title')}</h2>
-          <button className="close-button" onClick={() => setShowSettings(false)}>
-            <Icon icon="solar:close-circle-linear" />
-          </button>
+        <div className="settings-profile">
+          <img 
+            src="/assets/avatar-placeholder.png" 
+            alt="Profile" 
+            className="profile-avatar"
+          />
+          <div className="profile-info">
+            <div className="profile-name">Евгений TIME</div>
+            <div className="profile-id">ID: 1001054</div>
+          </div>
         </div>
+
+        <div className="settings-divider" />
 
         <div className="settings-content">
           <div className="settings-group">
