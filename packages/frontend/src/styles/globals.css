@@ -48,30 +48,6 @@ html, body {
   margin-top: 16px;
 }
 
-/* Общие стили для заголовков страниц */
-.page-header {
-  padding-bottom: 8px;
-  padding-left: var(--app-padding);
-  padding-right: var(--app-padding);
-  text-align: center;
-  margin-bottom: 0;
-}
-
-.page-header h1 {
-  font-size: 20px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.5);
-}
-
-/* Отступы для разных платформ */
-html[data-platform="mobile"] .page-header {
-  padding-top: calc(env(safe-area-inset-top) + 82px);
-}
-
-html[data-platform="desktop"] .page-header {
-  padding-top: 24px;
-}
-
 /* Обновляем отступы для разных платформ */
 html[data-platform="mobile"][data-fullscreen="true"] {
   --header-padding: 26px;

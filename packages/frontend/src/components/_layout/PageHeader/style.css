@@ -3,7 +3,7 @@
   justify-content: space-between;
   align-items: center;
   padding: var(--header-padding) var(--app-padding) 8px;
-  margin-bottom: 8px;
+  margin-bottom: 8px !important;
   position: sticky;
   top: 0;
   z-index: 10;
@@ -16,4 +16,12 @@
   font-size: 24px;
   font-weight: 600;
   color: #FFFFFF;
+}
+
+html[data-platform="mobile"] .page-header {
+  padding-top: calc(env(safe-area-inset-top) + 82px);
+}
+
+html[data-platform="desktop"] .page-header {
+  padding-top: 24px;
 } 
