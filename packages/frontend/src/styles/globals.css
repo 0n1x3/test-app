@@ -54,7 +54,7 @@ html, body {
   padding-left: var(--app-padding);
   padding-right: var(--app-padding);
   text-align: center;
-  margin-bottom: 5px;
+  margin-bottom: 0;
 }
 
 .page-header h1 {
@@ -132,7 +132,7 @@ html[data-platform="desktop"] {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  z-index: 9999;
+  z-index: 100;
   padding: 0 !important;
   margin: 0 !important;
   width: 100% !important;
@@ -160,6 +160,8 @@ body.settings-open .app-container {
 body.settings-open .bottom-nav {
   opacity: 0.6;
   filter: none;
+  visibility: visible !important;
+  pointer-events: none;
 }
 
 /* Обновляем стили для попапа */
@@ -176,6 +178,7 @@ body.settings-open .bottom-nav {
   overflow-y: auto;
   left: 0 !important;
   right: 0 !important;
+  z-index: 101;
 }
 
 /* Обновляем стили для разных платформ */
@@ -243,8 +246,9 @@ html[data-platform="desktop"] .settings-popup {
   padding-bottom: env(safe-area-inset-bottom);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
-  z-index: 2;
-  transition: opacity 0.2s ease-out;
+  z-index: 99;
+  transition: opacity 0.3s ease;
+  will-change: opacity;
 }
 
 /* Обновляем отступы для контента */
