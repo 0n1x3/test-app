@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Icon } from '@iconify/react';
 import './style.css';
 
 interface AvatarSelectorProps {
@@ -24,15 +25,25 @@ export function AvatarSelector({ currentAvatar, onSelect }: AvatarSelectorProps)
     '/avatars/nft12.png',
     '/avatars/nft17.png',
     '/avatars/nft18.png',
+    '/avatars/nft40.png',
+    '/avatars/nft42.png',
   ];
 
   return (
     <div className="avatar-selector">
-      <div 
-        className="current-avatar" 
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <img src={currentAvatar} alt="Current avatar" />
+      <div className="avatar-container">
+        <div className="current-avatar">
+          <img src={currentAvatar} alt="Current avatar" />
+        </div>
+        <button 
+          className="change-avatar-button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsOpen(!isOpen);
+          }}
+        >
+          <Icon icon="solar:refresh-circle-linear" />
+        </button>
       </div>
       
       {isOpen && (

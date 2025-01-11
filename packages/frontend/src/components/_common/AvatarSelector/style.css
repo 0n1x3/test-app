@@ -2,10 +2,15 @@
   position: relative;
 }
 
-.current-avatar {
-  cursor: pointer;
+.avatar-container {
+  position: relative;
   width: 64px;
   height: 64px;
+}
+
+.current-avatar {
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   overflow: hidden;
 }
@@ -14,6 +19,29 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.change-avatar-button {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--tg-theme-button-color);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tg-theme-button-text-color);
+  font-size: 16px;
+  padding: 0;
+  transition: transform 0.2s;
+}
+
+.change-avatar-button:hover {
+  transform: scale(1.1);
 }
 
 .avatar-grid {
