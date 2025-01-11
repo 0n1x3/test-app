@@ -45,16 +45,14 @@ export class UsersService {
     const { telegramId, username, avatarUrl } = userData;
 
     try {
-      // Ищем пользователя по telegramId
       const existingUser = await this.userModel.findOne({ telegramId });
 
       if (existingUser) {
-        // Обновляем существующего пользователя
+        // Обновляем только имя пользователя, сохраняя текущий аватар
         return this.userModel.findOneAndUpdate(
           { telegramId },
           { 
             username,
-            avatarUrl,
             isActive: true
           },
           { new: true }
@@ -64,7 +62,7 @@ export class UsersService {
         const newUser = new this.userModel({
           telegramId,
           username,
-          avatarUrl,
+          avatarUrl, // Используем Telegram аватар только при первом создании
           balance: 0,
           isActive: true
         });
