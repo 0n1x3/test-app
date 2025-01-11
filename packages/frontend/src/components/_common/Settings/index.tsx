@@ -75,6 +75,11 @@ export function Settings() {
 
   const handleAvatarSelect = async (avatarUrl: string) => {
     try {
+      console.log('Updating avatar for user:', {
+        telegramId: userData?.telegramId,
+        avatarUrl
+      });
+
       const response = await fetch('https://test.timecommunity.xyz/api/users/update-avatar', {
         method: 'POST',
         headers: {
@@ -86,10 +91,21 @@ export function Settings() {
         }),
       });
 
-      if (response.ok) {
-        const updatedUser = await response.json();
-        setUserData(updatedUser);
+      console.log('Response status:', response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error details:', {
+          status: response.status,
+          statusText: response.statusText,
+          body: errorText
+        });
+        return;
       }
+
+      const updatedUser = await response.json();
+      console.log('Updated user data:', updatedUser);
+      setUserData(updatedUser);
     } catch (error) {
       console.error('Error updating avatar:', error);
     }

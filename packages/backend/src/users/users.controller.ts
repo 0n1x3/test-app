@@ -47,11 +47,13 @@ export class UsersController {
 
   @Post('update-avatar')
   async updateAvatar(@Body() data: { telegramId: number; avatarUrl: string }) {
+    console.log('Updating avatar:', data);
     try {
       const result = await this.usersService.updateAvatar(
         data.telegramId,
         data.avatarUrl
       );
+      console.log('Avatar updated:', result);
       return result;
     } catch (error) {
       console.error('Error updating avatar:', error);
