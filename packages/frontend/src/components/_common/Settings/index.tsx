@@ -21,13 +21,6 @@ export function Settings() {
         if (!webApp) return;
 
         const initData = (webApp as any).initData;
-        const user = webApp.initDataUnsafe.user;
-
-        if (!initData || !user) {
-          console.error('Missing required data:', { initData, user });
-          return;
-        }
-
         console.log('Telegram Data:', initData);
         
         const response = await fetch('https://test.timecommunity.xyz/api/users/init', {
@@ -36,14 +29,17 @@ export function Settings() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            initData,
-            user
+            initData
           }),
         });
         
         if (!response.ok) {
-          const error = await response.text();
-          console.error('Error response:', error);
+          const errorText = await response.text();
+          console.error('Error details:', {
+            status: response.status,
+            statusText: response.statusText,
+            body: errorText
+          });
           return;
         }
 

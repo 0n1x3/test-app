@@ -13,20 +13,35 @@ export class UsersController {
   }
 
   @Post('init')
-  @UseGuards(TelegramGuard)
   async initUser(@Body() data: any) {
-    console.log('Init user data:', data);
+    console.log('1. Raw request data:', JSON.stringify(data, null, 2));
+    
     try {
+      // Парсим данные пользователя из URL-encoded строки
+      const params = new URLSearchParams(data.initData);
+      console.log('2. Parsed URL params:', Array.from(params.entries()));
+      
+      const userStr = params.get('user');
+      console.log('3. User string:', userStr);
+      
+      if (!userStr) {
+        throw new Error('No user data found');
+      }
+
+      const user = JSON.parse(decodeURIComponent(userStr));
+      console.log('4. Parsed user data:', user);
+
       const result = await this.usersService.createOrUpdateUser({
-        telegramId: data.user.id,
-        username: data.user.username || data.user.first_name,
-        avatarUrl: data.user.photo_url,
+        telegramId: user.id,
+        username: user.username || user.first_name,
+        avatarUrl: user.photo_url,
       });
-      console.log('Created/Updated user:', result);
+      console.log('5. Created/Updated user:', result);
+
       return result;
     } catch (error) {
-      console.error('Error creating user:', error);
-      throw error;
+      console.error('Error processing request:', error);
+      throw new Error(`Failed to process request: ${error.message}`);
     }
   }
 }

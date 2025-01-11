@@ -9,7 +9,6 @@ interface TelegramWebApp {
       language_code?: string;
       photo_url?: string;
       is_premium?: boolean;
-      allows_write_to_pm?: boolean;
     };
     auth_date: number;
     hash: string;
