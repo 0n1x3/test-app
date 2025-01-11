@@ -44,4 +44,18 @@ export class UsersController {
       throw new Error(`Failed to process request: ${error.message}`);
     }
   }
+
+  @Post('update-avatar')
+  async updateAvatar(@Body() data: { telegramId: number; avatarUrl: string }) {
+    try {
+      const result = await this.usersService.updateAvatar(
+        data.telegramId,
+        data.avatarUrl
+      );
+      return result;
+    } catch (error) {
+      console.error('Error updating avatar:', error);
+      throw error;
+    }
+  }
 }

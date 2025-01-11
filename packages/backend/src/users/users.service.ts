@@ -75,4 +75,12 @@ export class UsersService {
       throw error;
     }
   }
+
+  async updateAvatar(telegramId: number, avatarUrl: string): Promise<User> {
+    return this.userModel.findOneAndUpdate(
+      { telegramId },
+      { avatarUrl },
+      { new: true }
+    );
+  }
 }

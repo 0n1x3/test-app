@@ -8,6 +8,7 @@ import type { Language } from '@/types/i18n';
 import type { TelegramWebApp } from '@/types/telegram';
 import { UserData } from '@/types/user';
 import './style.css';
+import { AvatarSelector } from '../AvatarSelector';
 
 export function Settings() {
   const { setShowSettings } = useModal();
@@ -72,16 +73,36 @@ export function Settings() {
     localStorage.setItem('language', lang);
   };
 
+  const handleAvatarSelect = async (avatarUrl: string) => {
+    try {
+      const response = await fetch('https://test.timecommunity.xyz/api/users/update-avatar', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          telegramId: userData?.telegramId,
+          avatarUrl
+        }),
+      });
+
+      if (response.ok) {
+        const updatedUser = await response.json();
+        setUserData(updatedUser);
+      }
+    } catch (error) {
+      console.error('Error updating avatar:', error);
+    }
+  };
+
   return (
     <div className="settings-modal" onClick={handleBackdropClick}>
       <div className="settings-popup">
         <div className="settings-profile">
-          <div className="profile-avatar">
-            <Icon 
-              icon="solar:user-circle-linear" 
-              className="avatar-icon"
-            />
-          </div>
+          <AvatarSelector 
+            currentAvatar={userData?.avatarUrl || '/avatars/nft1.png'} 
+            onSelect={handleAvatarSelect}
+          />
           <div className="profile-info">
             <div className="profile-name">
               {userData?.username || 'Пользователь'}
