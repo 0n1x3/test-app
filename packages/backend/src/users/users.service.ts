@@ -36,4 +36,43 @@ export class UsersService {
       { new: true }
     );
   }
+
+  async createOrUpdateUser(userData: {
+    telegramId: number;
+    username: string;
+    avatarUrl?: string;
+  }): Promise<User> {
+    const { telegramId, username, avatarUrl } = userData;
+
+    try {
+      // Ищем пользователя по telegramId
+      const existingUser = await this.userModel.findOne({ telegramId });
+
+      if (existingUser) {
+        // Обновляем существующего пользователя
+        return this.userModel.findOneAndUpdate(
+          { telegramId },
+          { 
+            username,
+            avatarUrl,
+            isActive: true
+          },
+          { new: true }
+        );
+      } else {
+        // Создаем нового пользователя
+        const newUser = new this.userModel({
+          telegramId,
+          username,
+          avatarUrl,
+          balance: 0,
+          isActive: true
+        });
+        return newUser.save();
+      }
+    } catch (error) {
+      console.error('Error in createOrUpdateUser:', error);
+      throw error;
+    }
+  }
 }

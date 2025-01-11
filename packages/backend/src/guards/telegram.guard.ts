@@ -29,14 +29,20 @@ export class TelegramGuard implements CanActivate {
     try {
       // Декодируем URL-encoded строку
       const decodedData = decodeURIComponent(initData);
+      console.log('Decoded initData:', decodedData);
+      
       const urlParams = new URLSearchParams(decodedData);
       const hash = urlParams.get('hash');
+      console.log('Hash:', hash);
+      
       urlParams.delete('hash');
       
       const dataCheckString = Array.from(urlParams.entries())
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([key, value]) => `${key}=${value}`)
         .join('\n');
+      
+      console.log('Data check string:', dataCheckString);
 
       const secretKey = createHash('sha256')
         .update(this.BOT_TOKEN)
@@ -45,6 +51,9 @@ export class TelegramGuard implements CanActivate {
       const hmac = createHmac('sha256', secretKey)
         .update(dataCheckString)
         .digest('hex');
+      
+      console.log('Generated HMAC:', hmac);
+      console.log('Received hash:', hash);
 
       return hmac === hash;
     } catch (error) {

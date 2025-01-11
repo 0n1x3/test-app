@@ -14,23 +14,15 @@ export class UsersController {
 
   @Post('init')
   @UseGuards(TelegramGuard)
-  async initUser(@Body() data: { 
-    initData: string;
-    user: {
-      id: number;
-      username: string;
-      first_name: string;
-      photo_url?: string;
-    }
-  }) {
-    console.log('Raw request body:', data);
+  async initUser(@Body() data: any) {
+    console.log('Init user data:', data);
     try {
-      const result = await this.usersService.findOrCreate({
-        id: data.user.id,
+      const result = await this.usersService.createOrUpdateUser({
+        telegramId: data.user.id,
         username: data.user.username || data.user.first_name,
-        photoUrl: data.user.photo_url
+        avatarUrl: data.user.photo_url,
       });
-      console.log('Created user:', result);
+      console.log('Created/Updated user:', result);
       return result;
     } catch (error) {
       console.error('Error creating user:', error);
