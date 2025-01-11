@@ -2,15 +2,17 @@ interface TelegramWebApp {
   initData: string;
   initDataUnsafe: {
     user?: {
-      id?: number;
-      first_name?: string;
+      id: number;
+      first_name: string;
       last_name?: string;
       username?: string;
       language_code?: string;
       photo_url?: string;
+      is_premium?: boolean;
+      allows_write_to_pm?: boolean;
     };
-    auth_date?: number;
-    hash?: string;
+    auth_date: number;
+    hash: string;
     query_id?: string;
   };
   expand: () => void;

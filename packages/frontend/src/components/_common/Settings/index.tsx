@@ -6,12 +6,13 @@ import { useTranslation } from '@/providers/i18n';
 import { useModal } from '@/providers/modal';
 import type { Language } from '@/types/i18n';
 import type { TelegramWebApp } from '@/types/telegram';
+import { UserData } from '@/types/user';
 import './style.css';
 
 export function Settings() {
   const { setShowSettings } = useModal();
   const { t, language, setLanguage } = useTranslation();
-  const [userData, setUserData] = useState(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
 
   useEffect(() => {
     const initUser = async () => {
@@ -19,15 +20,15 @@ export function Settings() {
         const webApp = window.Telegram?.WebApp;
         if (!webApp) return;
 
-        const initDataStr = (webApp as any).initData;
-        const userData = webApp.initDataUnsafe.user;
+        const initData = (webApp as any).initData;
+        const user = webApp.initDataUnsafe.user;
 
-        if (!userData) {
-          console.error('No user data available');
+        if (!initData || !user) {
+          console.error('Missing required data:', { initData, user });
           return;
         }
 
-        console.log('Telegram Data:', initDataStr);
+        console.log('Telegram Data:', initData);
         
         const response = await fetch('https://test.timecommunity.xyz/api/users/init', {
           method: 'POST',
@@ -35,11 +36,17 @@ export function Settings() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            initData: initDataStr,
-            user: userData
+            initData,
+            user
           }),
         });
         
+        if (!response.ok) {
+          const error = await response.text();
+          console.error('Error response:', error);
+          return;
+        }
+
         const data = await response.json();
         console.log('Response:', data);
         setUserData(data);
@@ -80,8 +87,12 @@ export function Settings() {
             />
           </div>
           <div className="profile-info">
-            <div className="profile-name">Евгений TIME</div>
-            <div className="profile-id">ID: 1001054</div>
+            <div className="profile-name">
+              {userData?.username || 'Пользователь'}
+            </div>
+            <div className="profile-id">
+              ID: {userData?.telegramId || '---'}
+            </div>
           </div>
           <button className="close-button" onClick={() => setShowSettings(false)}>
             <Icon icon="solar:close-circle-linear" />
