@@ -23,11 +23,18 @@ export class UsersController {
       photo_url?: string;
     }
   }) {
-    console.log('Received user data:', data);
-    return this.usersService.findOrCreate({
-      id: data.user.id,
-      username: data.user.username || data.user.first_name,
-      photoUrl: data.user.photo_url
-    });
+    console.log('Raw request body:', data);
+    try {
+      const result = await this.usersService.findOrCreate({
+        id: data.user.id,
+        username: data.user.username || data.user.first_name,
+        photoUrl: data.user.photo_url
+      });
+      console.log('Created user:', result);
+      return result;
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw error;
+    }
   }
 }

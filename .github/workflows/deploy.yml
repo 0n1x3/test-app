@@ -89,6 +89,7 @@ jobs:
             echo '      - "3005:3005"' >> docker-compose.yml
             echo '    environment:' >> docker-compose.yml
             echo '      - MONGODB_URI=${{ secrets.MONGODB_URI }}' >> docker-compose.yml
+            echo '      - BOT_TOKEN=${{ secrets.BOT_TOKEN }}' >> docker-compose.yml
             echo '' >> docker-compose.yml
             echo '  frontend:' >> docker-compose.yml
             echo '    image: 0n1x3/test-app-frontend:latest' >> docker-compose.yml

@@ -8,7 +8,9 @@ import { GameModule } from './game/game.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     MongooseModule.forRoot(process.env.MONGODB_URI || 'mongodb+srv://username:password@neometria.lpi4d.mongodb.net/test-app?retryWrites=true&w=majority'),
     UsersModule,
     BotModule,
