@@ -2,6 +2,7 @@
 
 import Script from 'next/script'
 import { useEffect } from 'react';
+import { Inter, Roboto_Mono } from 'next/font/google';
 import { usePathname } from 'next/navigation';
 import '@/styles/globals.css';
 import '@/styles/base/components.css';
@@ -11,6 +12,12 @@ import { BottomNav } from '@/components/_layout/BottomNav';
 import { I18nProvider } from '@/providers/i18n';
 import { ModalProvider } from '@/providers/modal';
 import { PortalContainer } from '@/components/_layout/PortalContainer';
+
+const inter = Inter({ subsets: ['latin', 'cyrillic'] });
+const robotoMono = Roboto_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+});
 
 export default function RootLayout({
   children,
@@ -39,7 +46,7 @@ export default function RootLayout({
   }, []);
 
   return (
-    <html lang="en" data-platform="mobile" data-fullscreen="true">
+    <html lang="en" data-platform="mobile" data-fullscreen="true" className={`${inter.className} ${robotoMono.variable}`}>
       <head>
         <meta 
           name="viewport" 
