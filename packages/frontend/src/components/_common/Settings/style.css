@@ -34,6 +34,8 @@
 .settings-popup {
   border: 1px solid rgba(255, 255, 255, 0.1);
   animation: slideUp 0.3s ease-out;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 .settings-header {
@@ -141,11 +143,11 @@ body.settings-open {
 
 @keyframes slideUp {
   from {
-    transform: translateY(60px);
+    transform: translate3d(0, 60px, 0);
     opacity: 0;
   }
   to {
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
     opacity: 1;
   }
 }

@@ -24,4 +24,30 @@ html[data-platform="mobile"] .page-header {
 
 html[data-platform="desktop"] .page-header {
   padding-top: 24px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.balance {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.balance-icon {
+  font-size: 18px;
+  color: #2196F3;
+}
+
+.balance-amount {
+  color: #FFFFFF;
+  font-size: 16px;
 } 
