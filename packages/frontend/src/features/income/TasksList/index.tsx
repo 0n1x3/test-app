@@ -25,7 +25,7 @@ export function TasksList() {
 
         if (response.ok) {
           const data = await response.json();
-          console.log('Fetched tasks:', data); // Добавляем лог
+          console.log('Fetched tasks:', data);
           setTasks(data);
         }
       } catch (error) {
