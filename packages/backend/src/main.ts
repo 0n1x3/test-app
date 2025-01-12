@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { TasksService } from './tasks/tasks.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,6 +12,10 @@ async function bootstrap() {
   });
 
   app.setGlobalPrefix('api');
+
+  // Инициализируем первое задание
+  const tasksService = app.get(TasksService);
+  await tasksService.initDefaultTasks();
 
   await app.listen(3005);
 }

@@ -21,7 +21,12 @@
         "invite5friends": "邀请5位好友",
         "play10games": "玩10场游戏"
       },
-      "claim": "领取"
+      "claim": "领取",
+      "tabs": {
+        "active": "进行中",
+        "completed": "已完成"
+      },
+      "collect": "领取"
     },
     "tournament": {
       "title": "比赛",

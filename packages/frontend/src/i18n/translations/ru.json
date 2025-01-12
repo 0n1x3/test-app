@@ -21,7 +21,12 @@
         "invite5friends": "Пригласи 5 друзей",
         "play10games": "Сыграй 10 игр"
       },
-      "claim": "Получить"
+      "claim": "Получить",
+      "tabs": {
+        "active": "Активные",
+        "completed": "Завершенные"
+      },
+      "collect": "Собрать"
     },
     "tournament": {
       "title": "Турниры",

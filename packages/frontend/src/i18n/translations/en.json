@@ -21,7 +21,12 @@
         "invite5friends": "Invite 5 friends",
         "play10games": "Play 10 games"
       },
-      "claim": "Claim"
+      "claim": "Claim",
+      "tabs": {
+        "active": "Active",
+        "completed": "Completed"
+      },
+      "collect": "Collect"
     },
     "tournament": {
       "title": "Tournaments",
