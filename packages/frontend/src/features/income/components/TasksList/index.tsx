@@ -1,10 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Icon } from '@iconify/react';
+import { useTranslation } from '@/providers/i18n';
 import type { Task } from '../../../../types';
 import './style.css';
 
 export function TasksList() {
+  const { t } = useTranslation();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'active' | 'completed'>('active');
@@ -46,39 +49,81 @@ export function TasksList() {
     fetchTasks();
   }, [activeTab]);
 
+  const handleCollect = async (taskId: string) => {
+    try {
+      const webApp = window.Telegram?.WebApp;
+      if (!webApp) return;
+
+      const initData = (webApp as any).initData;
+      const response = await fetch('https://test.timecommunity.xyz/api/tasks/complete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ initData, taskId })
+      });
+
+      if (response.ok) {
+        // Перезагружаем задачи после успешного выполнения
+        const fetchTasks = async () => {
+          // ... код fetchTasks
+        };
+        fetchTasks();
+      }
+    } catch (error) {
+      console.error('Error collecting reward:', error);
+    }
+  };
+
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="tasks-loading">{t('common.loading')}</div>;
   }
 
   if (tasks.length === 0) {
-    return <div>No active tasks</div>;
+    return <div className="tasks-empty">
+      {activeTab === 'active' 
+        ? t('pages.income.tasks.noActive')
+        : t('pages.income.tasks.noCompleted')}
+    </div>;
   }
 
   return (
     <div className="tasks-container">
       <div className="tasks-tabs">
         <button 
-          className={activeTab === 'active' ? 'active' : ''} 
+          className={`tab ${activeTab === 'active' ? 'active' : ''}`}
           onClick={() => setActiveTab('active')}
         >
-          Активные
+          {t('pages.income.tasks.active')}
         </button>
         <button 
-          className={activeTab === 'completed' ? 'active' : ''} 
+          className={`tab ${activeTab === 'completed' ? 'active' : ''}`}
           onClick={() => setActiveTab('completed')}
         >
-          Завершенные
+          {t('pages.income.tasks.completed')}
         </button>
       </div>
       <div className="tasks-list">
         {tasks.map(task => (
-          <div key={task._id} className="task-card">
+          <div key={task._id} className={`task-card ${!task.isActive ? 'completed' : ''}`}>
             <div className="task-info">
               <h3>{task.title}</h3>
               <p>{task.description}</p>
             </div>
             <div className="task-reward">
+              <Icon 
+                icon="material-symbols:diamond-rounded" 
+                className="reward-icon"
+              />
               <span>{task.reward}</span>
+              {activeTab === 'active' && (
+                <button 
+                  className="collect-button"
+                  onClick={() => handleCollect(task._id)}
+                >
+                  {t('pages.income.tasks.collect')}
+                </button>
+              )}
             </div>
           </div>
         ))}

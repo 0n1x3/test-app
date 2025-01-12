@@ -20,7 +20,12 @@
         "progress": "Progress",
         "win3games": "Win 3 games in a row",
         "invite5friends": "Invite 5 friends",
-        "play10games": "Play 10 games"
+        "play10games": "Play 10 games",
+        "active": "Active",
+        "completed": "Completed",
+        "collect": "Collect",
+        "noActive": "No active tasks",
+        "noCompleted": "No completed tasks"
       },
       "claim": "Claim",
       "tabs": {
