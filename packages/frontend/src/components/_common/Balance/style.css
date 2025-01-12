@@ -1,7 +1,7 @@
 .balance-wrapper {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   padding: 0 12px;
   height: 32px;
   background: rgba(255, 255, 255, 0.1);
@@ -12,8 +12,8 @@
 }
 
 .balance-wrapper__icon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   color: #2196F3;
   flex-shrink: 0;
 }

@@ -12,6 +12,7 @@ import { BottomNav } from '@/components/_layout/BottomNav';
 import { I18nProvider } from '@/providers/i18n';
 import { ModalProvider } from '@/providers/modal';
 import { PortalContainer } from '@/components/_layout/PortalContainer';
+import { useUserStore } from '@/store/useUserStore';
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'] });
 const robotoMono = Roboto_Mono({
@@ -25,6 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const { fetchUserData } = useUserStore();
 
   useEffect(() => {
     if (!document.getElementById('portal-root')) {
@@ -43,6 +45,10 @@ export default function RootLayout({
         }
       }, { passive: false });
     }
+  }, []);
+
+  useEffect(() => {
+    fetchUserData();
   }, []);
 
   return (

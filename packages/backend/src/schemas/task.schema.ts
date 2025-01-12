@@ -7,16 +7,19 @@ export class Task extends Document {
   title: string;
 
   @Prop({ required: true })
+  description: string;
+
+  @Prop({ required: true })
   reward: number;
 
-  @Prop({ type: Map, of: Boolean, default: new Map() })
-  completedBy: Map<string, boolean>;
+  @Prop({ required: true })
+  type: string;
 
   @Prop({ default: true })
   isActive: boolean;
 
-  @Prop({ default: 1 })
-  requiredLevel: number;
+  @Prop({ type: Map, of: Boolean, default: new Map() })
+  completedBy: Map<string, boolean>;
 }
 
 export const TaskSchema = SchemaFactory.createForClass(Task); 

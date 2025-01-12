@@ -48,20 +48,18 @@ export class TasksService {
   }
 
   async initDefaultTasks(): Promise<Task[]> {
-    // Сначала проверяем, есть ли уже задачи
-    const existingTasks = await this.taskModel.find().exec();
-    if (existingTasks.length > 0) {
-      return existingTasks;
-    }
+    // Удаляем все существующие задачи (для тестирования)
+    await this.taskModel.deleteMany({});
 
-    // Если задач нет, создаем новые
+    // Создаем новые задачи
     const defaultTasks = [
       {
         title: 'First Task',
         description: 'Complete your first game',
         reward: 1000,
         type: 'FIRST_GAME',
-        isActive: true
+        isActive: true,
+        completedBy: new Map()
       }
     ];
 
