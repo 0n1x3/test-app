@@ -2,27 +2,27 @@
   display: inline-flex;
   align-items: center;
   gap: 0;
-  padding: 0 12px;
+  padding: 0 10px;
   height: 32px;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  width: 90px;
+  width: 86px;
   justify-content: center;
   flex-shrink: 0;
 }
 
 .balance-wrapper__icon {
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
   color: #2196F3;
   flex-shrink: 0;
-  margin-right: 2px;
+  margin-right: -1px;
 }
 
 .balance-wrapper__amount {
   font: 600 15px/1 monospace;
   color: #FFFFFF;
-  width: 40px;
+  width: 36px;
   text-align: right;
   letter-spacing: -0.5px;
 } 
