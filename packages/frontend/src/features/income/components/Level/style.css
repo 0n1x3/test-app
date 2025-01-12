@@ -1,0 +1,42 @@
+.level-card {
+  width: 100%;
+  background: #1A1A1A;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.level-header {
+  margin-bottom: 16px;
+}
+
+.level-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 8px;
+}
+
+.level-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.progress-bar {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #2196F3;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 13px;
+  color: #808080;
+} 
