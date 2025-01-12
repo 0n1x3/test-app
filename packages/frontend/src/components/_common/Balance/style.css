@@ -1,0 +1,27 @@
+.balance-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 12px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  width: 90px;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.balance-wrapper__icon {
+  width: 20px;
+  height: 20px;
+  color: #2196F3;
+  flex-shrink: 0;
+}
+
+.balance-wrapper__amount {
+  font: 600 15px/1 monospace;
+  color: #FFFFFF;
+  width: 40px;
+  text-align: right;
+  letter-spacing: -0.5px;
+} 

@@ -47,14 +47,24 @@ export class TasksService {
     return user.save();
   }
 
-  async initDefaultTasks() {
-    const count = await this.taskModel.countDocuments();
-    if (count === 0) {
-      await this.taskModel.create({
-        title: 'Collect first reward',
-        reward: 1000,
-        requiredLevel: 1
-      });
+  async initDefaultTasks(): Promise<Task[]> {
+    // Сначала проверяем, есть ли уже задачи
+    const existingTasks = await this.taskModel.find().exec();
+    if (existingTasks.length > 0) {
+      return existingTasks;
     }
+
+    // Если задач нет, создаем новые
+    const defaultTasks = [
+      {
+        title: 'First Task',
+        description: 'Complete your first game',
+        reward: 1000,
+        type: 'FIRST_GAME',
+        isActive: true
+      }
+    ];
+
+    return this.taskModel.create(defaultTasks);
   }
 } 
