@@ -17,9 +17,18 @@ export interface Translation {
       title: string;
       level: string;
       tasks: {
-        title: string;
-        progress: string;
+        active: string;
+        completed: string;
+        collect: string;
+        noActive: string;
+        noCompleted: string;
       };
+      claim: string;
+      tabs: {
+        active: string;
+        completed: string;
+      };
+      collect: string;
     };
     tournament: {
       title: string;

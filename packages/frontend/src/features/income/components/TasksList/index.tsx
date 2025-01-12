@@ -65,10 +65,25 @@ export function TasksList() {
 
       if (response.ok) {
         // Перезагружаем задачи после успешного выполнения
-        const fetchTasks = async () => {
-          // ... код fetchTasks
-        };
-        fetchTasks();
+        const endpoint = activeTab === 'active' ? 'active' : 'completed';
+        const method = activeTab === 'active' ? 'POST' : 'GET';
+
+        const url = method === 'GET' 
+          ? `https://test.timecommunity.xyz/api/tasks/${endpoint}?initData=${encodeURIComponent(initData)}`
+          : `https://test.timecommunity.xyz/api/tasks/${endpoint}`;
+
+        const tasksResponse = await fetch(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          ...(method === 'POST' ? { body: JSON.stringify({ initData }) } : {})
+        });
+
+        if (tasksResponse.ok) {
+          const data = await tasksResponse.json();
+          setTasks(data);
+        }
       }
     } catch (error) {
       console.error('Error collecting reward:', error);
