@@ -4,10 +4,11 @@
       "title": "Games",
       "games": {
         "rps": "Rock, Paper, Scissors",
+        "dice": "Dice",
+        "backgammon": "Backgammon",
         "checkers": "Checkers",
         "chess": "Chess",
-        "durak": "Durak",
-        "dice": "Dice"
+        "durak": "Durak"
       },
       "playButton": "Play"
     },

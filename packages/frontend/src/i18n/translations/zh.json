@@ -4,10 +4,11 @@
       "title": "游戏",
       "games": {
         "rps": "石头剪刀布",
+        "dice": "骰子",
+        "backgammon": "双陆棋",
         "checkers": "跳棋",
         "chess": "国际象棋",
-        "durak": "傻瓜",
-        "dice": "骰子"
+        "durak": "傻瓜"
       },
       "playButton": "开始"
     },

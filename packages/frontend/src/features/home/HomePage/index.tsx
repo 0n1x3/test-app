@@ -24,6 +24,16 @@ export function HomePage() {
       icon: 'mingcute:scissors-2-fill'
     },
     {
+      id: 'dice',
+      title: t('pages.home.games.dice'),
+      icon: 'ion:dice-sharp'
+    },
+    {
+      id: 'backgammon',
+      title: t('pages.home.games.backgammon'),
+      icon: 'game-icons:backgammon'
+    },
+    {
       id: 'checkers',
       title: t('pages.home.games.checkers'),
       icon: 'mdi:checkers'
@@ -37,11 +47,6 @@ export function HomePage() {
       id: 'durak',
       title: t('pages.home.games.durak'),
       icon: 'mdi:cards-playing'
-    },
-    {
-      id: 'dice',
-      title: t('pages.home.games.dice'),
-      icon: 'ion:dice-sharp'
     }
   ];
 

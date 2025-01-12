@@ -81,4 +81,19 @@ export class UsersService {
       { new: true }
     );
   }
+
+  async initUser(telegramId: number, username: string): Promise<User> {
+    const existingUser = await this.userModel.findOne({ telegramId });
+    if (existingUser) return existingUser;
+
+    return this.userModel.create({
+      telegramId,
+      username,
+      level: 1,
+      experience: 0,
+      balance: 0,
+      completedTasks: [], // Явно инициализируем пустым массивом
+      isActive: true
+    });
+  }
 }

@@ -22,7 +22,7 @@ export class User extends Document {
   @Prop({ default: 0 })
   experience: number;
 
-  @Prop({ type: [{ type: Types.ObjectId, ref: 'Task' }] })
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Task' }], default: [] })
   completedTasks: Task[];
 
   @Prop({ default: false })

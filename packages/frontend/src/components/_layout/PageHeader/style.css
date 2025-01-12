@@ -42,9 +42,11 @@ html[data-platform="desktop"] .page-header {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   font-weight: 500;
-  width: 90px;
+  min-width: 90px;
   justify-content: center;
   flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
 }
 
 .balance-icon {
@@ -64,4 +66,5 @@ html[data-platform="desktop"] .page-header {
   line-height: 1;
   margin: 0;
   padding: 0;
+  font-family: 'SF Mono', SFMono-Regular, ui-monospace, monospace;
 } 

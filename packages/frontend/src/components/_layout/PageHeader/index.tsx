@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { SettingsButton } from '@/components/_common/SettingsButton';
+import { useUserStore } from '@/store/useUserStore';
 import './style.css';
 
 interface PageHeaderProps {
@@ -10,36 +11,11 @@ interface PageHeaderProps {
 }
 
 export function PageHeader({ title }: PageHeaderProps) {
-  const [balance, setBalance] = useState(0);
+  const { balance, fetchUserData } = useUserStore();
 
   useEffect(() => {
-    const fetchBalance = async () => {
-      try {
-        const webApp = window.Telegram?.WebApp;
-        if (!webApp) return;
-
-        const initData = (webApp as any).initData;
-        const response = await fetch('https://test.timecommunity.xyz/api/users/init', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ initData }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setBalance(data.balance || 0);
-        }
-      } catch (error) {
-        console.error('Error fetching balance:', error);
-      }
-    };
-
-    fetchBalance();
-    // Обновляем баланс каждые 30 секунд
-    const interval = setInterval(fetchBalance, 30000);
-    return () => clearInterval(interval);
+    // Загружаем данные только один раз при монтировании
+    fetchUserData();
   }, []);
 
   return (
