@@ -19,13 +19,16 @@ export function TasksList() {
         const endpoint = activeTab === 'active' ? 'active' : 'completed';
         const method = activeTab === 'active' ? 'POST' : 'GET';
 
-        const response = await fetch(`https://test.timecommunity.xyz/api/tasks/${endpoint}`, {
+        const url = method === 'GET' 
+          ? `https://test.timecommunity.xyz/api/tasks/${endpoint}?initData=${encodeURIComponent(initData)}`
+          : `https://test.timecommunity.xyz/api/tasks/${endpoint}`;
+
+        const response = await fetch(url, {
           method,
           headers: {
             'Content-Type': 'application/json',
           },
-          ...(method === 'POST' ? { body: JSON.stringify({ initData }) } : 
-            { query: `?initData=${encodeURIComponent(initData)}` })
+          ...(method === 'POST' ? { body: JSON.stringify({ initData }) } : {})
         });
 
         if (response.ok) {
@@ -52,18 +55,34 @@ export function TasksList() {
   }
 
   return (
-    <div className="tasks-list">
-      {tasks.map(task => (
-        <div key={task._id} className="task-card">
-          <div className="task-info">
-            <h3>{task.title}</h3>
-            <p>{task.description}</p>
+    <div className="tasks-container">
+      <div className="tasks-tabs">
+        <button 
+          className={activeTab === 'active' ? 'active' : ''} 
+          onClick={() => setActiveTab('active')}
+        >
+          Активные
+        </button>
+        <button 
+          className={activeTab === 'completed' ? 'active' : ''} 
+          onClick={() => setActiveTab('completed')}
+        >
+          Завершенные
+        </button>
+      </div>
+      <div className="tasks-list">
+        {tasks.map(task => (
+          <div key={task._id} className="task-card">
+            <div className="task-info">
+              <h3>{task.title}</h3>
+              <p>{task.description}</p>
+            </div>
+            <div className="task-reward">
+              <span>{task.reward}</span>
+            </div>
           </div>
-          <div className="task-reward">
-            <span>{task.reward}</span>
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 } 
