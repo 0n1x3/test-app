@@ -29,9 +29,9 @@ export function HomePage() {
       icon: 'ion:dice-sharp'
     },
     {
-      id: 'backgammon',
-      title: t('pages.home.games.backgammon'),
-      icon: 'game-icons:backgammon'
+      id: 'durak',
+      title: t('pages.home.games.durak'),
+      icon: 'mdi:cards-playing'
     },
     {
       id: 'checkers',
@@ -44,10 +44,11 @@ export function HomePage() {
       icon: 'fluent:chess-20-filled'
     },
     {
-      id: 'durak',
-      title: t('pages.home.games.durak'),
-      icon: 'mdi:cards-playing'
+      id: 'backgammon',
+      title: t('pages.home.games.backgammon'),
+      icon: 'game-icons:backgammon'
     }
+    
   ];
 
   return (

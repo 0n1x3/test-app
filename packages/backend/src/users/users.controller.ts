@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Delete } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { TelegramGuard } from '../guards/telegram.guard';
 
@@ -59,5 +59,10 @@ export class UsersController {
       console.error('Error updating avatar:', error);
       throw error;
     }
+  }
+
+  @Delete('reset')
+  async resetUser(@Body() { telegramId }: { telegramId: number }) {
+    return this.usersService.deleteUser(telegramId);
   }
 }

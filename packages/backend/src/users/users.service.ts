@@ -2,11 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from '../schemas/user.schema';
+import { TasksService } from '../tasks/tasks.service';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel(User.name) private userModel: Model<User>
+    @InjectModel(User.name) private userModel: Model<User>,
+    private tasksService: TasksService
   ) {}
 
   async findOrCreate(telegramData: {
@@ -48,7 +50,6 @@ export class UsersService {
       const existingUser = await this.userModel.findOne({ telegramId });
 
       if (existingUser) {
-        // Обновляем только имя пользователя, сохраняя текущий аватар
         return this.userModel.findOneAndUpdate(
           { telegramId },
           { 
@@ -62,11 +63,19 @@ export class UsersService {
         const newUser = new this.userModel({
           telegramId,
           username,
-          avatarUrl, // Используем Telegram аватар только при первом создании
+          avatarUrl,
           balance: 0,
+          level: 1,
+          experience: 0,
+          completedTasks: [],
           isActive: true
         });
-        return newUser.save();
+        await newUser.save();
+        
+        // Инициализируем задачи для нового пользователя
+        await this.tasksService.initDefaultTasks();
+        
+        return newUser;
       }
     } catch (error) {
       console.error('Error in createOrUpdateUser:', error);
@@ -95,5 +104,9 @@ export class UsersService {
       completedTasks: [], // Явно инициализируем пустым массивом
       isActive: true
     });
+  }
+
+  async deleteUser(telegramId: number): Promise<void> {
+    await this.userModel.deleteOne({ telegramId });
   }
 }
