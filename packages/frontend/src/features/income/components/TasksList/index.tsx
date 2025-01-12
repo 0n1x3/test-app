@@ -90,18 +90,6 @@ export function TasksList() {
     }
   };
 
-  if (loading) {
-    return <div className="tasks-loading">{t('common.loading')}</div>;
-  }
-
-  if (tasks.length === 0) {
-    return <div className="tasks-empty">
-      {activeTab === 'active' 
-        ? t('pages.income.tasks.noActive')
-        : t('pages.income.tasks.noCompleted')}
-    </div>;
-  }
-
   return (
     <div className="tasks-container">
       <div className="tasks-tabs">
@@ -118,31 +106,42 @@ export function TasksList() {
           {t('pages.income.tasks.completed')}
         </button>
       </div>
-      <div className="tasks-list">
-        {tasks.map(task => (
-          <div key={task._id} className={`task-card ${!task.isActive ? 'completed' : ''}`}>
-            <div className="task-info">
-              <h3>{task.title}</h3>
-              <p>{task.description}</p>
+      
+      {loading ? (
+        <div className="tasks-loading">{t('common.loading')}</div>
+      ) : tasks.length === 0 ? (
+        <div className="tasks-empty">
+          {activeTab === 'active' 
+            ? t('pages.income.tasks.noActive')
+            : t('pages.income.tasks.noCompleted')}
+        </div>
+      ) : (
+        <div className="tasks-list">
+          {tasks.map(task => (
+            <div key={task._id} className={`task-card ${!task.isActive ? 'completed' : ''}`}>
+              <div className="task-info">
+                <h3>{task.title}</h3>
+                <p>{task.description}</p>
+              </div>
+              <div className="task-reward">
+                <Icon 
+                  icon="material-symbols:diamond-rounded" 
+                  className="reward-icon"
+                />
+                <span>{task.reward}</span>
+                {activeTab === 'active' && (
+                  <button 
+                    className="collect-button"
+                    onClick={() => handleCollect(task._id)}
+                  >
+                    {t('pages.income.tasks.collect')}
+                  </button>
+                )}
+              </div>
             </div>
-            <div className="task-reward">
-              <Icon 
-                icon="material-symbols:diamond-rounded" 
-                className="reward-icon"
-              />
-              <span>{task.reward}</span>
-              {activeTab === 'active' && (
-                <button 
-                  className="collect-button"
-                  onClick={() => handleCollect(task._id)}
-                >
-                  {t('pages.income.tasks.collect')}
-                </button>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 } 
