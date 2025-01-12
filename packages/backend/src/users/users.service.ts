@@ -72,7 +72,8 @@ export class UsersService {
         });
         await newUser.save();
         
-        // Инициализируем задачи для нового пользователя
+        // Инициализируем задачи при создании нового пользователя
+        console.log('Creating default tasks for new user');
         await this.tasksService.initDefaultTasks();
         
         return newUser;

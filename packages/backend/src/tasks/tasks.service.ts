@@ -48,8 +48,11 @@ export class TasksService {
   }
 
   async initDefaultTasks(): Promise<Task[]> {
-    // Удаляем все существующие задачи (для тестирования)
-    await this.taskModel.deleteMany({});
+    console.log('Starting initDefaultTasks');
+    
+    // Удаляем все существующие задачи
+    const deleteResult = await this.taskModel.deleteMany({});
+    console.log('Deleted tasks:', deleteResult);
 
     // Создаем новые задачи
     const defaultTasks = [
@@ -63,6 +66,9 @@ export class TasksService {
       }
     ];
 
-    return this.taskModel.create(defaultTasks);
+    const createdTasks = await this.taskModel.create(defaultTasks);
+    console.log('Created tasks:', createdTasks);
+
+    return createdTasks;
   }
 } 
