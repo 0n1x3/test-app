@@ -40,11 +40,12 @@ html[data-platform="desktop"] .page-header {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   font-weight: 500;
-  min-width: 80px;
+  width: 100px;
+  justify-content: flex-end;
 }
 
 .balance-icon {
-  font-size: 18px;
+  font-size: 20px;
   color: #2196F3;
   flex-shrink: 0;
 }
@@ -52,6 +53,5 @@ html[data-platform="desktop"] .page-header {
 .balance-amount {
   color: #FFFFFF;
   font-size: 16px;
-  min-width: 20px;
-  text-align: right;
+  font-weight: 600;
 } 

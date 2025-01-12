@@ -47,7 +47,7 @@ export function PageHeader({ title }: PageHeaderProps) {
       <h1>{title}</h1>
       <div className="header-actions">
         <div className="balance">
-          <Icon icon="solar:dollar-minimalistic-linear" className="balance-icon" />
+          <Icon icon="material-symbols:diamond-rounded" className="balance-icon" />
           <span className="balance-amount">{balance}</span>
         </div>
         <SettingsButton />
