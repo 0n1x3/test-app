@@ -29,6 +29,15 @@ declare global {
     platform: string;
     requestFullscreen: () => void;
     exitFullscreen: () => void;
+    showPopup: (params: {
+      title?: string;
+      message: string;
+      buttons?: Array<{
+        id?: string;
+        type?: 'default' | 'ok' | 'close' | 'cancel' | 'destructive';
+        text?: string;
+      }>;
+    }) => Promise<void>;
   }
 
   interface Window {

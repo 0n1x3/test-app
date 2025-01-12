@@ -18,9 +18,11 @@
       "tasks": {
         "active": "Активные",
         "completed": "Завершенные",
-        "collect": "Собрать",
+        "collect": "Получить",
         "noActive": "Нет активных заданий",
-        "noCompleted": "Нет завершенных заданий"
+        "noCompleted": "Нет завершенных заданий",
+        "rewardCollected": "Награда получена",
+        "rewardAddedToBalance": "Награда добавлена к балансу"
       },
       "claim": "Получить",
       "tabs": {

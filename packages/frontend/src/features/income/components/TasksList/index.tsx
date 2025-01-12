@@ -60,11 +60,14 @@ export function TasksList() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ initData, taskId })
+        body: JSON.stringify({ 
+          initData,
+          taskId 
+        })
       });
 
       if (response.ok) {
-        // Перезагружаем задачи после успешного выполнения
+        // Обновляем список задач
         const endpoint = activeTab === 'active' ? 'active' : 'completed';
         const method = activeTab === 'active' ? 'POST' : 'GET';
 
@@ -83,6 +86,12 @@ export function TasksList() {
         if (tasksResponse.ok) {
           const data = await tasksResponse.json();
           setTasks(data);
+          
+          // Можно добавить уведомление об успешном получении награды
+          webApp.showPopup({
+            title: t('pages.income.tasks.rewardCollected'),
+            message: t('pages.income.tasks.rewardAddedToBalance')
+          });
         }
       }
     } catch (error) {

@@ -20,7 +20,9 @@
         "completed": "已完成",
         "collect": "领取",
         "noActive": "暂无进行中的任务",
-        "noCompleted": "暂无已完成的任务"
+        "noCompleted": "暂无已完成的任务",
+        "rewardCollected": "奖励已领取",
+        "rewardAddedToBalance": "奖励已添加到余额"
       },
       "claim": "领取",
       "tabs": {
