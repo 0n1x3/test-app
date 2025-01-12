@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Query } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 
 @Controller('tasks')
@@ -30,8 +30,21 @@ export class TasksController {
   }
 
   @Get('completed')
-  async getCompletedTasks(@Body() { telegramId }: { telegramId: number }) {
-    return this.tasksService.getCompletedTasks(telegramId);
+  async getCompletedTasks(@Query('initData') initData: string) {
+    try {
+      const params = new URLSearchParams(initData);
+      const userStr = params.get('user');
+      
+      if (!userStr) {
+        throw new Error('No user data found');
+      }
+
+      const user = JSON.parse(decodeURIComponent(userStr));
+      return this.tasksService.getCompletedTasks(user.id);
+    } catch (error) {
+      console.error('Error getting completed tasks:', error);
+      throw error;
+    }
   }
 
   @Post('complete')

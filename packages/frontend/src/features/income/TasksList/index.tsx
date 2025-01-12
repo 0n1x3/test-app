@@ -7,6 +7,7 @@ import './style.css';
 export function TasksList() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'active' | 'completed'>('active');
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -15,17 +16,21 @@ export function TasksList() {
         if (!webApp) return;
 
         const initData = (webApp as any).initData;
-        const response = await fetch('https://test.timecommunity.xyz/api/tasks/active', {
-          method: 'POST',
+        const endpoint = activeTab === 'active' ? 'active' : 'completed';
+        const method = activeTab === 'active' ? 'POST' : 'GET';
+
+        const response = await fetch(`https://test.timecommunity.xyz/api/tasks/${endpoint}`, {
+          method,
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ initData }),
+          ...(method === 'POST' ? { body: JSON.stringify({ initData }) } : 
+            { query: `?initData=${encodeURIComponent(initData)}` })
         });
 
         if (response.ok) {
           const data = await response.json();
-          console.log('Fetched tasks:', data);
+          console.log(`Fetched ${activeTab} tasks:`, data);
           setTasks(data);
         }
       } catch (error) {
@@ -36,7 +41,7 @@ export function TasksList() {
     };
 
     fetchTasks();
-  }, []);
+  }, [activeTab]);
 
   if (loading) {
     return <div>Loading...</div>;
