@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { Task } from '../../../types';
+import type { Task } from '../../../../types';
 import './style.css';
 
 export function TasksList() {
