@@ -55,43 +55,47 @@ export function TasksList() {
       if (!webApp) return;
 
       const initData = (webApp as any).initData;
+      const params = new URLSearchParams(initData);
+      const userStr = params.get('user');
+      
+      if (!userStr) {
+        throw new Error('No user data found');
+      }
+
+      const user = JSON.parse(decodeURIComponent(userStr));
+      
       const response = await fetch('https://test.timecommunity.xyz/api/tasks/complete', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
-          initData,
+          telegramId: user.id,
           taskId 
         })
       });
 
       if (response.ok) {
+        const updatedUser = await response.json();
+        
+        // Показываем уведомление
+        webApp.showPopup({
+          title: t('pages.income.tasks.rewardCollected'),
+          message: t('pages.income.tasks.rewardAddedToBalance')
+        });
+
         // Обновляем список задач
-        const endpoint = activeTab === 'active' ? 'active' : 'completed';
-        const method = activeTab === 'active' ? 'POST' : 'GET';
-
-        const url = method === 'GET' 
-          ? `https://test.timecommunity.xyz/api/tasks/${endpoint}?initData=${encodeURIComponent(initData)}`
-          : `https://test.timecommunity.xyz/api/tasks/${endpoint}`;
-
-        const tasksResponse = await fetch(url, {
-          method,
+        const tasksResponse = await fetch(`https://test.timecommunity.xyz/api/tasks/${activeTab}`, {
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          ...(method === 'POST' ? { body: JSON.stringify({ initData }) } : {})
+          body: JSON.stringify({ initData })
         });
 
         if (tasksResponse.ok) {
-          const data = await tasksResponse.json();
-          setTasks(data);
-          
-          // Можно добавить уведомление об успешном получении награды
-          webApp.showPopup({
-            title: t('pages.income.tasks.rewardCollected'),
-            message: t('pages.income.tasks.rewardAddedToBalance')
-          });
+          const tasks = await tasksResponse.json();
+          setTasks(tasks);
         }
       }
     } catch (error) {

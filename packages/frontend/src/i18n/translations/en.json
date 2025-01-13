@@ -27,7 +27,10 @@
         "noActive": "No active tasks",
         "noCompleted": "No completed tasks",
         "rewardCollected": "Reward collected",
-        "rewardAddedToBalance": "Reward added to balance"
+        "rewardAddedToBalance": "Reward added to balance",
+        "firstTask": {
+          "title": "First Task"
+        }
       },
       "claim": "Claim",
       "tabs": {

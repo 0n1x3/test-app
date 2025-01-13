@@ -22,7 +22,10 @@
         "noActive": "Нет активных заданий",
         "noCompleted": "Нет завершенных заданий",
         "rewardCollected": "Награда получена",
-        "rewardAddedToBalance": "Награда добавлена к балансу"
+        "rewardAddedToBalance": "Награда добавлена к балансу",
+        "firstTask": {
+          "title": "Первое Задание"
+        }
       },
       "claim": "Получить",
       "tabs": {
