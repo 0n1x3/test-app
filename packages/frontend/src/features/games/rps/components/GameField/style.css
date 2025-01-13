@@ -1,0 +1,183 @@
+.game-field {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: linear-gradient(180deg, #000000 0%, #1A1A1A 100%);
+  padding: 16px;
+}
+
+.game-header {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+}
+
+.score {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.player-score,
+.bot-score {
+  font-size: 32px;
+  font-weight: 700;
+  color: white;
+  font-family: var(--font-mono);
+}
+
+.round {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.round-number {
+  font-size: 18px;
+  color: #808080;
+}
+
+.bet-amount {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #2196F3;
+  font-weight: 600;
+}
+
+.game-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 32px;
+  position: relative;
+  padding: 32px 0;
+}
+
+.player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.bot {
+  transform: rotate(180deg);
+}
+
+.player-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-icon {
+  font-size: 32px;
+  color: #2196F3;
+}
+
+.player-choice {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.choice-icon {
+  font-size: 80px;
+  color: white;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.3s;
+}
+
+.choice-icon.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.choice-icon.shaking {
+  animation: shake 0.5s infinite;
+}
+
+.choice-buttons {
+  display: flex;
+  gap: 16px;
+}
+
+.choice-button {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.choice-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.choice-button:active {
+  transform: scale(0.95);
+}
+
+.round-result {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 64px;
+  font-weight: 700;
+  text-align: center;
+  color: white;
+  text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  animation: popIn 0.3s ease-out;
+}
+
+.round-result.win {
+  color: #4CAF50;
+}
+
+.round-result.lose {
+  color: #F44336;
+}
+
+.round-result.draw {
+  color: #FFC107;
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-20deg);
+  }
+  75% {
+    transform: rotate(20deg);
+  }
+} 

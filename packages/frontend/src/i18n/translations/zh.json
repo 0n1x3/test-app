@@ -92,6 +92,11 @@
         "startGame": "开始游戏",
         "errors": {
           "insufficientBalance": "代币余额不足"
+        },
+        "results": {
+          "win": "胜利！",
+          "lose": "失败！",
+          "draw": "平局！"
         }
       }
     }

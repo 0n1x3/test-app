@@ -8,6 +8,7 @@ import { PageContainer } from '@/components/_layout/PageContainer';
 import { PageHeader } from '@/components/_layout/PageHeader';
 import { useUserStore } from '@/store/useUserStore';
 import './style.css';
+import { GameField } from '../components/GameField';
 
 type GameMode = 'bot' | 'player';
 type BetType = 'tokens' | 'real';
@@ -17,9 +18,9 @@ export function RpsPage() {
   const [betType, setBetType] = useState<BetType>('tokens');
   const [gameMode, setGameMode] = useState<GameMode>('bot');
   const [betAmount, setBetAmount] = useState<number>(100);
+  const [gameStarted, setGameStarted] = useState(false);
 
   const handleStartGame = () => {
-    // Проверяем баланс пользователя перед началом игры
     const userBalance = useUserStore.getState().balance;
     
     if (betType === 'tokens' && userBalance < betAmount) {
@@ -31,12 +32,13 @@ export function RpsPage() {
       return;
     }
 
-    // Здесь будет логика начала игры
-    console.log('Starting game with:', {
-      betType,
-      gameMode,
-      betAmount
-    });
+    setGameStarted(true);
+  };
+
+  const handleGameEnd = (result: 'win' | 'lose' | 'draw') => {
+    // Здесь будет логика начисления выигрыша
+    console.log('Game ended with result:', result);
+    setGameStarted(false);
   };
 
   return (
@@ -44,77 +46,84 @@ export function RpsPage() {
       <PageContainer>
         <PageHeader title={t('pages.games.rps.title')} />
         
-        <div className="rps-page">
-          {/* Выбор типа ставки */}
-          <div className="bet-type-selector">
-            <button 
-              className={`bet-type-button ${betType === 'tokens' ? 'active' : ''}`}
-              onClick={() => setBetType('tokens')}
-            >
-              <Icon icon="material-symbols:diamond-rounded" />
-              {t('pages.games.rps.tokens')}
-            </button>
-            <button 
-              className={`bet-type-button ${betType === 'real' ? 'active' : ''}`}
-              onClick={() => setBetType('real')}
-            >
-              <Icon icon="cryptocurrency:ton" />
-              TON
-            </button>
-          </div>
-
-          {/* Выбор режима игры */}
-          <div className="game-mode-selector">
-            <button 
-              className={`game-mode-button ${gameMode === 'bot' ? 'active' : ''}`}
-              onClick={() => setGameMode('bot')}
-            >
-              <Icon icon="mdi:robot" />
-              {t('pages.games.rps.playWithBot')}
-            </button>
-            <button 
-              className={`game-mode-button ${gameMode === 'player' ? 'active' : ''}`}
-              onClick={() => setGameMode('player')}
-            >
-              <Icon icon="mdi:account-multiple" />
-              {t('pages.games.rps.playWithPlayer')}
-            </button>
-          </div>
-
-          {/* Выбор суммы ставки */}
-          <div className="bet-amount-selector">
-            <h3>{t('pages.games.rps.betAmount')}</h3>
-            <div className="bet-amount-controls">
+        {!gameStarted ? (
+          <div className="rps-page">
+            {/* Выбор типа ставки */}
+            <div className="bet-type-selector">
               <button 
-                className="bet-control-button"
-                onClick={() => setBetAmount(prev => Math.max(0, prev - 100))}
+                className={`bet-type-button ${betType === 'tokens' ? 'active' : ''}`}
+                onClick={() => setBetType('tokens')}
               >
-                -
+                <Icon icon="material-symbols:diamond-rounded" />
+                {t('pages.games.rps.tokens')}
               </button>
-              <div className="bet-amount">
-                <Icon 
-                  icon={betType === 'tokens' ? "material-symbols:diamond-rounded" : "cryptocurrency:ton"} 
-                  className="bet-currency-icon"
-                />
-                <span>{betAmount}</span>
-              </div>
               <button 
-                className="bet-control-button"
-                onClick={() => setBetAmount(prev => prev + 100)}
+                className={`bet-type-button ${betType === 'real' ? 'active' : ''}`}
+                onClick={() => setBetType('real')}
               >
-                +
+                <Icon icon="cryptocurrency:ton" />
+                TON
               </button>
             </div>
-          </div>
 
-          {/* Кнопка начала игры */}
-          <button 
-            className="start-game-button"
-            onClick={handleStartGame}
-          >
-            {t('pages.games.rps.startGame')}
-          </button>
-        </div>
+            {/* Выбор режима игры */}
+            <div className="game-mode-selector">
+              <button 
+                className={`game-mode-button ${gameMode === 'bot' ? 'active' : ''}`}
+                onClick={() => setGameMode('bot')}
+              >
+                <Icon icon="mdi:robot" />
+                {t('pages.games.rps.playWithBot')}
+              </button>
+              <button 
+                className={`game-mode-button ${gameMode === 'player' ? 'active' : ''}`}
+                onClick={() => setGameMode('player')}
+              >
+                <Icon icon="mdi:account-multiple" />
+                {t('pages.games.rps.playWithPlayer')}
+              </button>
+            </div>
+
+            {/* Выбор суммы ставки */}
+            <div className="bet-amount-selector">
+              <h3>{t('pages.games.rps.betAmount')}</h3>
+              <div className="bet-amount-controls">
+                <button 
+                  className="bet-control-button"
+                  onClick={() => setBetAmount(prev => Math.max(0, prev - 100))}
+                >
+                  -
+                </button>
+                <div className="bet-amount">
+                  <Icon 
+                    icon={betType === 'tokens' ? "material-symbols:diamond-rounded" : "cryptocurrency:ton"} 
+                    className="bet-currency-icon"
+                  />
+                  <span>{betAmount}</span>
+                </div>
+                <button 
+                  className="bet-control-button"
+                  onClick={() => setBetAmount(prev => prev + 100)}
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            {/* Кнопка начала игры */}
+            <button 
+              className="start-game-button"
+              onClick={handleStartGame}
+            >
+              {t('pages.games.rps.startGame')}
+            </button>
+          </div>
+        ) : (
+          <GameField 
+            betAmount={betAmount}
+            onGameEnd={handleGameEnd}
+          />
+        )}
       </PageContainer>
     </SafeArea>
   );

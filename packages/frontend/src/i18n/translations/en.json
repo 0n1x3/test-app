@@ -97,6 +97,11 @@
         "startGame": "Start Game",
         "errors": {
           "insufficientBalance": "Insufficient tokens for bet"
+        },
+        "results": {
+          "win": "WIN!",
+          "lose": "LOSE!",
+          "draw": "DRAW!"
         }
       }
     }
