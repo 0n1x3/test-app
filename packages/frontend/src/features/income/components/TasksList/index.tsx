@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Icon } from '@iconify/react';
 import { useTranslation } from '@/providers/i18n';
 import type { Task } from '../../../../types';
+import { useUserStore } from '@/store/useUserStore';
 import './style.css';
 
 export function TasksList() {
@@ -78,10 +79,11 @@ export function TasksList() {
       if (response.ok) {
         const updatedUser = await response.json();
         
-        // Показываем уведомление
-        webApp.showPopup({
-          title: t('pages.income.tasks.rewardCollected'),
-          message: t('pages.income.tasks.rewardAddedToBalance')
+        // Обновляем баланс пользователя
+        useUserStore.getState().setUserData({
+          balance: updatedUser.balance,
+          level: updatedUser.level,
+          experience: updatedUser.experience
         });
 
         // Обновляем список задач
@@ -133,8 +135,7 @@ export function TasksList() {
           {tasks.map(task => (
             <div key={task._id} className={`task-card ${!task.isActive ? 'completed' : ''}`}>
               <div className="task-info">
-                <h3>{task.title}</h3>
-                <p>{task.description}</p>
+                <h3>{task.type === 'FIRST_GAME' ? t('pages.income.tasks.firstTask.title') : task.title}</h3>
               </div>
               <div className="task-reward">
                 <Icon 

@@ -35,6 +35,10 @@ export class TasksService {
 
     // Обновляем пользователя
     const user = await this.userModel.findOne({ telegramId: userId });
+    if (!user) {
+      throw new Error('User not found');
+    }
+
     user.balance += task.reward;
     user.experience += task.reward;
     
