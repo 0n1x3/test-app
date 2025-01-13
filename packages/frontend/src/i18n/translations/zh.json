@@ -81,6 +81,19 @@
       "minimum": "最小",
       "available": "可用",
       "next": "下一步"
+    },
+    "games": {
+      "rps": {
+        "title": "石头剪刀布",
+        "tokens": "代币",
+        "playWithBot": "与机器人对战",
+        "playWithPlayer": "与玩家对战",
+        "betAmount": "投注金额",
+        "startGame": "开始游戏",
+        "errors": {
+          "insufficientBalance": "代币余额不足"
+        }
+      }
     }
   },
   "settings": {

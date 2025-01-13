@@ -1,0 +1,95 @@
+.rps-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 16px;
+}
+
+.bet-type-selector,
+.game-mode-selector {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.bet-type-button,
+.game-mode-button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  background: #1A1A1A;
+  border-radius: 12px;
+  color: #808080;
+  font-size: 15px;
+  transition: all 0.2s;
+}
+
+.bet-type-button.active,
+.game-mode-button.active {
+  background: #2196F3;
+  color: white;
+}
+
+.bet-amount-selector {
+  background: #1A1A1A;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.bet-amount-selector h3 {
+  font-size: 15px;
+  color: #808080;
+  margin-bottom: 16px;
+}
+
+.bet-amount-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.bet-control-button {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: white;
+  font-size: 20px;
+}
+
+.bet-amount {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 24px;
+  font-weight: 600;
+  color: white;
+}
+
+.bet-currency-icon {
+  font-size: 24px;
+  color: #2196F3;
+}
+
+.start-game-button {
+  width: 100%;
+  padding: 16px;
+  background: #2196F3;
+  border-radius: 12px;
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+.start-game-button:hover {
+  background: #1976D2;
+} 

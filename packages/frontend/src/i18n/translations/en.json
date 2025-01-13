@@ -86,6 +86,19 @@
       "minimum": "Minimum",
       "available": "Available",
       "next": "Next"
+    },
+    "games": {
+      "rps": {
+        "title": "Rock, Paper, Scissors",
+        "tokens": "Tokens",
+        "playWithBot": "Play with Bot",
+        "playWithPlayer": "Play with Player",
+        "betAmount": "Bet Amount",
+        "startGame": "Start Game",
+        "errors": {
+          "insufficientBalance": "Insufficient tokens for bet"
+        }
+      }
     }
   },
   "settings": {
