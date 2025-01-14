@@ -103,6 +103,23 @@
           "lose": "LOSE!",
           "draw": "DRAW!"
         }
+      },
+      "dice": {
+        "title": "Dice",
+        "tokens": "Tokens",
+        "playWithBot": "Play with Bot",
+        "playWithPlayer": "Play with Player",
+        "betAmount": "Bet Amount",
+        "startGame": "Start Game",
+        "roll": "Roll",
+        "results": {
+          "win": "Win",
+          "lose": "Lose",
+          "draw": "Draw"
+        },
+        "errors": {
+          "insufficientBalance": "Insufficient tokens"
+        }
       }
     }
   },

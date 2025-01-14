@@ -98,6 +98,23 @@
           "lose": "ПОРАЖЕНИЕ!",
           "draw": "НИЧЬЯ!"
         }
+      },
+      "dice": {
+        "title": "Кубик",
+        "tokens": "Токены",
+        "playWithBot": "Играть с ботом",
+        "playWithPlayer": "Играть с игроком",
+        "betAmount": "Сумма ставки",
+        "startGame": "Начать игру",
+        "roll": "Бросить",
+        "results": {
+          "win": "Победа",
+          "lose": "Поражение",
+          "draw": "Ничья"
+        },
+        "errors": {
+          "insufficientBalance": "Недостаточно токенов"
+        }
       }
     }
   },

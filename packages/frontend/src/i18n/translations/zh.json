@@ -98,6 +98,23 @@
           "lose": "失败！",
           "draw": "平局！"
         }
+      },
+      "dice": {
+        "title": "骰子",
+        "tokens": "代币",
+        "playWithBot": "与机器人对战",
+        "playWithPlayer": "与玩家对战",
+        "betAmount": "投注金额",
+        "startGame": "开始游戏",
+        "roll": "掷骰子",
+        "results": {
+          "win": "胜利",
+          "lose": "失败",
+          "draw": "平局"
+        },
+        "errors": {
+          "insufficientBalance": "代币不足"
+        }
       }
     }
   },
