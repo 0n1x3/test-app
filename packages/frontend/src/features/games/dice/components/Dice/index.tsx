@@ -36,15 +36,15 @@ export function Dice({ value, isRolling, size = 'large' }: DiceProps) {
       return;
     }
 
-    // Плавное вращение во время броска
-    rotationRef.current.x += 8;
-    rotationRef.current.y += 10;
-    rotationRef.current.z += 6;
+    // Более плавное вращение
+    rotationRef.current.x += 15;
+    rotationRef.current.y += 20;
+    rotationRef.current.z += 10;
 
     setRotation({
-      x: rotationRef.current.x,
-      y: rotationRef.current.y,
-      z: rotationRef.current.z
+      x: rotationRef.current.x % 360,
+      y: rotationRef.current.y % 360,
+      z: rotationRef.current.z % 360
     });
 
     animationRef.current = requestAnimationFrame(animate);
@@ -52,21 +52,16 @@ export function Dice({ value, isRolling, size = 'large' }: DiceProps) {
 
   useEffect(() => {
     if (isRolling) {
-      // Начинаем анимацию броска
       animationRef.current = requestAnimationFrame(animate);
     } else if (value) {
-      // Плавно переходим к конечному положению
       const targetRotation = valueToRotation[value];
       
-      // Добавляем дополнительные обороты для более естественного завершения
-      const finalRotation = {
-        x: targetRotation.x + Math.floor(rotationRef.current.x / 360) * 360,
-        y: targetRotation.y + Math.floor(rotationRef.current.y / 360) * 360,
-        z: targetRotation.z + Math.floor(rotationRef.current.z / 360) * 360
-      };
-
-      setRotation(finalRotation);
-      rotationRef.current = finalRotation;
+      // Плавный переход к конечному положению
+      setRotation({
+        x: targetRotation.x,
+        y: targetRotation.y,
+        z: targetRotation.z
+      });
     }
 
     return () => {
@@ -90,13 +85,12 @@ export function Dice({ value, isRolling, size = 'large' }: DiceProps) {
         <div className="face back">
           <span className="dot top left"></span>
           <span className="dot top right"></span>
-          <span className="dot center"></span>
+          <span className="dot middle left"></span>
+          <span className="dot middle right"></span>
           <span className="dot bottom left"></span>
           <span className="dot bottom right"></span>
-          <span className="dot center"></span>
         </div>
         <div className="face right">
-          <span className="dot top left"></span>
           <span className="dot top right"></span>
           <span className="dot bottom left"></span>
         </div>
@@ -108,8 +102,9 @@ export function Dice({ value, isRolling, size = 'large' }: DiceProps) {
           <span className="dot bottom right"></span>
         </div>
         <div className="face top">
-          <span className="dot top left"></span>
           <span className="dot top right"></span>
+          <span className="dot center"></span>
+          <span className="dot bottom left"></span>
         </div>
         <div className="face bottom">
           <span className="dot top left"></span>

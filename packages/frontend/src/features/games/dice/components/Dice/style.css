@@ -1,8 +1,9 @@
 .dice-container {
-  perspective: 1200px;
+  perspective: 1000px;
   width: 100px;
   height: 100px;
   position: relative;
+  margin: 20px;
 }
 
 .dice-container.small {
@@ -20,25 +21,25 @@
   height: 100%;
   position: relative;
   transform-style: preserve-3d;
-  transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: transform 0.6s ease;
 }
 
 .dice.rolling {
-  transition: transform 0.1s linear;
+  transition: none;
 }
 
 .face {
   position: absolute;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.95);
-  border: 2px solid rgba(0, 0, 0, 0.1);
+  background: white;
+  border: 2px solid #ccc;
   border-radius: 10%;
   display: grid;
   grid-template: repeat(3, 1fr) / repeat(3, 1fr);
-  gap: 4px;
-  padding: 8px;
-  backface-visibility: hidden;
+  gap: 8px;
+  padding: 12px;
+  backface-visibility: visible;
 }
 
 .dot {
@@ -48,25 +49,59 @@
   height: 100%;
 }
 
-.front { transform: translateZ(50px); }
-.back { transform: rotateY(180deg) translateZ(50px); }
-.right { transform: rotateY(90deg) translateZ(50px); }
-.left { transform: rotateY(-90deg) translateZ(50px); }
-.top { transform: rotateX(90deg) translateZ(50px); }
-.bottom { transform: rotateX(-90deg) translateZ(50px); }
+/* Позиционирование граней */
+.front {
+  transform: translateZ(calc(var(--size) / 2));
+}
 
+.back {
+  transform: rotateY(180deg) translateZ(calc(var(--size) / 2));
+}
+
+.right {
+  transform: rotateY(90deg) translateZ(calc(var(--size) / 2));
+}
+
+.left {
+  transform: rotateY(-90deg) translateZ(calc(var(--size) / 2));
+}
+
+.top {
+  transform: rotateX(90deg) translateZ(calc(var(--size) / 2));
+}
+
+.bottom {
+  transform: rotateX(-90deg) translateZ(calc(var(--size) / 2));
+}
+
+/* Позиционирование точек */
 .top.left { grid-area: 1 / 1; }
 .top.right { grid-area: 1 / 3; }
+.middle.left { grid-area: 2 / 1; }
+.middle.right { grid-area: 2 / 3; }
 .center { grid-area: 2 / 2; }
 .bottom.left { grid-area: 3 / 1; }
 .bottom.right { grid-area: 3 / 3; }
 
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  75% { transform: translateX(5px); }
+/* CSS переменные для размеров */
+.dice-container {
+  --size: 100px;
+}
+
+.dice-container.small {
+  --size: 60px;
+}
+
+.dice-container.large {
+  --size: 120px;
+}
+
+/* Анимация броска */
+@keyframes roll {
+  0% { transform: rotateX(0) rotateY(0) rotateZ(0); }
+  100% { transform: rotateX(360deg) rotateY(720deg) rotateZ(360deg); }
 }
 
 .rolling {
-  animation: shake 0.5s infinite;
+  animation: roll 1s linear infinite;
 } 
