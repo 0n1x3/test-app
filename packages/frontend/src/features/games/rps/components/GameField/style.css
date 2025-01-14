@@ -146,12 +146,18 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 64px;
+  font-size: 48px;
   font-weight: 700;
   text-align: center;
   color: white;
   text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
   animation: popIn 0.3s ease-out;
+  z-index: 5;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 16px 32px;
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .round-result.win {
