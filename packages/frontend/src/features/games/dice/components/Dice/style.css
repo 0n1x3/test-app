@@ -4,8 +4,9 @@
   height: var(--size);
   position: relative;
   --size: 80px;
-  --dot-size: 10px;
+  --dot-size: 8px;
   --dot-color: #333;
+  margin: 30px auto;
 }
 
 .dice {
@@ -34,46 +35,46 @@
 /* Грань 2 - две точки */
 .face-2 {
   background-image: 
-    radial-gradient(circle at 20% 80%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 80% 20%, var(--dot-color) var(--dot-size), transparent 0);
+    radial-gradient(circle at 25% 75%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 75% 25%, var(--dot-color) var(--dot-size), transparent 0);
 }
 
 /* Грань 3 - три точки */
 .face-3 {
   background-image: 
-    radial-gradient(circle at 20% 80%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 25% 75%, var(--dot-color) var(--dot-size), transparent 0),
     radial-gradient(circle at 50% 50%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 80% 20%, var(--dot-color) var(--dot-size), transparent 0);
+    radial-gradient(circle at 75% 25%, var(--dot-color) var(--dot-size), transparent 0);
 }
 
 /* Грань 4 - четыре точки */
 .face-4 {
   background-image: 
-    radial-gradient(circle at 20% 20%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 80% 20%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 20% 80%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 80% 80%, var(--dot-color) var(--dot-size), transparent 0);
+    radial-gradient(circle at 25% 25%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 75% 25%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 25% 75%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 75% 75%, var(--dot-color) var(--dot-size), transparent 0);
 }
 
 /* Грань 5 - пять точек */
 .face-5 {
   background-image: 
-    radial-gradient(circle at 20% 20%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 80% 20%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 25% 25%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 75% 25%, var(--dot-color) var(--dot-size), transparent 0),
     radial-gradient(circle at 50% 50%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 20% 80%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 80% 80%, var(--dot-color) var(--dot-size), transparent 0);
+    radial-gradient(circle at 25% 75%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 75% 75%, var(--dot-color) var(--dot-size), transparent 0);
 }
 
 /* Грань 6 - шесть точек */
 .face-6 {
   background-image: 
-    radial-gradient(circle at 20% 20%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 80% 20%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 20% 50%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 80% 50%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 20% 80%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 80% 80%, var(--dot-color) var(--dot-size), transparent 0);
+    radial-gradient(circle at 25% 25%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 75% 25%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 25% 50%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 75% 50%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 25% 75%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 75% 75%, var(--dot-color) var(--dot-size), transparent 0);
 }
 
 /* Позиционирование граней */
@@ -94,5 +95,5 @@
   animation: roll 1.5s ease-out infinite;
 }
 
-.dice-container.small { --size: 60px; --dot-size: 8px; }
-.dice-container.large { --size: 80px; --dot-size: 12px; } 
+.dice-container.small { --size: 60px; --dot-size: 6px; }
+.dice-container.large { --size: 80px; --dot-size: 8px; } 

@@ -142,4 +142,26 @@
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
   }
+}
+
+.game-field {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+}
+
+.dice-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 60px;
+  margin: 40px 0;
+}
+
+.button-area {
+  margin-top: 20px;
 } 
