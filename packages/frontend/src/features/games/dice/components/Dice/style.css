@@ -4,6 +4,8 @@
   height: var(--size);
   position: relative;
   --size: 100px;
+  --dot-size: 12px;
+  --dot-color: #333;
 }
 
 .dice {
@@ -21,112 +23,57 @@
   background: white;
   border: 2px solid #ccc;
   border-radius: 10%;
-  transform-style: preserve-3d;
+  background-repeat: no-repeat;
 }
 
-.dot {
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  background: #333;
-  border-radius: 50%;
-  z-index: 2;
-}
-
-/* Грань 1 - одна точка в центре */
-.face.front .dot.center {
-  top: calc(50% - 8px);
-  left: calc(50% - 8px);
+/* Грань 1 - одна точка */
+.face-1 {
+  background-image: radial-gradient(circle at center, var(--dot-color) var(--dot-size), transparent 0);
 }
 
 /* Грань 2 - две точки */
-.face.right .dot.top.right {
-  top: 25%;
-  right: 25%;
-}
-.face.right .dot.bottom.left {
-  bottom: 25%;
-  left: 25%;
+.face-2 {
+  background-image: 
+    radial-gradient(circle at 25% 75%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 75% 25%, var(--dot-color) var(--dot-size), transparent 0);
 }
 
 /* Грань 3 - три точки */
-.face.back .dot.top.right {
-  top: 25%;
-  right: 25%;
-}
-.face.back .dot.center {
-  top: calc(50% - 8px);
-  left: calc(50% - 8px);
-}
-.face.back .dot.bottom.left {
-  bottom: 25%;
-  left: 25%;
+.face-3 {
+  background-image: 
+    radial-gradient(circle at 25% 75%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 50% 50%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 75% 25%, var(--dot-color) var(--dot-size), transparent 0);
 }
 
 /* Грань 4 - четыре точки */
-.face.left .dot.top.left {
-  top: 25%;
-  left: 25%;
-}
-.face.left .dot.top.right {
-  top: 25%;
-  right: 25%;
-}
-.face.left .dot.bottom.left {
-  bottom: 25%;
-  left: 25%;
-}
-.face.left .dot.bottom.right {
-  bottom: 25%;
-  right: 25%;
+.face-4 {
+  background-image: 
+    radial-gradient(circle at 25% 25%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 75% 25%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 25% 75%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 75% 75%, var(--dot-color) var(--dot-size), transparent 0);
 }
 
 /* Грань 5 - пять точек */
-.face.top .dot.top.left {
-  top: 25%;
-  left: 25%;
-}
-.face.top .dot.top.right {
-  top: 25%;
-  right: 25%;
-}
-.face.top .dot.center {
-  top: calc(50% - 8px);
-  left: calc(50% - 8px);
-}
-.face.top .dot.bottom.left {
-  bottom: 25%;
-  left: 25%;
-}
-.face.top .dot.bottom.right {
-  bottom: 25%;
-  right: 25%;
+.face-5 {
+  background-image: 
+    radial-gradient(circle at 25% 25%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 75% 25%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 50% 50%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 25% 75%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 75% 75%, var(--dot-color) var(--dot-size), transparent 0);
 }
 
 /* Грань 6 - шесть точек */
-.face.bottom .dot.top.left {
-  top: 25%;
-  left: 25%;
-}
-.face.bottom .dot.top.right {
-  top: 25%;
-  right: 25%;
-}
-.face.bottom .dot.middle.left {
-  top: calc(50% - 8px);
-  left: 25%;
-}
-.face.bottom .dot.middle.right {
-  top: calc(50% - 8px);
-  right: 25%;
-}
-.face.bottom .dot.bottom.left {
-  bottom: 25%;
-  left: 25%;
-}
-.face.bottom .dot.bottom.right {
-  bottom: 25%;
-  right: 25%;
+.face-6 {
+  background-image: 
+    radial-gradient(circle at 25% 25%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 75% 25%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 25% 50%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 75% 50%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 25% 75%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 75% 75%, var(--dot-color) var(--dot-size), transparent 0);
 }
 
 /* Позиционирование граней */
@@ -147,26 +94,5 @@
   animation: roll 1.5s ease-out infinite;
 }
 
-/* Улучшаем 3D-эффект */
-.dice-container::after {
-  content: '';
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle at 50% 50%, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 60%);
-  transform: translateZ(-100px);
-  pointer-events: none;
-}
-
-/* Размер кубика */
-.dice-container {
-  --size: 100px;
-}
-
-.dice-container.small {
-  --size: 80px;
-}
-
-.dice-container.large {
-  --size: 120px;
-} 
+.dice-container.small { --size: 80px; --dot-size: 8px; }
+.dice-container.large { --size: 120px; --dot-size: 16px; } 

@@ -81,39 +81,12 @@ export function Dice({ value, isRolling, size = 'large' }: DiceProps) {
           transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg) rotateZ(${rotation.z}deg)`
         }}
       >
-        <div className="face front">
-          <span className="dot center"></span>
-        </div>
-        <div className="face right">
-          <span className="dot top right"></span>
-          <span className="dot bottom left"></span>
-        </div>
-        <div className="face back">
-          <span className="dot top right"></span>
-          <span className="dot center"></span>
-          <span className="dot bottom left"></span>
-        </div>
-        <div className="face left">
-          <span className="dot top left"></span>
-          <span className="dot top right"></span>
-          <span className="dot bottom left"></span>
-          <span className="dot bottom right"></span>
-        </div>
-        <div className="face top">
-          <span className="dot top left"></span>
-          <span className="dot top right"></span>
-          <span className="dot center"></span>
-          <span className="dot bottom left"></span>
-          <span className="dot bottom right"></span>
-        </div>
-        <div className="face bottom">
-          <span className="dot top left"></span>
-          <span className="dot top right"></span>
-          <span className="dot middle left"></span>
-          <span className="dot middle right"></span>
-          <span className="dot bottom left"></span>
-          <span className="dot bottom right"></span>
-        </div>
+        <div className="face face-1 front"></div>
+        <div className="face face-2 right"></div>
+        <div className="face face-3 back"></div>
+        <div className="face face-4 left"></div>
+        <div className="face face-5 top"></div>
+        <div className="face face-6 bottom"></div>
       </div>
     </div>
   );
