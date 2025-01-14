@@ -22,82 +22,122 @@
   border: 2px solid #ccc;
   border-radius: 10%;
   transform-style: preserve-3d;
-  /* Добавляем внутреннюю тень для объема */
-  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.1);
-}
-
-/* Важно: добавляем transform-style: preserve-3d для контейнеров точек */
-.dots-container {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  padding: 15%;
-  transform-style: preserve-3d;
 }
 
 .dot {
   position: absolute;
-  width: 12%;
-  height: 12%;
+  width: 16px;
+  height: 16px;
   background: #333;
   border-radius: 50%;
-  margin: 0;
+  z-index: 2;
 }
 
-/* Позиции для всех возможных точек */
-/* Верхний ряд */
-.top.left { left: 15%; top: 15%; }
-.top.right { right: 15%; top: 15%; }
-
-/* Средний ряд */
-.middle.left { left: 15%; top: 44%; }
-.middle.right { right: 15%; top: 44%; }
-.center { left: 44%; top: 44%; }
-
-/* Нижний ряд */
-.bottom.left { left: 15%; bottom: 15%; }
-.bottom.right { right: 15%; bottom: 15%; }
-
-/* Специальные стили для каждой грани */
-.face.front .dots-container {
-  /* Грань 1: одна точка в центре */
-  transform: rotateZ(0deg);
+/* Грань 1 - одна точка в центре */
+.face.front .dot.center {
+  top: calc(50% - 8px);
+  left: calc(50% - 8px);
 }
 
-.face.right .dots-container {
-  /* Грань 2: две точки по диагонали */
-  transform: rotateZ(-45deg);
+/* Грань 2 - две точки */
+.face.right .dot.top.right {
+  top: 25%;
+  right: 25%;
+}
+.face.right .dot.bottom.left {
+  bottom: 25%;
+  left: 25%;
 }
 
-.face.back .dots-container {
-  /* Грань 3: три точки по диагонали */
-  transform: rotateZ(45deg);
+/* Грань 3 - три точки */
+.face.back .dot.top.right {
+  top: 25%;
+  right: 25%;
+}
+.face.back .dot.center {
+  top: calc(50% - 8px);
+  left: calc(50% - 8px);
+}
+.face.back .dot.bottom.left {
+  bottom: 25%;
+  left: 25%;
 }
 
-.face.left .dots-container {
-  /* Грань 4: четыре точки по углам */
-  transform: rotateZ(0deg);
+/* Грань 4 - четыре точки */
+.face.left .dot.top.left {
+  top: 25%;
+  left: 25%;
+}
+.face.left .dot.top.right {
+  top: 25%;
+  right: 25%;
+}
+.face.left .dot.bottom.left {
+  bottom: 25%;
+  left: 25%;
+}
+.face.left .dot.bottom.right {
+  bottom: 25%;
+  right: 25%;
 }
 
-.face.top .dots-container {
-  /* Грань 5: пять точек */
-  transform: rotateZ(0deg);
+/* Грань 5 - пять точек */
+.face.top .dot.top.left {
+  top: 25%;
+  left: 25%;
+}
+.face.top .dot.top.right {
+  top: 25%;
+  right: 25%;
+}
+.face.top .dot.center {
+  top: calc(50% - 8px);
+  left: calc(50% - 8px);
+}
+.face.top .dot.bottom.left {
+  bottom: 25%;
+  left: 25%;
+}
+.face.top .dot.bottom.right {
+  bottom: 25%;
+  right: 25%;
 }
 
-.face.bottom .dots-container {
-  /* Грань 6: шесть точек */
-  transform: rotateZ(0deg);
+/* Грань 6 - шесть точек */
+.face.bottom .dot.top.left {
+  top: 25%;
+  left: 25%;
+}
+.face.bottom .dot.top.right {
+  top: 25%;
+  right: 25%;
+}
+.face.bottom .dot.middle.left {
+  top: calc(50% - 8px);
+  left: 25%;
+}
+.face.bottom .dot.middle.right {
+  top: calc(50% - 8px);
+  right: 25%;
+}
+.face.bottom .dot.bottom.left {
+  bottom: 25%;
+  left: 25%;
+}
+.face.bottom .dot.bottom.right {
+  bottom: 25%;
+  right: 25%;
 }
 
 /* Позиционирование граней */
-.front { transform: rotateY(0deg) translateZ(calc(var(--size) / 2)); }
+.front { transform: translateZ(calc(var(--size) / 2)); }
 .back { transform: rotateY(180deg) translateZ(calc(var(--size) / 2)); }
 .right { transform: rotateY(90deg) translateZ(calc(var(--size) / 2)); }
 .left { transform: rotateY(-90deg) translateZ(calc(var(--size) / 2)); }
 .top { transform: rotateX(90deg) translateZ(calc(var(--size) / 2)); }
 .bottom { transform: rotateX(-90deg) translateZ(calc(var(--size) / 2)); }
 
-/* Анимация броска */
+/* Анимация */
 @keyframes roll {
   0% { transform: rotateX(0) rotateY(0) rotateZ(0); }
   100% { transform: rotateX(720deg) rotateY(720deg) rotateZ(360deg); }
