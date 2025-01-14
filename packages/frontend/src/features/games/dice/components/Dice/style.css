@@ -31,37 +31,62 @@
   position: absolute;
   width: 100%;
   height: 100%;
-  padding: 20%;
+  padding: 15%;
   transform-style: preserve-3d;
 }
 
 .dot {
   position: absolute;
-  width: 15%;
-  height: 15%;
+  width: 12%;
+  height: 12%;
   background: #333;
   border-radius: 50%;
-  /* Убираем отступ от грани */
-  transform: translateZ(0);
+  margin: 0;
 }
 
-/* Позиционирование точек */
+/* Позиции для всех возможных точек */
 /* Верхний ряд */
-.top.left { left: 20%; top: 20%; }
-.top.right { right: 20%; top: 20%; }
+.top.left { left: 15%; top: 15%; }
+.top.right { right: 15%; top: 15%; }
 
 /* Средний ряд */
-.middle.left { left: 20%; top: calc(50% - 7.5%); }
-.middle.right { right: 20%; top: calc(50% - 7.5%); }
-.center { left: calc(50% - 7.5%); top: calc(50% - 7.5%); }
+.middle.left { left: 15%; top: 44%; }
+.middle.right { right: 15%; top: 44%; }
+.center { left: 44%; top: 44%; }
 
 /* Нижний ряд */
-.bottom.left { left: 20%; bottom: 20%; }
-.bottom.right { right: 20%; bottom: 20%; }
+.bottom.left { left: 15%; bottom: 15%; }
+.bottom.right { right: 15%; bottom: 15%; }
 
-/* Убираем margin, так как теперь используем точное позиционирование */
-.dot {
-  margin: 0;
+/* Специальные стили для каждой грани */
+.face.front .dots-container {
+  /* Грань 1: одна точка в центре */
+  transform: rotateZ(0deg);
+}
+
+.face.right .dots-container {
+  /* Грань 2: две точки по диагонали */
+  transform: rotateZ(-45deg);
+}
+
+.face.back .dots-container {
+  /* Грань 3: три точки по диагонали */
+  transform: rotateZ(45deg);
+}
+
+.face.left .dots-container {
+  /* Грань 4: четыре точки по углам */
+  transform: rotateZ(0deg);
+}
+
+.face.top .dots-container {
+  /* Грань 5: пять точек */
+  transform: rotateZ(0deg);
+}
+
+.face.bottom .dots-container {
+  /* Грань 6: шесть точек */
+  transform: rotateZ(0deg);
 }
 
 /* Позиционирование граней */
