@@ -82,37 +82,49 @@ export function Dice({ value, isRolling, size = 'large' }: DiceProps) {
         }}
       >
         <div className="face front">
-          <span className="dot center"></span>
+          <div className="dots-container">
+            <span className="dot center"></span>
+          </div>
         </div>
         <div className="face right">
-          <span className="dot top right"></span>
-          <span className="dot bottom left"></span>
+          <div className="dots-container">
+            <span className="dot top right"></span>
+            <span className="dot bottom left"></span>
+          </div>
         </div>
         <div className="face back">
-          <span className="dot top right"></span>
-          <span className="dot center"></span>
-          <span className="dot bottom left"></span>
+          <div className="dots-container">
+            <span className="dot top right"></span>
+            <span className="dot center"></span>
+            <span className="dot bottom left"></span>
+          </div>
         </div>
         <div className="face left">
-          <span className="dot top left"></span>
-          <span className="dot top right"></span>
-          <span className="dot bottom left"></span>
-          <span className="dot bottom right"></span>
+          <div className="dots-container">
+            <span className="dot top left"></span>
+            <span className="dot top right"></span>
+            <span className="dot bottom left"></span>
+            <span className="dot bottom right"></span>
+          </div>
         </div>
         <div className="face top">
-          <span className="dot top left"></span>
-          <span className="dot top right"></span>
-          <span className="dot center"></span>
-          <span className="dot bottom left"></span>
-          <span className="dot bottom right"></span>
+          <div className="dots-container">
+            <span className="dot top left"></span>
+            <span className="dot top right"></span>
+            <span className="dot center"></span>
+            <span className="dot bottom left"></span>
+            <span className="dot bottom right"></span>
+          </div>
         </div>
         <div className="face bottom">
-          <span className="dot top left"></span>
-          <span className="dot top right"></span>
-          <span className="dot middle left"></span>
-          <span className="dot middle right"></span>
-          <span className="dot bottom left"></span>
-          <span className="dot bottom right"></span>
+          <div className="dots-container">
+            <span className="dot top left"></span>
+            <span className="dot top right"></span>
+            <span className="dot middle left"></span>
+            <span className="dot middle right"></span>
+            <span className="dot bottom left"></span>
+            <span className="dot bottom right"></span>
+          </div>
         </div>
       </div>
     </div>
