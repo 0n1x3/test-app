@@ -9,11 +9,21 @@ interface DiceProps {
   size?: 'small' | 'large';
 }
 
+type DiceRotation = {
+  x: number;
+  y: number;
+  z: number;
+};
+
+type ValueToRotation = {
+  [key: number]: DiceRotation;
+};
+
 export function Dice({ value, isRolling, size = 'large' }: DiceProps) {
-  const [rotation, setRotation] = useState({ x: 0, y: 0, z: 0 });
+  const [rotation, setRotation] = useState<DiceRotation>({ x: 0, y: 0, z: 0 });
 
   // Маппинг значений на повороты куба
-  const valueToRotation = {
+  const valueToRotation: ValueToRotation = {
     1: { x: 0, y: 0, z: 0 },
     2: { x: -90, y: 0, z: 0 },
     3: { x: 0, y: 90, z: 0 },
