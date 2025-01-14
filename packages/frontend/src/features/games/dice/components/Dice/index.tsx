@@ -20,12 +20,12 @@ const INITIAL_ROTATION: DiceRotation = { x: 15, y: -15, z: 0 };
 
 // Правильные углы для каждой грани (добавляем начальный поворот)
 const valueToRotation: Record<number, DiceRotation> = {
-  1: { x: 0, y: 0, z: 0 },                    // Передняя грань
-  2: { x: 0, y: -90, z: 0 },                  // Правая грань
-  3: { x: 180, y: 0, z: 0 },                  // Задняя грань
-  4: { x: 0, y: 90, z: 0 },                   // Левая грань
-  5: { x: -90, y: 0, z: 0 },                  // Верхняя грань
-  6: { x: 90, y: 0, z: 0 }                    // Нижняя грань
+  1: { x: INITIAL_ROTATION.x, y: INITIAL_ROTATION.y, z: 0 },
+  2: { x: INITIAL_ROTATION.x, y: INITIAL_ROTATION.y - 90, z: 0 },
+  3: { x: INITIAL_ROTATION.x - 90, y: INITIAL_ROTATION.y, z: 0 },
+  4: { x: INITIAL_ROTATION.x + 90, y: INITIAL_ROTATION.y, z: 0 },
+  5: { x: INITIAL_ROTATION.x, y: INITIAL_ROTATION.y + 90, z: 0 },
+  6: { x: INITIAL_ROTATION.x + 180, y: INITIAL_ROTATION.y, z: 0 }
 };
 
 export function Dice({ value, isRolling, size = 'large' }: DiceProps) {
@@ -39,15 +39,14 @@ export function Dice({ value, isRolling, size = 'large' }: DiceProps) {
       return;
     }
 
-    // Более плавное вращение
-    rotationRef.current.x += 15;
-    rotationRef.current.y += 20;
-    rotationRef.current.z += 10;
+    rotationRef.current.x += 8;
+    rotationRef.current.y += 10;
+    rotationRef.current.z += 6;
 
     setRotation({
-      x: rotationRef.current.x % 360,
-      y: rotationRef.current.y % 360,
-      z: rotationRef.current.z % 360
+      x: rotationRef.current.x,
+      y: rotationRef.current.y,
+      z: rotationRef.current.z
     });
 
     animationRef.current = requestAnimationFrame(animate);
