@@ -1,0 +1,145 @@
+.dice-game {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: linear-gradient(180deg, #000000 0%, #1A1A1A 100%);
+  padding: 16px;
+  overflow: hidden;
+}
+
+.game-header {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+}
+
+.score {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.player-score,
+.bot-score {
+  font-size: 32px;
+  font-weight: 700;
+  color: white;
+  font-family: var(--font-mono);
+}
+
+.round {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.round-number {
+  font-size: 18px;
+  color: #808080;
+}
+
+.bet-amount {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #2196F3;
+  font-weight: 600;
+}
+
+.game-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
+
+.player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.bot {
+  transform: rotate(180deg);
+}
+
+.player-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-icon {
+  font-size: 32px;
+  color: #2196F3;
+}
+
+.roll-button {
+  padding: 12px 24px;
+  background: #2196F3;
+  border-radius: 12px;
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.roll-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.roll-button:not(:disabled):hover {
+  transform: scale(1.05);
+  background: #1976D2;
+}
+
+.round-result {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 48px;
+  font-weight: 700;
+  text-align: center;
+  color: white;
+  text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  animation: popIn 0.3s ease-out;
+  z-index: 5;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 16px 32px;
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.round-result.win {
+  color: #4CAF50;
+}
+
+.round-result.lose {
+  color: #F44336;
+}
+
+.round-result.draw {
+  color: #FFC107;
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+} 
