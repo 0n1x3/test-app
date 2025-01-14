@@ -15,19 +15,22 @@ type DiceRotation = {
   z: number;
 };
 
-// Правильные углы для каждой грани
+// Начальный поворот для лучшего 3D-вида
+const INITIAL_ROTATION: DiceRotation = { x: 15, y: -15, z: 0 };
+
+// Правильные углы для каждой грани (добавляем начальный поворот)
 const valueToRotation: Record<number, DiceRotation> = {
-  1: { x: 0, y: 0, z: 0 },         // Передняя грань (1)
-  2: { x: 0, y: -90, z: 0 },       // Правая грань (2)
-  3: { x: -90, y: 0, z: 0 },       // Верхняя грань (3)
-  4: { x: 90, y: 0, z: 0 },        // Нижняя грань (4)
-  5: { x: 0, y: 90, z: 0 },        // Левая грань (5)
-  6: { x: 180, y: 0, z: 0 }        // Задняя грань (6)
+  1: { x: INITIAL_ROTATION.x, y: INITIAL_ROTATION.y, z: 0 },
+  2: { x: INITIAL_ROTATION.x, y: INITIAL_ROTATION.y - 90, z: 0 },
+  3: { x: INITIAL_ROTATION.x - 90, y: INITIAL_ROTATION.y, z: 0 },
+  4: { x: INITIAL_ROTATION.x + 90, y: INITIAL_ROTATION.y, z: 0 },
+  5: { x: INITIAL_ROTATION.x, y: INITIAL_ROTATION.y + 90, z: 0 },
+  6: { x: INITIAL_ROTATION.x + 180, y: INITIAL_ROTATION.y, z: 0 }
 };
 
 export function Dice({ value, isRolling, size = 'large' }: DiceProps) {
-  const [rotation, setRotation] = useState<DiceRotation>({ x: 0, y: 0, z: 0 });
-  const rotationRef = useRef({ x: 0, y: 0, z: 0 });
+  const [rotation, setRotation] = useState<DiceRotation>(INITIAL_ROTATION);
+  const rotationRef = useRef(INITIAL_ROTATION);
   const animationRef = useRef<number>();
 
   const animate = () => {

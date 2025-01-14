@@ -1,19 +1,18 @@
 .dice-container {
   perspective: 1000px;
-  width: 100px;
-  height: 100px;
+  width: var(--size);
+  height: var(--size);
   position: relative;
   margin: 20px;
+  --size: 100px;
 }
 
 .dice-container.small {
-  width: 60px;
-  height: 60px;
+  --size: 60px;
 }
 
 .dice-container.large {
-  width: 120px;
-  height: 120px;
+  --size: 120px;
 }
 
 .dice {
@@ -40,6 +39,7 @@
   gap: 8px;
   padding: 12px;
   backface-visibility: visible;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .dot {
@@ -47,6 +47,7 @@
   border-radius: 50%;
   width: 100%;
   height: 100%;
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.4);
 }
 
 /* Позиционирование граней */
@@ -83,19 +84,6 @@
 .bottom.left { grid-area: 3 / 1; }
 .bottom.right { grid-area: 3 / 3; }
 
-/* CSS переменные для размеров */
-.dice-container {
-  --size: 100px;
-}
-
-.dice-container.small {
-  --size: 60px;
-}
-
-.dice-container.large {
-  --size: 120px;
-}
-
 /* Анимация броска */
 @keyframes roll {
   0% { transform: rotateX(0) rotateY(0) rotateZ(0); }
@@ -104,4 +92,15 @@
 
 .rolling {
   animation: roll 1s linear infinite;
+}
+
+/* Улучшаем 3D-эффект */
+.dice-container::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 50%, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 60%);
+  transform: translateZ(-100px);
+  pointer-events: none;
 } 
