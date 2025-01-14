@@ -20,7 +20,7 @@ const choiceIcons: Record<Choice, string> = {
 };
 
 export function GameField({ betAmount, onGameEnd }: GameFieldProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [round, setRound] = useState(1);
   const [playerChoice, setPlayerChoice] = useState<Choice | null>(null);
   const [botChoice, setBotChoice] = useState<Choice | null>(null);
@@ -112,7 +112,7 @@ export function GameField({ betAmount, onGameEnd }: GameFieldProps) {
         </div>
 
         {showResult && (
-          <div className={`round-result ${roundResult}`}>
+          <div className={`round-result ${roundResult} ${language === 'zh' ? 'zh' : ''}`}>
             {t(`pages.games.rps.results.${roundResult}`)}
           </div>
         )}

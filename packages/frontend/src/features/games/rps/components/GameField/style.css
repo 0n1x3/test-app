@@ -172,6 +172,12 @@
   color: #FFC107;
 }
 
+.round-result.zh {
+  font-size: 64px;
+  padding: 8px 24px;
+  white-space: nowrap;
+}
+
 @keyframes popIn {
   from {
     opacity: 0;
