@@ -1,6 +1,9 @@
 .rps-page {
   display: flex;
   flex-direction: column;
+  gap: 24px;
+  padding: 16px;
+  padding-bottom: calc(56px + 32px); /* Учитываем высоту нижнего меню + отступ */
   height: 100%;
   max-height: var(--tg-viewport-stable-height);
   overflow: hidden;
