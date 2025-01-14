@@ -126,13 +126,14 @@ export function GameField({ betAmount, onGameEnd }: GameFieldProps) {
               />
             )}
           </div>
-          {!playerChoice && !showResult && !isAnimating && (
+          {!playerChoice && !showResult && (
             <div className="choice-buttons">
               {choices.map(choice => (
                 <button
                   key={choice}
                   className="choice-button"
                   onClick={() => handleChoice(choice)}
+                  disabled={isAnimating}
                 >
                   <Icon icon={choiceIcons[choice]} />
                 </button>

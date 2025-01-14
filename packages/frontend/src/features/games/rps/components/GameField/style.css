@@ -107,6 +107,10 @@
 .choice-buttons {
   display: flex;
   gap: 16px;
+  justify-content: center;
+  margin-top: auto;
+  padding: 16px;
+  opacity: 1;
 }
 
 .choice-button {
@@ -120,6 +124,12 @@
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
+}
+
+.choice-button:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
 }
 
 .choice-button:hover {
