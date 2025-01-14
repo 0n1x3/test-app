@@ -1,8 +1,15 @@
 .rps-page {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding: 16px;
+  height: 100%;
+  max-height: var(--tg-viewport-stable-height);
+  overflow: hidden;
+}
+
+.game-container {
+  flex: 1;
+  min-height: 0; /* Важно для flex-контейнера */
+  position: relative;
 }
 
 .bet-type-selector,
