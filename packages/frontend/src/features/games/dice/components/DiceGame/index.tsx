@@ -30,17 +30,27 @@ export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
     setIsRolling(true);
     setShowResult(false);
     
-    // Анимация броска
     setTimeout(() => {
       const playerRoll = Math.floor(Math.random() * 6) + 1;
       const botRoll = Math.floor(Math.random() * 6) + 1;
       
+      console.log('Player roll:', playerRoll);
+      console.log('Bot roll:', botRoll);
+      
       setPlayerValue(playerRoll);
       setBotValue(botRoll);
       
-      // Определяем победителя раунда
-      const result = playerRoll > botRoll ? 'win' : 
-                    playerRoll < botRoll ? 'lose' : 'draw';
+      // Исправленная логика определения победителя
+      let result: GameResult;
+      if (playerRoll === botRoll) {
+        result = 'draw';
+      } else if (playerRoll > botRoll) {
+        result = 'win';
+      } else {
+        result = 'lose';
+      }
+      
+      console.log('Game result:', result);
       
       // Начисляем очки только при явной победе/поражении
       if (result === 'win') setPlayerScore(prev => prev + 1);
