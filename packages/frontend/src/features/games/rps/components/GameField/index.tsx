@@ -14,9 +14,9 @@ interface GameFieldProps {
 }
 
 const choiceIcons: Record<Choice, string> = {
-  rock: 'mdi:hand-back',
-  paper: 'mdi:hand',
-  scissors: 'mdi:content-cut',
+  rock: 'game-icons:stone-block',
+  paper: 'game-icons:folded-paper',
+  scissors: 'mdi:scissors',
 };
 
 export function GameField({ betAmount, onGameEnd }: GameFieldProps) {
