@@ -4,11 +4,9 @@
   align-items: center;
   padding: var(--header-padding) var(--app-padding) 8px;
   margin-bottom: 8px !important;
-  position: fixed;
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
-  z-index: 20;
+  z-index: 10;
   background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
