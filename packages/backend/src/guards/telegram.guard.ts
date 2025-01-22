@@ -41,11 +41,10 @@ export class TelegramGuard implements CanActivate {
       
       console.log('Hash from init data:', hash);
       
-      // Удаляем hash и signature из проверяемых данных
+      // Удаляем hash из проверяемых данных
       urlParams.delete('hash');
-      urlParams.delete('signature');
       
-      // Сортируем оставшиеся параметры
+      // Сортируем параметры и создаем строку для проверки
       const dataCheckString = Array.from(urlParams.entries())
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([key, value]) => `${key}=${value}`)
@@ -72,7 +71,7 @@ export class TelegramGuard implements CanActivate {
       console.log('Generated HMAC:', hmac);
       
       const isValid = hmac === hash;
-      console.log('Validation result:', isValid);
+      console.log('Hash comparison:', { received: hash, generated: hmac, isValid });
       
       return isValid;
     } catch (error) {
