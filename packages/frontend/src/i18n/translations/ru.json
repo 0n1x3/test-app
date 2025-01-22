@@ -113,7 +113,9 @@
           "draw": "Ничья"
         },
         "errors": {
-          "insufficientBalance": "Недостаточно токенов"
+          "insufficientBalance": "Недостаточно токенов для ставки",
+          "betFailed": "Не удалось сделать ставку",
+          "resultFailed": "Ошибка при обработке результата"
         }
       }
     }

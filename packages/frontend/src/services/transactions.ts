@@ -16,22 +16,22 @@ function getTelegramInitData(): { userId: number; initData: string } {
 export async function createBet(amount: number, game: GameType): Promise<GameTransaction> {
   const { userId, initData } = getTelegramInitData();
 
-  const response = await fetch('/api/transactions/bet', {
+  const response = await fetch('https://test.timecommunity.xyz/api/transactions/bet', {
     method: 'POST',
     headers: { 
       'Content-Type': 'application/json',
+      'Authorization': `Bearer ${initData}`
     },
     body: JSON.stringify({ 
       userId,
       amount, 
-      game,
-      initData
+      game
     })
   });
   
   const data = await response.json();
   if (!data.success) {
-    throw new Error(data.error);
+    throw new Error(data.error || 'Failed to create bet');
   }
   return data.transaction;
 }
@@ -43,22 +43,22 @@ export async function processGameResult(
 ): Promise<void> {
   const { userId, initData } = getTelegramInitData();
 
-  const response = await fetch('/api/transactions/result', {
+  const response = await fetch('https://test.timecommunity.xyz/api/transactions/result', {
     method: 'POST',
     headers: { 
       'Content-Type': 'application/json',
+      'Authorization': `Bearer ${initData}`
     },
     body: JSON.stringify({ 
       userId,
       game, 
       result, 
-      betAmount,
-      initData
+      betAmount
     })
   });
   
   const data = await response.json();
   if (!data.success) {
-    throw new Error(data.error);
+    throw new Error(data.error || 'Failed to process game result');
   }
 } 

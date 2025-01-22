@@ -113,7 +113,9 @@
           "draw": "平局"
         },
         "errors": {
-          "insufficientBalance": "代币不足"
+          "insufficientBalance": "代币不足以下注",
+          "betFailed": "下注失败",
+          "resultFailed": "处理游戏结果时出错"
         }
       }
     }

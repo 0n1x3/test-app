@@ -6,58 +6,43 @@ export class TelegramGuard implements CanActivate {
   private readonly BOT_TOKEN = process.env.BOT_TOKEN;
 
   canActivate(context: ExecutionContext): boolean {
-    const request = context.switchToHttp().getRequest();
-    const { initData } = request.body;
-
-    if (!initData) {
-      console.log('No initData in request');
-      return false;
-    }
-
     try {
-      console.log('Validating initData:', initData);
-      const isValid = this.validateInitData(initData);
-      console.log('Validation result:', isValid);
-      return isValid;
-    } catch (error) {
-      console.error('Validation error:', error);
-      return false;
-    }
-  }
-
-  private validateInitData(initData: string): boolean {
-    try {
-      // Декодируем URL-encoded строку
-      const decodedData = decodeURIComponent(initData);
-      console.log('Decoded initData:', decodedData);
+      const request = context.switchToHttp().getRequest();
+      const authHeader = request.headers.authorization;
       
-      const urlParams = new URLSearchParams(decodedData);
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return false;
+      }
+
+      const initData = authHeader.slice(7); // Убираем 'Bearer '
+      
+      // Проверяем данные
+      const urlParams = new URLSearchParams(initData);
       const hash = urlParams.get('hash');
-      console.log('Hash:', hash);
+      if (!hash) return false;
       
+      // Удаляем hash из проверяемых данных
       urlParams.delete('hash');
       
+      // Сортируем оставшиеся параметры
       const dataCheckString = Array.from(urlParams.entries())
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([key, value]) => `${key}=${value}`)
         .join('\n');
       
-      console.log('Data check string:', dataCheckString);
-
+      // Создаем секретный ключ
       const secretKey = createHash('sha256')
         .update(this.BOT_TOKEN)
         .digest();
       
+      // Вычисляем HMAC
       const hmac = createHmac('sha256', secretKey)
         .update(dataCheckString)
         .digest('hex');
       
-      console.log('Generated HMAC:', hmac);
-      console.log('Received hash:', hash);
-
       return hmac === hash;
     } catch (error) {
-      console.error('Error validating data:', error);
+      console.error('Error validating Telegram data:', error);
       return false;
     }
   }

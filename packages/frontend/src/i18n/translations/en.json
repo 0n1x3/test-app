@@ -118,7 +118,9 @@
           "draw": "Draw"
         },
         "errors": {
-          "insufficientBalance": "Insufficient tokens"
+          "insufficientBalance": "Insufficient tokens for bet",
+          "betFailed": "Failed to place bet",
+          "resultFailed": "Error processing game result"
         }
       }
     }
