@@ -10,10 +10,20 @@ declare global {
     disableVerticalSwipes: () => void;
     onEvent: (eventType: string, eventHandler: (params: { isStateStable?: boolean }) => void) => void;
     offEvent: (eventType: string, eventHandler: Function) => void;
+    initData: string;
     initDataUnsafe: {
       user?: {
-        id?: number;
+        id: number;
+        first_name: string;
+        last_name?: string;
+        username?: string;
+        language_code?: string;
+        photo_url?: string;
+        is_premium?: boolean;
       };
+      auth_date: number;
+      hash: string;
+      query_id?: string;
     };
     themeParams?: {
       bg_color: string;

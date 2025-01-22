@@ -6,17 +6,17 @@ import { UsersModule } from './users/users.module';
 import { BotModule } from './bot/bot.module';
 import { GameModule } from './game/game.module';
 import { TasksModule } from './tasks/tasks.module';
+import { TransactionsModule } from './transactions/transactions.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
+    ConfigModule.forRoot(),
     MongooseModule.forRoot(process.env.MONGODB_URI),
     UsersModule,
     BotModule,
     GameModule,
-    TasksModule
+    TasksModule,
+    TransactionsModule
   ],
   controllers: [AppController],
 })

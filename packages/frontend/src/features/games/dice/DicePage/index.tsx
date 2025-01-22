@@ -9,6 +9,8 @@ import { PageHeader } from '@/components/_layout/PageHeader';
 import { useUserStore } from '@/store/useUserStore';
 import { DiceGame } from '../components/DiceGame';
 import './style.css';
+import { createBet, processGameResult } from '@/services/transactions';
+import { GameType } from '@/types/game';
 
 type GameMode = 'bot' | 'player';
 type BetType = 'tokens' | 'real';
@@ -20,24 +22,25 @@ export function DicePage() {
   const [betAmount, setBetAmount] = useState<number>(100);
   const [gameStarted, setGameStarted] = useState(false);
 
-  const handleStartGame = () => {
-    const userBalance = useUserStore.getState().balance;
-    
-    if (betType === 'tokens' && userBalance < betAmount) {
-      window.Telegram?.WebApp?.showPopup({
-        title: t('common.error'),
-        message: t('pages.games.dice.errors.insufficientBalance'),
-        buttons: [{ type: 'ok' }]
-      });
-      return;
+  const handleStartGame = async () => {
+    try {
+      // Создаем ставку
+      await createBet(betAmount, GameType.DICE);
+      setGameStarted(true);
+    } catch (error) {
+      console.error('Error creating bet:', error);
+      // Здесь можно добавить уведомление пользователю
     }
-
-    setGameStarted(true);
   };
 
-  const handleGameEnd = (result: 'win' | 'lose' | 'draw') => {
-    // Здесь будет логика начисления выигрыша
-    console.log('Game ended with result:', result);
+  const handleGameEnd = async (result: 'win' | 'lose' | 'draw') => {
+    if (result !== 'draw') {
+      try {
+        await processGameResult(GameType.DICE, result, betAmount);
+      } catch (error) {
+        console.error('Error processing game result:', error);
+      }
+    }
     setGameStarted(false);
   };
 
