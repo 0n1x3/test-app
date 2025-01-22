@@ -3,23 +3,43 @@ import { createHash, createHmac } from 'crypto';
 
 @Injectable()
 export class TelegramGuard implements CanActivate {
-  private readonly BOT_TOKEN = process.env.BOT_TOKEN;
+  private readonly BOT_TOKEN: string;
+
+  constructor() {
+    // Проверяем, что токен получен из переменных окружения
+    if (!process.env.BOT_TOKEN) {
+      console.error('Critical: BOT_TOKEN environment variable is not set');
+      throw new Error('BOT_TOKEN environment variable is not set');
+    }
+    this.BOT_TOKEN = process.env.BOT_TOKEN;
+  }
 
   canActivate(context: ExecutionContext): boolean {
     try {
       const request = context.switchToHttp().getRequest();
       const authHeader = request.headers.authorization;
       
+      console.log('Auth header:', authHeader);
+      console.log('BOT_TOKEN exists:', !!this.BOT_TOKEN);
+      
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        console.log('No valid auth header');
         return false;
       }
 
       const initData = authHeader.slice(7); // Убираем 'Bearer '
+      console.log('Init data:', initData);
       
       // Проверяем данные
       const urlParams = new URLSearchParams(initData);
       const hash = urlParams.get('hash');
-      if (!hash) return false;
+      
+      if (!hash) {
+        console.log('No hash in init data');
+        return false;
+      }
+      
+      console.log('Hash from init data:', hash);
       
       // Удаляем hash из проверяемых данных
       urlParams.delete('hash');
@@ -29,6 +49,14 @@ export class TelegramGuard implements CanActivate {
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([key, value]) => `${key}=${value}`)
         .join('\n');
+      
+      console.log('Data check string:', dataCheckString);
+      
+      // Проверяем наличие BOT_TOKEN
+      if (!this.BOT_TOKEN) {
+        console.error('BOT_TOKEN not found in environment');
+        return false;
+      }
       
       // Создаем секретный ключ
       const secretKey = createHash('sha256')
@@ -40,9 +68,14 @@ export class TelegramGuard implements CanActivate {
         .update(dataCheckString)
         .digest('hex');
       
-      return hmac === hash;
+      console.log('Generated HMAC:', hmac);
+      
+      const isValid = hmac === hash;
+      console.log('Validation result:', isValid);
+      
+      return isValid;
     } catch (error) {
-      console.error('Error validating Telegram data:', error);
+      console.error('Error in TelegramGuard:', error);
       return false;
     }
   }

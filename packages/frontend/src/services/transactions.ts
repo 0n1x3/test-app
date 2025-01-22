@@ -4,8 +4,17 @@ function getTelegramInitData(): { userId: number; initData: string } {
   const tg = window.Telegram?.WebApp;
   
   if (!tg?.initDataUnsafe?.user?.id || !tg?.initData) {
+    console.error('Telegram WebApp data:', {
+      initDataUnsafe: tg?.initDataUnsafe,
+      initData: tg?.initData
+    });
     throw new Error('User not authenticated');
   }
+
+  console.log('Using Telegram data:', {
+    userId: tg.initDataUnsafe.user.id,
+    initData: tg.initData
+  });
 
   return {
     userId: tg.initDataUnsafe.user.id,

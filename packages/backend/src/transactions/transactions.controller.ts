@@ -13,13 +13,16 @@ export class TransactionsController {
     @Body() data: { userId: number; amount: number; game: GameType }
   ) {
     try {
+      console.log('Creating bet with data:', data);
       const transaction = await this.transactionsService.createBet(
         data.userId,
         data.amount,
         data.game
       );
+      console.log('Created transaction:', transaction);
       return { success: true, transaction };
     } catch (error) {
+      console.error('Error in createBet:', error);
       return { success: false, error: error.message };
     }
   }
