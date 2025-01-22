@@ -41,8 +41,9 @@ export class TelegramGuard implements CanActivate {
       
       console.log('Hash from init data:', hash);
       
-      // Удаляем hash из проверяемых данных
+      // Удаляем hash и signature из проверяемых данных
       urlParams.delete('hash');
+      urlParams.delete('signature');  // Важно! Signature не должен участвовать в проверке
       
       // Сортируем параметры и создаем строку для проверки
       const dataCheckString = Array.from(urlParams.entries())
