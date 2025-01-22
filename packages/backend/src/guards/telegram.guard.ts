@@ -27,8 +27,8 @@ export class TelegramGuard implements CanActivate {
         return false;
       }
 
-      const initData = authHeader.slice(7); // Убираем 'Bearer '
-      console.log('Init data:', initData);
+      const initData = decodeURIComponent(authHeader.slice(7)); // Декодируем URL-encoded строку
+      console.log('Decoded init data:', initData);
       
       // Проверяем данные
       const urlParams = new URLSearchParams(initData);
