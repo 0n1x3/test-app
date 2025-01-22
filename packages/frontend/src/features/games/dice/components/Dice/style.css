@@ -27,27 +27,32 @@
   background-repeat: no-repeat;
 }
 
-/* Грань 1 - одна точка */
+/* Позиционирование граней */
+.face-1 { transform: translateZ(calc(var(--size) / 2)); }         /* Передняя (1) */
+.face-2 { transform: rotateY(90deg) translateZ(calc(var(--size) / 2)); }   /* Правая (2) */
+.face-6 { transform: rotateY(180deg) translateZ(calc(var(--size) / 2)); }  /* Задняя (6) */
+.face-5 { transform: rotateY(-90deg) translateZ(calc(var(--size) / 2)); }  /* Левая (5) */
+.face-3 { transform: rotateX(90deg) translateZ(calc(var(--size) / 2)); }   /* Верхняя (3) */
+.face-4 { transform: rotateX(-90deg) translateZ(calc(var(--size) / 2)); }  /* Нижняя (4) */
+
+/* Точки на гранях */
 .face-1 {
   background-image: radial-gradient(circle at center, var(--dot-color) var(--dot-size), transparent 0);
 }
 
-/* Грань 2 - две точки */
 .face-2 {
   background-image: 
-    radial-gradient(circle at 25% 75%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 75% 25%, var(--dot-color) var(--dot-size), transparent 0);
+    radial-gradient(circle at 25% 25%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 75% 75%, var(--dot-color) var(--dot-size), transparent 0);
 }
 
-/* Грань 3 - три точки */
 .face-3 {
   background-image: 
-    radial-gradient(circle at 25% 75%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 25% 25%, var(--dot-color) var(--dot-size), transparent 0),
     radial-gradient(circle at 50% 50%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 75% 25%, var(--dot-color) var(--dot-size), transparent 0);
+    radial-gradient(circle at 75% 75%, var(--dot-color) var(--dot-size), transparent 0);
 }
 
-/* Грань 4 - четыре точки */
 .face-4 {
   background-image: 
     radial-gradient(circle at 25% 25%, var(--dot-color) var(--dot-size), transparent 0),
@@ -56,7 +61,6 @@
     radial-gradient(circle at 75% 75%, var(--dot-color) var(--dot-size), transparent 0);
 }
 
-/* Грань 5 - пять точек */
 .face-5 {
   background-image: 
     radial-gradient(circle at 25% 25%, var(--dot-color) var(--dot-size), transparent 0),
@@ -66,7 +70,6 @@
     radial-gradient(circle at 75% 75%, var(--dot-color) var(--dot-size), transparent 0);
 }
 
-/* Грань 6 - шесть точек */
 .face-6 {
   background-image: 
     radial-gradient(circle at 25% 25%, var(--dot-color) var(--dot-size), transparent 0),
@@ -76,14 +79,6 @@
     radial-gradient(circle at 25% 75%, var(--dot-color) var(--dot-size), transparent 0),
     radial-gradient(circle at 75% 75%, var(--dot-color) var(--dot-size), transparent 0);
 }
-
-/* Позиционирование граней */
-.front { transform: translateZ(calc(var(--size) / 2)); }
-.back { transform: rotateY(180deg) translateZ(calc(var(--size) / 2)); }
-.right { transform: rotateY(90deg) translateZ(calc(var(--size) / 2)); }
-.left { transform: rotateY(-90deg) translateZ(calc(var(--size) / 2)); }
-.top { transform: rotateX(90deg) translateZ(calc(var(--size) / 2)); }
-.bottom { transform: rotateX(-90deg) translateZ(calc(var(--size) / 2)); }
 
 /* Анимация */
 @keyframes roll {

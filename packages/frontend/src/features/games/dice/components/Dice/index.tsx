@@ -82,12 +82,12 @@ export function Dice({ value, isRolling, size = 'large' }: DiceProps) {
           transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg) rotateZ(${rotation.z}deg)`
         }}
       >
-        <div className="face face-1 front"></div>
-        <div className="face face-2 right"></div>
-        <div className="face face-3 back"></div>
-        <div className="face face-4 left"></div>
-        <div className="face face-5 top"></div>
-        <div className="face face-6 bottom"></div>
+        <div className="face face-1"></div>
+        <div className="face face-2"></div>
+        <div className="face face-6"></div>
+        <div className="face face-5"></div>
+        <div className="face face-3"></div>
+        <div className="face face-4"></div>
       </div>
     </div>
   );
