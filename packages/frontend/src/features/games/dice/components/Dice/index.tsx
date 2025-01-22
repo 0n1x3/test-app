@@ -18,14 +18,14 @@ type DiceRotation = {
 // Начальный поворот для лучшего 3D-вида
 const INITIAL_ROTATION: DiceRotation = { x: 15, y: -15, z: 0 };
 
-// Правильные углы для каждой грани (добавляем начальный поворот)
+// Обновляем маппинг значений на углы поворота
 const valueToRotation: Record<number, DiceRotation> = {
-  1: { x: INITIAL_ROTATION.x, y: INITIAL_ROTATION.y, z: 0 },
-  2: { x: INITIAL_ROTATION.x, y: INITIAL_ROTATION.y - 90, z: 0 },
-  3: { x: INITIAL_ROTATION.x - 90, y: INITIAL_ROTATION.y, z: 0 },
-  4: { x: INITIAL_ROTATION.x + 90, y: INITIAL_ROTATION.y, z: 0 },
-  5: { x: INITIAL_ROTATION.x, y: INITIAL_ROTATION.y + 90, z: 0 },
-  6: { x: INITIAL_ROTATION.x + 180, y: INITIAL_ROTATION.y, z: 0 }
+  1: { x: 0, y: 0, z: 0 },                    // Передняя грань (1)
+  6: { x: 180, y: 0, z: 0 },                  // Задняя грань (6)
+  2: { x: 0, y: -90, z: 0 },                  // Правая грань (2)
+  5: { x: 0, y: 90, z: 0 },                   // Левая грань (5)
+  3: { x: -90, y: 0, z: 0 },                  // Верхняя грань (3)
+  4: { x: 90, y: 0, z: 0 }                    // Нижняя грань (4)
 };
 
 export function Dice({ value, isRolling, size = 'large' }: DiceProps) {
@@ -56,9 +56,10 @@ export function Dice({ value, isRolling, size = 'large' }: DiceProps) {
     if (isRolling) {
       animationRef.current = requestAnimationFrame(animate);
     } else if (value) {
+      console.log('Setting dice to value:', value);
       const targetRotation = valueToRotation[value];
+      console.log('Target rotation:', targetRotation);
       
-      // Плавный переход к конечному положению
       setRotation({
         x: targetRotation.x,
         y: targetRotation.y,

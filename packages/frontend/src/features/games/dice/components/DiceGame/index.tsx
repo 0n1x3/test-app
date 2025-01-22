@@ -34,13 +34,12 @@ export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
       const playerRoll = Math.floor(Math.random() * 6) + 1;
       const botRoll = Math.floor(Math.random() * 6) + 1;
       
-      console.log('Player roll:', playerRoll);
-      console.log('Bot roll:', botRoll);
+      console.log('Generated rolls:', { player: playerRoll, bot: botRoll });
       
       setPlayerValue(playerRoll);
       setBotValue(botRoll);
       
-      // Исправленная логика определения победителя
+      // Определяем результат
       let result: GameResult;
       if (playerRoll === botRoll) {
         result = 'draw';
@@ -50,24 +49,24 @@ export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
         result = 'lose';
       }
       
-      console.log('Game result:', result);
-      
-      // Начисляем очки только при явной победе/поражении
-      if (result === 'win') setPlayerScore(prev => prev + 1);
-      if (result === 'lose') setBotScore(prev => prev + 1);
-      
+      console.log('Round result:', result);
       setRoundResult(result);
       setShowResult(true);
       setIsRolling(false);
-      
-      // Проверяем, достиг ли кто-то 2 побед
+
+      // Обновляем счет
+      if (result === 'win') {
+        setPlayerScore(prev => prev + 1);
+      } else if (result === 'lose') {
+        setBotScore(prev => prev + 1);
+      }
+
+      // Проверяем окончание игры
       setTimeout(() => {
-        if (playerScore === 1 && result === 'win' || 
-            botScore === 1 && result === 'lose') {
-          // Кто-то достиг 2 побед
+        if (playerScore >= 1 && result === 'win' || 
+            botScore >= 1 && result === 'lose') {
           onGameEnd(result);
         } else {
-          // Продолжаем игру
           setRound(prev => prev + 1);
           setPlayerValue(null);
           setBotValue(null);
