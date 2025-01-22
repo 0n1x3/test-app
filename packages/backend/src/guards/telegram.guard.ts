@@ -27,10 +27,8 @@ export class TelegramGuard implements CanActivate {
         return false;
       }
 
-      const initData = decodeURIComponent(authHeader.slice(7)); // Декодируем URL-encoded строку
-      console.log('Decoded init data:', initData);
-      
-      // Проверяем данные
+      // Берем initData как есть, без декодирования
+      const initData = authHeader.slice(7);
       const urlParams = new URLSearchParams(initData);
       const hash = urlParams.get('hash');
       
@@ -43,9 +41,10 @@ export class TelegramGuard implements CanActivate {
       
       // Удаляем hash и signature из проверяемых данных
       urlParams.delete('hash');
-      urlParams.delete('signature');  // Важно! Signature не должен участвовать в проверке
+      urlParams.delete('signature');
       
       // Сортируем параметры и создаем строку для проверки
+      // Важно: не декодируем значения!
       const dataCheckString = Array.from(urlParams.entries())
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([key, value]) => `${key}=${value}`)
