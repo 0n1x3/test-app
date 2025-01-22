@@ -50,30 +50,56 @@ export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
       }
       
       console.log('Round result:', result);
+      
+      // Обновляем счет и проверяем окончание игры
+      if (result === 'win') {
+        setPlayerScore(prevScore => {
+          const newScore = prevScore + 1;
+          if (newScore >= 2) {
+            // Задержка для показа результата
+            setTimeout(() => onGameEnd(result), 2000);
+          }
+          return newScore;
+        });
+      } else if (result === 'lose') {
+        setBotScore(prevScore => {
+          const newScore = prevScore + 1;
+          if (newScore >= 2) {
+            // Задержка для показа результата
+            setTimeout(() => onGameEnd(result), 2000);
+          }
+          return newScore;
+        });
+      }
+
       setRoundResult(result);
       setShowResult(true);
       setIsRolling(false);
 
-      // Обновляем счет
-      if (result === 'win') {
-        setPlayerScore(prev => prev + 1);
-      } else if (result === 'lose') {
-        setBotScore(prev => prev + 1);
-      }
-
-      // Проверяем окончание игры
-      setTimeout(() => {
-        if (playerScore >= 1 && result === 'win' || 
-            botScore >= 1 && result === 'lose') {
-          onGameEnd(result);
-        } else {
+      // Переход к следующему раунду если игра не закончена
+      if (result !== 'draw') {
+        setTimeout(() => {
+          const currentPlayerScore = playerScore;
+          const currentBotScore = botScore;
+          
+          if (currentPlayerScore < 2 && currentBotScore < 2) {
+            setRound(prev => prev + 1);
+            setPlayerValue(null);
+            setBotValue(null);
+            setShowResult(false);
+            setRoundResult(null);
+          }
+        }, 2000);
+      } else {
+        // При ничьей сразу переходим к следующему раунду
+        setTimeout(() => {
           setRound(prev => prev + 1);
           setPlayerValue(null);
           setBotValue(null);
           setShowResult(false);
           setRoundResult(null);
-        }
-      }, 2000);
+        }, 2000);
+      }
     }, 2000);
   };
 
