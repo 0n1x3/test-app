@@ -8,11 +8,14 @@ export class BotService implements OnModuleInit {
 
   constructor(private configService: ConfigService) {
     const token = this.configService.get<string>('BOT_TOKEN');
-    if (!token) {
-      throw new Error('BOT_TOKEN not found in environment variables');
-    }
+    console.log('Bot token first 10 chars:', token?.substring(0, 10));
     
+    // Проверяем токен через Telegram API
     this.bot = new TelegramBot(token, { polling: true });
+    this.bot.getMe().then(
+      info => console.log('Bot info:', info),
+      err => console.error('Invalid bot token:', err)
+    );
   }
 
   onModuleInit() {
