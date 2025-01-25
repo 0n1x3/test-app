@@ -8,10 +8,10 @@ export class TelegramInitData {
     const params = new URLSearchParams(initData);
     this.hash = params.get('hash') || '';
     
-    // Создаем новую Map без hash параметра
+    // Создаем новую Map без hash и signature параметров
     this.data = new Map();
     params.forEach((value, key) => {
-      if (key !== 'hash') {
+      if (key !== 'hash' && key !== 'signature') {
         this.data.set(key, value);
       }
     });
