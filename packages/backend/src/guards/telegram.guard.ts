@@ -28,8 +28,9 @@ export class TelegramGuard implements CanActivate {
       
       if (!hash) return false;
 
-      // Удаляем hash из параметров перед проверкой
+      // Удаляем hash и signature из параметров
       params.delete('hash');
+      params.delete('signature');
       
       // Создаем отсортированную строку для проверки
       const dataCheckString = Array.from(params.entries())
@@ -48,7 +49,8 @@ export class TelegramGuard implements CanActivate {
       console.log('Verification details:', {
         dataCheckString,
         receivedHash: hash,
-        generatedHash: hmac
+        generatedHash: hmac,
+        params: Object.fromEntries(params.entries())
       });
 
       return hmac === hash;
