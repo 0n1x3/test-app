@@ -10,7 +10,8 @@
         "chess": "国际象棋",
         "durak": "傻瓜"
       },
-      "playButton": "开始"
+      "playButton": "开始",
+      "comingSoon": "即将推出"
     },
     "income": {
       "title": "收入",

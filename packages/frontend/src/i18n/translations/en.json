@@ -10,7 +10,8 @@
         "chess": "Chess",
         "durak": "Durak"
       },
-      "playButton": "Play"
+      "playButton": "Play",
+      "comingSoon": "Soon"
     },
     "income": {
       "title": "Income",

@@ -7,6 +7,8 @@ import { SafeArea } from '@/components/_layout/SafeArea';
 import { PageContainer } from '@/components/_layout/PageContainer';
 import { PageHeader } from '@/components/_layout/PageHeader';
 import { useUserStore } from '@/store/useUserStore';
+import { createBet, processGameResult } from '@/services/transactions';
+import { GameType } from '@/types/game';
 import './style.css';
 import { GameField } from '../components/GameField';
 
@@ -20,24 +22,55 @@ export function RpsPage() {
   const [betAmount, setBetAmount] = useState<number>(100);
   const [gameStarted, setGameStarted] = useState(false);
 
-  const handleStartGame = () => {
-    const userBalance = useUserStore.getState().balance;
-    
-    if (betType === 'tokens' && userBalance < betAmount) {
+  const updateUserBalance = useUserStore(state => state.updateBalance);
+
+  const handleStartGame = async () => {
+    try {
+      const userBalance = useUserStore.getState().balance;
+      
+      if (betType === 'tokens' && userBalance < betAmount) {
+        window.Telegram?.WebApp?.showPopup({
+          title: t('common.error'),
+          message: t('pages.games.rps.errors.insufficientBalance'),
+          buttons: [{ type: 'ok' }]
+        });
+        return;
+      }
+
+      await createBet(betAmount, GameType.RPS);
+      // Уменьшаем баланс на сумму ставки
+      updateUserBalance(-betAmount);
+      setGameStarted(true);
+    } catch (error: unknown) {
+      console.error('Error creating bet:', error);
       window.Telegram?.WebApp?.showPopup({
         title: t('common.error'),
-        message: t('pages.games.rps.errors.insufficientBalance'),
+        message: error instanceof Error ? error.message : t('pages.games.rps.errors.betFailed'),
         buttons: [{ type: 'ok' }]
       });
-      return;
     }
-
-    setGameStarted(true);
   };
 
-  const handleGameEnd = (result: 'win' | 'lose' | 'draw') => {
-    // Здесь будет логика начисления выигрыша
-    console.log('Game ended with result:', result);
+  const handleGameEnd = async (result: 'win' | 'lose' | 'draw') => {
+    if (result !== 'draw') {
+      try {
+        await processGameResult(GameType.RPS, result, betAmount);
+        
+        if (result === 'win') {
+          // При выигрыше добавляем удвоенную ставку
+          updateUserBalance(betAmount * 2);
+        }
+        // При проигрыше ничего не делаем, так как баланс уже уменьшен
+        
+      } catch (error: unknown) {
+        console.error('Error processing game result:', error);
+        window.Telegram?.WebApp?.showPopup({
+          title: t('common.error'),
+          message: error instanceof Error ? error.message : t('pages.games.rps.errors.resultFailed'),
+          buttons: [{ type: 'ok' }]
+        });
+      }
+    }
     setGameStarted(false);
   };
 

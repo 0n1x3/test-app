@@ -10,7 +10,8 @@
         "chess": "Шахматы",
         "durak": "Дурак"
       },
-      "playButton": "Играть"
+      "playButton": "Играть",
+      "comingSoon": "Скоро"
     },
     "income": {
       "title": "Доход",
