@@ -7,12 +7,9 @@ export class TelegramGuard implements CanActivate {
 
   constructor() {
     if (!process.env.BOT_TOKEN) {
-      console.error('BOT_TOKEN is not set');
       throw new Error('BOT_TOKEN is required');
     }
-    // Берем только секретную часть токена
-    const [botId, timestamp, secret] = process.env.BOT_TOKEN.split(':');
-    this.BOT_TOKEN = secret || process.env.BOT_TOKEN;
+    this.BOT_TOKEN = process.env.BOT_TOKEN;
   }
 
   canActivate(context: ExecutionContext): boolean {
@@ -25,19 +22,17 @@ export class TelegramGuard implements CanActivate {
       }
 
       const initData = authHeader.slice(7);
-      const params = new URLSearchParams(initData);
-      const hash = params.get('hash');
       
+      // Получаем хеш из исходной строки
+      const searchParams = new URLSearchParams(initData);
+      const hash = searchParams.get('hash');
       if (!hash) return false;
 
-      // Удаляем hash и signature из параметров
-      params.delete('hash');
-      params.delete('signature');
-      
-      // Создаем отсортированную строку для проверки
-      const dataCheckString = Array.from(params.entries())
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([key, value]) => `${key}=${value}`)
+      // Важно: работаем с исходной строкой, а не с декодированными значениями
+      const checkString = initData
+        .split('&')
+        .filter(param => !param.startsWith('hash='))
+        .sort()
         .join('\n');
 
       const secretKey = createHash('sha256')
@@ -45,14 +40,13 @@ export class TelegramGuard implements CanActivate {
         .digest();
 
       const hmac = createHmac('sha256', secretKey)
-        .update(dataCheckString)
+        .update(checkString)
         .digest('hex');
 
       console.log('Verification details:', {
-        dataCheckString,
+        checkString,
         receivedHash: hash,
-        generatedHash: hmac,
-        params: Object.fromEntries(params.entries())
+        generatedHash: hmac
       });
 
       return hmac === hash;
