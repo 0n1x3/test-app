@@ -10,7 +10,9 @@ export class TelegramGuard implements CanActivate {
       console.error('BOT_TOKEN is not set');
       throw new Error('BOT_TOKEN is required');
     }
-    this.BOT_TOKEN = process.env.BOT_TOKEN;
+    // Берем только секретную часть токена
+    const [botId, timestamp, secret] = process.env.BOT_TOKEN.split(':');
+    this.BOT_TOKEN = secret || process.env.BOT_TOKEN;
   }
 
   canActivate(context: ExecutionContext): boolean {
