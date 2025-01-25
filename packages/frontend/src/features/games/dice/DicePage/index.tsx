@@ -38,6 +38,7 @@ export function DicePage() {
       }
 
       await createBet(betAmount, GameType.DICE);
+      updateUserBalance(-betAmount);
       setGameStarted(true);
     } catch (error: unknown) {
       console.error('Error creating bet:', error);
