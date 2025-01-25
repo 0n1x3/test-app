@@ -1,17 +1,29 @@
 import { create } from 'zustand';
+import { UserData } from '@/types/user';
 
 interface UserState {
+  telegramId: number | null;
+  username: string | null;
+  avatarUrl: string | null;
   balance: number;
   level: number;
   experience: number;
+  isActive: boolean;
   setUserData: (data: { balance: number; level: number; experience: number }) => void;
   fetchUserData: () => Promise<void>;
+  updateUser: (data: UserData) => void;
+  updateAvatar: (url: string) => void;
+  updateBalance: (amount: number) => void;
 }
 
 export const useUserStore = create<UserState>((set) => ({
+  telegramId: null,
+  username: null,
+  avatarUrl: null,
   balance: 0,
   level: 1,
   experience: 0,
+  isActive: false,
   setUserData: (data) => set(data),
   fetchUserData: async () => {
     try {
@@ -36,5 +48,16 @@ export const useUserStore = create<UserState>((set) => ({
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
-  }
+  },
+  updateUser: (data: UserData) => set({
+    telegramId: data.telegramId,
+    username: data.username,
+    avatarUrl: data.avatarUrl,
+    balance: data.balance || 0,
+    isActive: data.isActive || false,
+  }),
+  updateAvatar: (url: string) => set({ avatarUrl: url }),
+  updateBalance: (amount: number) => set((state) => ({ 
+    balance: state.balance + amount 
+  })),
 })); 

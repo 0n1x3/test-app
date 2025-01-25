@@ -22,6 +22,8 @@ export function DicePage() {
   const [betAmount, setBetAmount] = useState<number>(100);
   const [gameStarted, setGameStarted] = useState(false);
 
+  const updateUserBalance = useUserStore(state => state.updateBalance);
+
   const handleStartGame = async () => {
     try {
       const userBalance = useUserStore.getState().balance;
@@ -51,6 +53,11 @@ export function DicePage() {
     if (result !== 'draw') {
       try {
         await processGameResult(GameType.DICE, result, betAmount);
+        
+        if (result === 'win') {
+          updateUserBalance(betAmount * 2);
+        }
+        
       } catch (error: unknown) {
         console.error('Error processing game result:', error);
         window.Telegram?.WebApp?.showPopup({
