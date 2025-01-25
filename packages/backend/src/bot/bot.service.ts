@@ -8,14 +8,38 @@ export class BotService implements OnModuleInit {
 
   constructor(private configService: ConfigService) {
     const token = this.configService.get<string>('BOT_TOKEN');
-    console.log('Bot token first 10 chars:', token?.substring(0, 10));
+    if (!token) {
+      console.error('BOT_TOKEN is not set in environment variables');
+      throw new Error('BOT_TOKEN is required');
+    }
+
+    console.log('Initializing bot with token:', {
+      first10: token.substring(0, 10),
+      length: token.length
+    });
     
-    // Проверяем токен через Telegram API
-    this.bot = new TelegramBot(token, { polling: true });
-    this.bot.getMe().then(
-      info => console.log('Bot info:', info),
-      err => console.error('Invalid bot token:', err)
-    );
+    try {
+      this.bot = new TelegramBot(token, { polling: true });
+      
+      // Проверяем токен сразу при создании
+      this.bot.getMe().then(
+        info => {
+          console.log('Bot initialized successfully:', {
+            id: info.id,
+            username: info.username,
+            first_name: info.first_name,
+            is_bot: info.is_bot
+          });
+        },
+        error => {
+          console.error('Failed to initialize bot:', error.message);
+          throw error;
+        }
+      );
+    } catch (error) {
+      console.error('Error creating bot instance:', error);
+      throw error;
+    }
   }
 
   onModuleInit() {
