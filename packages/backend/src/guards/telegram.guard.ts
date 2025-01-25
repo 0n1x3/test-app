@@ -31,7 +31,7 @@ export class TelegramGuard implements CanActivate {
       // Важно: работаем с исходной строкой, а не с декодированными значениями
       const checkString = initData
         .split('&')
-        .filter(param => !param.startsWith('hash='))
+        .filter(param => !param.startsWith('hash=') && !param.startsWith('signature='))
         .sort()
         .join('\n');
 
