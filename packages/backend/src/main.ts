@@ -20,6 +20,16 @@ async function bootstrap() {
 
     app.setGlobalPrefix('api');
 
+    // Логируем все маршруты
+    const server = app.getHttpServer();
+    const router = server._events.request._router;
+    console.log('Registered routes:');
+    router.stack.forEach((route) => {
+      if (route.route) {
+        console.log(`${route.route.stack[0].method.toUpperCase()} ${route.route.path}`);
+      }
+    });
+
     // Инициализируем первое задание
     const tasksService = app.get(TasksService);
     await tasksService.initDefaultTasks();
