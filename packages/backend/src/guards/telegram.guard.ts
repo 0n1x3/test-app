@@ -29,7 +29,7 @@ export class TelegramGuard implements CanActivate {
 
       // Создаем строку для проверки
       const data = Array.from(params.entries())
-        .filter(([key]) => key !== 'hash')
+        .filter(([key]) => key !== 'hash' && key !== 'signature')
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([key, value]) => `${key}=${value}`)
         .join('\n');
