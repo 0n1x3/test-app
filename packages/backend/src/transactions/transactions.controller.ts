@@ -3,7 +3,7 @@ import { TransactionsService } from './transactions.service';
 import { GameType } from '../schemas/transaction.schema';
 import { TelegramGuard } from '../guards/telegram.guard';
 
-@Controller('transactions')
+@Controller('api/transactions')
 export class TransactionsController {
   constructor(private transactionsService: TransactionsService) {}
 
