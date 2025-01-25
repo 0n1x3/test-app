@@ -1,5 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { createHash, createHmac } from 'crypto';
+import { TelegramInitData } from '../utils/telegram-init-data';
 
 @Injectable()
 export class TelegramGuard implements CanActivate {
@@ -22,34 +23,9 @@ export class TelegramGuard implements CanActivate {
       }
 
       const initData = authHeader.slice(7);
+      const telegramData = new TelegramInitData(initData);
       
-      // Получаем хеш из исходной строки
-      const searchParams = new URLSearchParams(initData);
-      const hash = searchParams.get('hash');
-      if (!hash) return false;
-
-      // Важно: работаем с исходной строкой, а не с декодированными значениями
-      const checkString = initData
-        .split('&')
-        .filter(param => !param.startsWith('hash=') && !param.startsWith('signature='))
-        .sort()
-        .join('\n');
-
-      const secretKey = createHash('sha256')
-        .update(this.BOT_TOKEN)
-        .digest();
-
-      const hmac = createHmac('sha256', secretKey)
-        .update(checkString)
-        .digest('hex');
-
-      console.log('Verification details:', {
-        checkString,
-        receivedHash: hash,
-        generatedHash: hmac
-      });
-
-      return hmac === hash;
+      return telegramData.validate(this.BOT_TOKEN);
     } catch (error) {
       console.error('Error in TelegramGuard:', error);
       return false;
