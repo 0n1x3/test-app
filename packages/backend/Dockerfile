@@ -17,7 +17,7 @@ COPY packages/backend/package.json ./packages/backend/
 # Устанавливаем pnpm и зависимости
 RUN npm install -g pnpm
 RUN pnpm install --frozen-lockfile && \
-    pnpm add uuid@9.0.2 -w @test-app/backend
+    pnpm add uuid@9.0.0 -w @test-app/backend
 
 # Копируем исходный код (исключая node_modules)
 COPY packages/shared/src ./packages/shared/src
