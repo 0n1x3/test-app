@@ -36,35 +36,41 @@ export class TransactionsService {
     return transaction;
   }
 
-  async processGameResult(
-    userId: number,
-    gameType: GameType,
-    result: 'win' | 'lose',
-    betAmount: number
-  ): Promise<void> {
-    if (result === 'win') {
-      // При выигрыше увеличиваем баланс на удвоенную ставку
-      await this.userModel.updateOne(
-        { telegramId: userId },
-        { $inc: { balance: betAmount * 2 } }
-      );
+  async processGameResult(params: {
+    winnerId: number;
+    loserId: number;
+    betAmount: number;
+  }): Promise<void> {
+    const { winnerId, loserId, betAmount } = params;
 
-      await this.transactionModel.create({
-        userId,
-        amount: betAmount * 2,
+    // Уменьшаем баланс проигравшего
+    await this.userModel.updateOne(
+      { telegramId: loserId },
+      { $inc: { balance: -betAmount } }
+    );
+
+    // Увеличиваем баланс победителя
+    await this.userModel.updateOne(
+      { telegramId: winnerId },
+      { $inc: { balance: betAmount } }
+    );
+
+    // Создаем транзакции
+    await Promise.all([
+      this.transactionModel.create({
+        userId: winnerId,
+        amount: betAmount,
         type: TransactionType.WIN,
-        game: gameType,
+        game: GameType.DICE, // или другой тип игры
         processed: true
-      });
-    } else {
-      // При проигрыше создаем запись о потере
-      await this.transactionModel.create({
-        userId,
+      }),
+      this.transactionModel.create({
+        userId: loserId,
         amount: betAmount,
         type: TransactionType.LOSS,
-        game: gameType,
+        game: GameType.DICE,
         processed: true
-      });
-    }
+      })
+    ]);
   }
 } 

@@ -1,6 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as TelegramBot from 'node-telegram-bot-api';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class BotService implements OnModuleInit {
@@ -62,5 +63,13 @@ export class BotService implements OnModuleInit {
   // Методы для отправки уведомлений
   async sendNotification(userId: number, message: string) {
     return this.bot.sendMessage(userId, message);
+  }
+
+  // Добавить обработку инвайтов
+  async handleInvite(inviterId: number, inviteeId: number) {
+    const invite = { id: uuid(), inviterId, createdAt: Date.now() };
+    const inviteLink = `${process.env.FRONTEND_URL}/join/${invite.id}`;
+    await this.bot.sendMessage(inviteeId, `Приглашение в игру: ${inviteLink}`);
+    return invite;
   }
 } 

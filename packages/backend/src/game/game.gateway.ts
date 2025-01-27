@@ -1,7 +1,7 @@
 import { WebSocketGateway, WebSocketServer, SubscribeMessage, MessageBody } from '@nestjs/websockets';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { GameService } from './game.service';
-import { Game, User, WSEvents } from '@test-app/shared';
+import { Game, User, WSEvents, verifyToken } from '@test-app/shared';
 
 @WebSocketGateway({
   cors: {
@@ -15,6 +15,10 @@ export class GameGateway {
   server!: Server;
 
   constructor(private gameService: GameService) {}
+
+  afterInit() {
+    this.gameService.setServer(this.server);
+  }
 
   @SubscribeMessage('createGame')
   async handleCreateGame(
@@ -38,5 +42,15 @@ export class GameGateway {
   async handleGetGames() {
     // Здесь должна быть логика получения списка игр
     return { games: [] };
+  }
+
+  handleConnection(client: Socket) {
+    try {
+      const token = client.handshake.auth.token;
+      const user = verifyToken(token);
+      client.data.user = user;
+    } catch (e) {
+      client.disconnect(true);
+    }
   }
 } 

@@ -23,4 +23,10 @@ export enum WSEvents {
   GAME_STATE_UPDATE = 'gameStateUpdate',
   PLAYER_JOINED = 'playerJoined',
   PLAYER_LEFT = 'playerLeft'
-} 
+}
+
+export const verifyToken = (token: string): User => {
+  // Реализация верификации JWT
+  // Например, используя jsonwebtoken
+  return {} as User; // Заглушка, нужно реализовать
+}; 

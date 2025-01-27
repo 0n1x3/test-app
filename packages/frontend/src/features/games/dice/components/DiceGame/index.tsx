@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Icon } from '@iconify/react';
 import { useTranslation } from '@/providers/i18n';
 import { Dice } from '../Dice';
+import { LobbyInterface } from '../LobbyInterface';
 import './style.css';
 
 type GameResult = 'win' | 'lose' | 'draw';
@@ -15,6 +16,7 @@ interface DiceGameProps {
 
 export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
   const { t } = useTranslation();
+  const [gameMode, setGameMode] = useState<'bot'|'player'>('bot');
   const [round, setRound] = useState(1);
   const [playerScore, setPlayerScore] = useState(0);
   const [botScore, setBotScore] = useState(0);
@@ -34,40 +36,26 @@ export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
       const playerRoll = Math.floor(Math.random() * 6) + 1;
       const botRoll = Math.floor(Math.random() * 6) + 1;
       
-      console.log('Generated rolls:', { player: playerRoll, bot: botRoll });
-      
       setPlayerValue(playerRoll);
       setBotValue(botRoll);
       
-      // Определяем результат
       let result: GameResult;
       if (playerRoll === botRoll) {
         result = 'draw';
-      } else if (playerRoll > botRoll) {
-        result = 'win';
       } else {
-        result = 'lose';
+        result = playerRoll > botRoll ? 'win' : 'lose';
       }
       
-      console.log('Round result:', result);
-      
-      // Обновляем счет и проверяем окончание игры
       if (result === 'win') {
-        setPlayerScore(prevScore => {
-          const newScore = prevScore + 1;
-          if (newScore >= 2) {
-            // Задержка для показа результата
-            setTimeout(() => onGameEnd(result), 2000);
-          }
+        setPlayerScore(prev => {
+          const newScore = prev + 1;
+          if (newScore >= 2) setTimeout(() => onGameEnd(result), 2000);
           return newScore;
         });
       } else if (result === 'lose') {
-        setBotScore(prevScore => {
-          const newScore = prevScore + 1;
-          if (newScore >= 2) {
-            // Задержка для показа результата
-            setTimeout(() => onGameEnd(result), 2000);
-          }
+        setBotScore(prev => {
+          const newScore = prev + 1;
+          if (newScore >= 2) setTimeout(() => onGameEnd(result), 2000);
           return newScore;
         });
       }
@@ -76,74 +64,82 @@ export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
       setShowResult(true);
       setIsRolling(false);
 
-      // Переход к следующему раунду если игра не закончена
-      if (result !== 'draw') {
-        setTimeout(() => {
-          const currentPlayerScore = playerScore;
-          const currentBotScore = botScore;
-          
-          if (currentPlayerScore < 2 && currentBotScore < 2) {
-            setRound(prev => prev + 1);
-            setPlayerValue(null);
-            setBotValue(null);
-            setShowResult(false);
-            setRoundResult(null);
-          }
-        }, 2000);
-      } else {
-        // При ничьей сразу переходим к следующему раунду
-        setTimeout(() => {
+      // Логика перехода раундов
+      setTimeout(() => {
+        if (playerScore < 2 && botScore < 2) {
           setRound(prev => prev + 1);
           setPlayerValue(null);
           setBotValue(null);
           setShowResult(false);
           setRoundResult(null);
-        }, 2000);
-      }
+        }
+      }, 2000);
     }, 2000);
   };
 
   return (
-    <div className="dice-game">
-      <div className="game-header">
-        <div className="score">
-          <div className="player-score">{playerScore}</div>
-          <div className="round">
-            <div className="round-number">Round {round}/3</div>
-            <div className="bet-amount">
-              <Icon icon="material-symbols:diamond-rounded" />
-              {betAmount}
+    <div className="dice-container">
+      <div className="mode-selector">
+        <button 
+          className={gameMode === 'bot' ? 'active' : ''}
+          onClick={() => setGameMode('bot')}
+        >
+          {t('pages.games.vsBot')}
+        </button>
+        <button
+          className={gameMode === 'player' ? 'active' : ''}
+          onClick={() => setGameMode('player')}
+        >
+          {t('pages.games.multiplayer')}
+        </button>
+      </div>
+
+      {gameMode === 'bot' ? (
+        <div className="dice-game">
+          {/* Оригинальный интерфейс игры с ботом */}
+          <div className="game-header">
+            <div className="score">
+              <div className="player-score">{playerScore}</div>
+              <div className="round">
+                <div className="round-number">{t('pages.games.round')} {round}/3</div>
+                <div className="bet-amount">
+                  <Icon icon="material-symbols:diamond-rounded" />
+                  {betAmount}
+                </div>
+              </div>
+              <div className="bot-score">{botScore}</div>
             </div>
           </div>
-          <div className="bot-score">{botScore}</div>
-        </div>
-      </div>
 
-      <div className="game-area">
-        <div className="player bot">
-          <div className="player-avatar">
-            <Icon icon="mdi:robot" className="avatar-icon" />
+          <div className="game-area">
+            <div className="player bot">
+              <div className="player-avatar">
+                <Icon icon="mdi:robot" className="avatar-icon" />
+              </div>
+              <Dice value={botValue} isRolling={isRolling} />
+            </div>
+
+            {showResult && (
+              <div className={`round-result ${roundResult}`}>
+                {t(`pages.games.dice.results.${roundResult}`)}
+              </div>
+            )}
+
+            <div className="player human">
+              <Dice value={playerValue} isRolling={isRolling} />
+              <button 
+                className="roll-button"
+                onClick={handleRoll}
+                disabled={isRolling || showResult}
+              >
+                {t('pages.games.dice.roll')}
+              </button>
+            </div>
           </div>
-          <Dice value={botValue} isRolling={isRolling} />
         </div>
-
-        {showResult && (
-          <div className={`round-result ${roundResult}`}>
-            {t(`pages.games.dice.results.${roundResult}`)}
-          </div>
-        )}
-
-        <div className="player human">
-          <Dice value={playerValue} isRolling={isRolling} />
-          <button 
-            className="roll-button"
-            onClick={handleRoll}
-            disabled={isRolling || showResult}
-          >
-            {t('pages.games.dice.roll')}
-          </button>
-        </div>
-      </div>
+      ) : (
+        <LobbyInterface gameType="dice" />
+      )}
     </div>
   );
 } 

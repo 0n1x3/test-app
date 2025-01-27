@@ -38,12 +38,11 @@ export class TransactionsController {
     }
   ) {
     try {
-      await this.transactionsService.processGameResult(
-        data.userId,
-        data.game,
-        data.result,
-        data.betAmount
-      );
+      await this.transactionsService.processGameResult({
+        winnerId: data.result === 'win' ? data.userId : null,
+        loserId: data.result === 'lose' ? data.userId : null,
+        betAmount: data.betAmount
+      });
       return { success: true };
     } catch (error) {
       return { success: false, error: error.message };
