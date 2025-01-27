@@ -2,6 +2,9 @@
   "name": "test-app",
   "version": "1.0.0",
   "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "resolutions": {
     "react": "18.2.0",
     "react-dom": "18.2.0"
