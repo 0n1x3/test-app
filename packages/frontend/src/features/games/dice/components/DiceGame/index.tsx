@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Icon } from '@iconify/react';
 import { useTranslation } from '@/providers/i18n';
 import { Dice } from '../Dice';
-import { LobbyInterface } from '../LobbyInterface';
+import { LobbyInterface } from '@/features/games/components/LobbyInterface';
 import './style.css';
 
 type GameResult = 'win' | 'lose' | 'draw';

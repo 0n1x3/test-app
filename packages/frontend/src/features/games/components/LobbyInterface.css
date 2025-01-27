@@ -1,0 +1,11 @@
+.lobby-container {
+  padding: 1rem;
+}
+
+.create-game-btn {
+  background: var(--tg-theme-button-color);
+  color: var(--tg-theme-button-text-color);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+} 
