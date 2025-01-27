@@ -37,40 +37,37 @@ export class TransactionsService {
   }
 
   async processGameResult(params: {
-    winnerId: number;
-    loserId: number;
+    winnerId: number | null;
+    loserId: number | null;
     betAmount: number;
   }): Promise<void> {
     const { winnerId, loserId, betAmount } = params;
 
-    // Уменьшаем баланс проигравшего
-    await this.userModel.updateOne(
-      { telegramId: loserId },
-      { $inc: { balance: -betAmount } }
-    );
+    // Добавляем проверки
+    if (!winnerId && !loserId) {
+      throw new Error('At least one participant must be specified');
+    }
 
-    // Увеличиваем баланс победителя
-    await this.userModel.updateOne(
-      { telegramId: winnerId },
-      { $inc: { balance: betAmount } }
-    );
+    const updates = [];
+    
+    if (loserId) {
+      updates.push(
+        this.userModel.updateOne(
+          { telegramId: loserId },
+          { $inc: { balance: -betAmount } }
+        )
+      );
+    }
 
-    // Создаем транзакции
-    await Promise.all([
-      this.transactionModel.create({
-        userId: winnerId,
-        amount: betAmount,
-        type: TransactionType.WIN,
-        game: GameType.DICE, // или другой тип игры
-        processed: true
-      }),
-      this.transactionModel.create({
-        userId: loserId,
-        amount: betAmount,
-        type: TransactionType.LOSS,
-        game: GameType.DICE,
-        processed: true
-      })
-    ]);
+    if (winnerId) {
+      updates.push(
+        this.userModel.updateOne(
+          { telegramId: winnerId },
+          { $inc: { balance: betAmount } }
+        )
+      );
+    }
+
+    await Promise.all(updates);
   }
 } 

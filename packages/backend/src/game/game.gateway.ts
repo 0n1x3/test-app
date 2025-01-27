@@ -34,8 +34,16 @@ export class GameGateway {
     @MessageBody() data: { gameId: string; user: User },
   ) {
     const game = this.gameService.joinGame(data.gameId, data.user);
-    this.server.emit(WSEvents.PLAYER_JOINED, { game });
+    this.server.to(game.id).emit(WSEvents.PLAYER_JOINED, { game });
     return { success: true, game };
+  }
+
+  @SubscribeMessage('startGame')
+  async handleStartGame(
+    @MessageBody() data: { gameId: string },
+  ) {
+    const game = this.gameService.startGame(data.gameId);
+    this.server.to(game.id).emit(WSEvents.GAME_STARTED, { game });
   }
 
   @SubscribeMessage('getGames')

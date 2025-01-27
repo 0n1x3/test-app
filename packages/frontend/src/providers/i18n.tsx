@@ -36,7 +36,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
           value = value[k];
         } else {
           console.warn(`Translation key not found: ${key}`);
-          return key;
+          return key.split('.').pop() || key;
         }
       }
       

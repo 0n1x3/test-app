@@ -12,9 +12,10 @@ type GameResult = 'win' | 'lose' | 'draw';
 interface DiceGameProps {
   betAmount: number;
   onGameEnd: (result: GameResult) => void;
+  onMultiplayerStart?: () => void;
 }
 
-export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
+export function DiceGame({ betAmount, onGameEnd, onMultiplayerStart }: DiceGameProps) {
   const { t } = useTranslation();
   const [gameMode, setGameMode] = useState<'bot'|'player'>('bot');
   const [round, setRound] = useState(1);
@@ -75,6 +76,22 @@ export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
         }
       }, 2000);
     }, 2000);
+  };
+
+  const handleCreateGame = async () => {
+    try {
+      const response = await fetch('/api/games/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ betAmount })
+      });
+      
+      if (response.ok) {
+        onMultiplayerStart?.();
+      }
+    } catch (error) {
+      console.error('Error creating game:', error);
+    }
   };
 
   return (
@@ -138,7 +155,10 @@ export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
           </div>
         </div>
       ) : (
-        <LobbyInterface gameType="dice" />
+        <LobbyInterface 
+          gameType="dice"
+          onCreate={handleCreateGame}
+        />
       )}
     </div>
   );

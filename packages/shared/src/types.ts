@@ -22,7 +22,8 @@ export interface GameState {
 export enum WSEvents {
   GAME_STATE_UPDATE = 'gameStateUpdate',
   PLAYER_JOINED = 'playerJoined',
-  PLAYER_LEFT = 'playerLeft'
+  PLAYER_LEFT = 'playerLeft',
+  GAME_STARTED = 'gameStarted'
 }
 
 export const verifyToken = (token: string): User => {

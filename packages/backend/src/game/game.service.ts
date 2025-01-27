@@ -52,5 +52,19 @@ export class GameService {
     }
   }
 
+  startGame(lobbyId: string): Game {
+    const game = this.games.get(lobbyId);
+    if (!game) throw new Error('Game not found');
+    
+    game.status = 'playing';
+    this.gameStates.set(lobbyId, {
+      gameId: lobbyId,
+      currentPlayer: game.players[0].id,
+      moves: []
+    });
+    
+    return game;
+  }
+
   // Другие методы для управления играми
 } 

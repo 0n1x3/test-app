@@ -118,7 +118,9 @@
           "betFailed": "下注失败",
           "resultFailed": "处理游戏结果时出错"
         }
-      }
+      },
+      "createGame": "创建游戏",
+      "gameStarted": "游戏开始！"
     }
   },
   "settings": {

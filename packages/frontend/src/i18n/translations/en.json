@@ -123,7 +123,9 @@
           "betFailed": "Failed to place bet",
           "resultFailed": "Error processing game result"
         }
-      }
+      },
+      "createGame": "Create Game",
+      "gameStarted": "Game started!"
     }
   },
   "settings": {
