@@ -113,12 +113,13 @@ export function DiceGame({ betAmount, onGameEnd, onMultiplayerStart }: DiceGameP
 
       {gameMode === 'bot' ? (
         <div className="dice-game">
-          {/* Оригинальный интерфейс игры с ботом */}
           <div className="game-header">
             <div className="score">
               <div className="player-score">{playerScore}</div>
               <div className="round">
-                <div className="round-number">{t('pages.games.round')} {round}/3</div>
+                <div className="round-number">
+                  {t('pages.games.round')} {round}/3
+                </div>
                 <div className="bet-amount">
                   <Icon icon="material-symbols:diamond-rounded" />
                   {betAmount}

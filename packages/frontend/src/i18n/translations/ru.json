@@ -123,7 +123,10 @@
       "multiplayer": "Мультиплеер",
       "round": "Раунд",
       "createGame": "Создать игру",
-      "gameStarted": "Игра началась!"
+      "gameStarted": "Игра началась!",
+      "noActiveGames": "Нет активных игр",
+      "waitingPlayers": "Ожидание игроков...",
+      "inviteFriends": "Пригласить друзей"
     }
   },
   "settings": {
