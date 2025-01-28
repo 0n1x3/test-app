@@ -126,7 +126,10 @@
       "gameStarted": "Игра началась!",
       "noActiveGames": "Нет активных игр",
       "waitingPlayers": "Ожидание игроков...",
-      "inviteFriends": "Пригласить друзей"
+      "inviteFriends": "Пригласить друзей",
+      "copyLink": "Скопировать ссылку",
+      "join": "Присоединиться",
+      "gameCreated": "Игра создана"
     }
   },
   "settings": {
@@ -140,6 +143,7 @@
   "common": {
     "loading": "Загрузка...",
     "error": "Ошибка",
-    "retry": "Повторить"
+    "retry": "Повторить",
+    "linkCopied": "Ссылка скопирована"
   }
 } 

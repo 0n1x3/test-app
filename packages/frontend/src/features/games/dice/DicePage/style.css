@@ -1,12 +1,12 @@
-.dice-page {
+.dice-setup,
+.dice-lobby {
   display: flex;
   flex-direction: column;
   gap: 24px;
   padding: 16px;
   padding-bottom: calc(56px + 32px);
   height: 100%;
-  max-height: var(--tg-viewport-stable-height);
-  overflow: hidden;
+  max-height: var(--tg-theme-stable-height);
 }
 
 .bet-type-selector,
@@ -43,7 +43,7 @@
   padding: 16px;
 }
 
-.bet-amount-selector h3 {
+.bet-amount-label {
   font-size: 15px;
   color: #808080;
   margin-bottom: 16px;
@@ -91,9 +91,14 @@
   color: white;
   font-size: 16px;
   font-weight: 500;
-  margin-top: 8px;
+  margin-top: auto;
 }
 
 .start-game-button:hover {
   background: #1976D2;
+}
+
+.styled-lobby {
+  background: var(--tg-theme-bg-color);
+  height: calc(100vh - 120px);
 } 
