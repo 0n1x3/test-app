@@ -12,12 +12,10 @@ type GameResult = 'win' | 'lose' | 'draw';
 interface DiceGameProps {
   betAmount: number;
   onGameEnd: (result: GameResult) => void;
-  onMultiplayerStart?: () => void;
 }
 
-export function DiceGame({ betAmount, onGameEnd, onMultiplayerStart }: DiceGameProps) {
+export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
   const { t } = useTranslation();
-  const [gameMode, setGameMode] = useState<'bot'|'player'>('bot');
   const [round, setRound] = useState(1);
   const [playerScore, setPlayerScore] = useState(0);
   const [botScore, setBotScore] = useState(0);
@@ -37,26 +35,40 @@ export function DiceGame({ betAmount, onGameEnd, onMultiplayerStart }: DiceGameP
       const playerRoll = Math.floor(Math.random() * 6) + 1;
       const botRoll = Math.floor(Math.random() * 6) + 1;
       
+      console.log('Generated rolls:', { player: playerRoll, bot: botRoll });
+      
       setPlayerValue(playerRoll);
       setBotValue(botRoll);
       
+      // Определяем результат
       let result: GameResult;
       if (playerRoll === botRoll) {
         result = 'draw';
+      } else if (playerRoll > botRoll) {
+        result = 'win';
       } else {
-        result = playerRoll > botRoll ? 'win' : 'lose';
+        result = 'lose';
       }
       
+      console.log('Round result:', result);
+      
+      // Обновляем счет и проверяем окончание игры
       if (result === 'win') {
-        setPlayerScore(prev => {
-          const newScore = prev + 1;
-          if (newScore >= 2) setTimeout(() => onGameEnd(result), 2000);
+        setPlayerScore(prevScore => {
+          const newScore = prevScore + 1;
+          if (newScore >= 2) {
+            // Задержка для показа результата
+            setTimeout(() => onGameEnd(result), 2000);
+          }
           return newScore;
         });
       } else if (result === 'lose') {
-        setBotScore(prev => {
-          const newScore = prev + 1;
-          if (newScore >= 2) setTimeout(() => onGameEnd(result), 2000);
+        setBotScore(prevScore => {
+          const newScore = prevScore + 1;
+          if (newScore >= 2) {
+            // Задержка для показа результата
+            setTimeout(() => onGameEnd(result), 2000);
+          }
           return newScore;
         });
       }
@@ -65,61 +77,40 @@ export function DiceGame({ betAmount, onGameEnd, onMultiplayerStart }: DiceGameP
       setShowResult(true);
       setIsRolling(false);
 
-      // Логика перехода раундов
+      // Переход к следующему раунду если игра не закончена
+      if (result !== 'draw') {
       setTimeout(() => {
-        if (playerScore < 2 && botScore < 2) {
+          const currentPlayerScore = playerScore;
+          const currentBotScore = botScore;
+          
+          if (currentPlayerScore < 2 && currentBotScore < 2) {
+            setRound(prev => prev + 1);
+            setPlayerValue(null);
+            setBotValue(null);
+            setShowResult(false);
+            setRoundResult(null);
+          }
+        }, 2000);
+      } else {
+        // При ничьей сразу переходим к следующему раунду
+        setTimeout(() => {
           setRound(prev => prev + 1);
           setPlayerValue(null);
           setBotValue(null);
           setShowResult(false);
           setRoundResult(null);
-        }
       }, 2000);
+      }
     }, 2000);
   };
 
-  const handleCreateGame = async () => {
-    try {
-      const response = await fetch('/api/games/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ betAmount })
-      });
-      
-      if (response.ok) {
-        onMultiplayerStart?.();
-      }
-    } catch (error) {
-      console.error('Error creating game:', error);
-    }
-  };
-
   return (
-    <div className="dice-container">
-      <div className="mode-selector">
-        <button 
-          className={gameMode === 'bot' ? 'active' : ''}
-          onClick={() => setGameMode('bot')}
-        >
-          {t('pages.games.vsBot')}
-        </button>
-        <button
-          className={gameMode === 'player' ? 'active' : ''}
-          onClick={() => setGameMode('player')}
-        >
-          {t('pages.games.multiplayer')}
-        </button>
-      </div>
-
-      {gameMode === 'bot' ? (
         <div className="dice-game">
           <div className="game-header">
             <div className="score">
               <div className="player-score">{playerScore}</div>
               <div className="round">
-                <div className="round-number">
-                  {t('pages.games.round')} {round}/3
-                </div>
+            <div className="round-number">Round {round}/3</div>
                 <div className="bet-amount">
                   <Icon icon="material-symbols:diamond-rounded" />
                   {betAmount}
@@ -154,13 +145,6 @@ export function DiceGame({ betAmount, onGameEnd, onMultiplayerStart }: DiceGameP
               </button>
             </div>
           </div>
-        </div>
-      ) : (
-        <LobbyInterface 
-          gameType="dice"
-          onCreate={handleCreateGame}
-        />
-      )}
     </div>
   );
 } 
