@@ -2,6 +2,7 @@ import { WebSocketGateway, WebSocketServer, SubscribeMessage, MessageBody } from
 import { Server, Socket } from 'socket.io';
 import { GameService } from './game.service';
 import { Game, User, WSEvents, verifyToken } from '@test-app/shared';
+import { GameType } from '@test-app/shared';
 
 @WebSocketGateway({
   cors: {
@@ -22,9 +23,17 @@ export class GameGateway {
 
   @SubscribeMessage('createGame')
   async handleCreateGame(
-    @MessageBody() data: { name: string; creator: User },
+    @MessageBody() data: { 
+      gameType: GameType,
+      creator: User,
+      betAmount: number 
+    },
   ) {
-    const game = this.gameService.createGame(data.name, data.creator);
+    const game = this.gameService.createGame(
+      data.gameType,
+      data.creator,
+      data.betAmount
+    );
     this.server.emit(WSEvents.GAME_STATE_UPDATE, game);
     return { success: true, game };
   }

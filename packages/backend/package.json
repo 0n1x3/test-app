@@ -20,20 +20,21 @@
     "@nestjs/platform-socket.io": "^10.0.0",
     "@nestjs/websockets": "^10.0.0",
     "@test-app/shared": "workspace:*",
+    "@tma.js/init-data-node": "^1.4.0",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.0.0",
     "node-telegram-bot-api": "^0.66.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "socket.io": "^4.7.0",
-    "jsonwebtoken": "^9.0.2",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
     "@types/node": "^20.11.0",
     "@types/node-telegram-bot-api": "^0.64.7",
+    "@types/uuid": "^9.0.7",
     "rimraf": "^5.0.0",
-    "typescript": "^5.0.0",
-    "@types/uuid": "^9.0.7"
+    "typescript": "^5.0.0"
   }
 }

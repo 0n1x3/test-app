@@ -1,16 +1,29 @@
 // Общие типы для всего приложения
+export enum GameType {
+  RPS = 'rps',
+  DICE = 'dice'
+}
+
 export interface User {
   id: string;
-  address: string;
-  balance: string;
+  telegramId: number;
+  username: string;
+  balance: number;
+  avatarUrl?: string;
 }
 
 export interface Game {
   id: string;
-  name: string;
+  type: GameType;
   players: User[];
+  betAmount: number;
   status: 'waiting' | 'playing' | 'finished';
-  createdAt: number;
+  currentRound?: number;
+  rounds?: Array<{
+    player1: number;
+    player2: number;
+    result: 'win' | 'lose' | 'draw';
+  }>;
 }
 
 export interface GameState {

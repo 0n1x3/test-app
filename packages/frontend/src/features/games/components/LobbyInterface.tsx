@@ -31,47 +31,38 @@ export const LobbyInterface: React.FC<LobbyInterfaceProps> = ({
   const [inviteLink, setInviteLink] = useState<string>('');
 
   const handleCreate = async () => {
+    const tg = window.Telegram?.WebApp;
+    if (!tg || !tg.initDataUnsafe?.user) return;
+
     setLoading(true);
     try {
       const response = await fetch('https://test.timecommunity.xyz/api/games/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `tma ${tg.initData}`
         },
-        body: JSON.stringify({ gameType }),
+        body: JSON.stringify({ 
+          gameType,
+          creatorId: tg.initDataUnsafe.user.id,
+          betAmount: 100
+        }),
       });
 
-      if (!response.ok) throw new Error('Failed to create game');
+      const { gameId, inviteLink } = await response.json();
+      setInviteLink(inviteLink);
 
-      const { gameId } = await response.json();
-      const link = `https://t.me/neometria_bot/game?id=${gameId}`;
-      setInviteLink(link);
-
-      // Показываем попап с приглашением
-      await window.Telegram?.WebApp?.showPopup({
+      await tg.showPopup({
         title: t('pages.games.inviteFriends'),
         message: t('pages.games.waitingPlayers'),
-        buttons: [
-          {
-            type: 'default',
-            text: t('pages.games.copyLink')
-          }
-        ]
+        buttons: [{ type: 'default', text: t('pages.games.copyLink') }]
       });
 
-      // Копируем ссылку после нажатия на кнопку
-      await navigator.clipboard.writeText(link);
-      
-      // Показываем подтверждение копирования
-      await window.Telegram?.WebApp?.showPopup({
-        message: t('common.linkCopied'),
-        buttons: [{ type: 'ok' }]
-      });
-
+      navigator.clipboard.writeText(inviteLink);
     } catch (error) {
-      console.error('Error creating game:', error);
-      await window.Telegram?.WebApp?.showPopup({
-        message: t('common.error'),
+      tg.showPopup({
+        title: t('common.error'),
+        message: error instanceof Error ? error.message : 'Unknown error',
         buttons: [{ type: 'ok' }]
       });
     } finally {
