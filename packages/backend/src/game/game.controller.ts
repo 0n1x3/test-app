@@ -14,7 +14,7 @@ export class GameController {
   }
 
   @Post('create')
-  @UseGuards(TelegramGuard)
+  // @UseGuards(TelegramGuard)
   async createGame(
     @Body() data: { 
       betAmount: number,
