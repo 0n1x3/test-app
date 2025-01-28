@@ -4,7 +4,7 @@
   height: var(--size);
   position: relative;
   --size: 80px;
-  --dot-size: 12px;
+  --dot-size: 8px;
   --dot-color: #333;
   margin: 30px auto;
 }
@@ -24,105 +24,60 @@
   background: white;
   border: 2px solid #ccc;
   border-radius: 10%;
+  background-repeat: no-repeat;
 }
 
 /* Позиционирование граней */
-.face-1 { transform: translateZ(40px); }
-.face-2 { transform: rotateY(90deg) translateZ(40px); }
-.face-3 { transform: rotateX(90deg) translateZ(40px); }
-.face-4 { transform: rotateX(-90deg) translateZ(40px); }
-.face-5 { transform: rotateY(-90deg) translateZ(40px); }
-.face-6 { transform: rotateY(180deg) translateZ(40px); }
+.face-1 { transform: translateZ(calc(var(--size) / 2)); }         /* Передняя (1) */
+.face-2 { transform: rotateY(90deg) translateZ(calc(var(--size) / 2)); }   /* Правая (2) */
+.face-6 { transform: rotateY(180deg) translateZ(calc(var(--size) / 2)); }  /* Задняя (6) */
+.face-5 { transform: rotateY(-90deg) translateZ(calc(var(--size) / 2)); }  /* Левая (5) */
+.face-3 { transform: rotateX(90deg) translateZ(calc(var(--size) / 2)); }   /* Верхняя (3) */
+.face-4 { transform: rotateX(-90deg) translateZ(calc(var(--size) / 2)); }  /* Нижняя (4) */
 
 /* Точки на гранях */
-.face-1::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: var(--dot-size);
-  height: var(--dot-size);
-  background: var(--dot-color);
-  border-radius: 50%;
+.face-1 {
+  background-image: radial-gradient(circle at center, var(--dot-color) var(--dot-size), transparent 0);
 }
 
-.face-2::before,
-.face-2::after {
-  content: '';
-  position: absolute;
-  width: var(--dot-size);
-  height: var(--dot-size);
-  background: var(--dot-color);
-  border-radius: 50%;
+.face-2 {
+  background-image: 
+    radial-gradient(circle at 25% 25%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 75% 75%, var(--dot-color) var(--dot-size), transparent 0);
 }
-.face-2::before { top: 25%; left: 25%; }
-.face-2::after { bottom: 25%; right: 25%; }
 
-.face-3::before,
-.face-3::after {
-  content: '';
-  position: absolute;
-  width: var(--dot-size);
-  height: var(--dot-size);
-  background: var(--dot-color);
-  border-radius: 50%;
-}
-.face-3::before { top: 25%; left: 25%; }
-.face-3::after { bottom: 25%; right: 25%; }
-.face-3 .center-dot {
-  position: absolute;
-  width: var(--dot-size);
-  height: var(--dot-size);
-  background: var(--dot-color);
-  border-radius: 50%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+.face-3 {
+  background-image: 
+    radial-gradient(circle at 25% 25%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 50% 50%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 75% 75%, var(--dot-color) var(--dot-size), transparent 0);
 }
 
 .face-4 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20%;
-  padding: 20%;
-}
-.face-4::before {
-  content: '';
-  grid-column: span 2;
-  width: var(--dot-size);
-  height: var(--dot-size);
-  background: var(--dot-color);
-  border-radius: 50%;
-  justify-self: center;
+  background-image: 
+    radial-gradient(circle at 25% 25%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 75% 25%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 25% 75%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 75% 75%, var(--dot-color) var(--dot-size), transparent 0);
 }
 
 .face-5 {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  gap: 15%;
-  padding: 15%;
-}
-.face-5 .dot {
-  width: var(--dot-size);
-  height: var(--dot-size);
-  background: var(--dot-color);
-  border-radius: 50%;
+  background-image: 
+    radial-gradient(circle at 25% 25%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 75% 25%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 50% 50%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 25% 75%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 75% 75%, var(--dot-color) var(--dot-size), transparent 0);
 }
 
 .face-6 {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  gap: 15%;
-  padding: 15%;
-}
-.face-6 .dot {
-  width: var(--dot-size);
-  height: var(--dot-size);
-  background: var(--dot-color);
-  border-radius: 50%;
+  background-image: 
+    radial-gradient(circle at 25% 25%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 75% 25%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 25% 50%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 75% 50%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 25% 75%, var(--dot-color) var(--dot-size), transparent 0),
+    radial-gradient(circle at 75% 75%, var(--dot-color) var(--dot-size), transparent 0);
 }
 
 /* Анимация */
@@ -135,12 +90,5 @@
   animation: roll 1.5s ease-out infinite;
 }
 
-.dice-container.small {
-  --size: 60px;
-  --dot-size: 8px;
-}
-
-.dice-container.large {
-  --size: 80px;
-  --dot-size: 12px;
-} 
+.dice-container.small { --size: 60px; --dot-size: 6px; }
+.dice-container.large { --size: 80px; --dot-size: 8px; } 
