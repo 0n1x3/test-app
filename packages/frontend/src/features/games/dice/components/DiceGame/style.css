@@ -1,10 +1,16 @@
-.dice-game {
+.dice-container {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  background: var(--tg-theme-bg-color);
+}
+
+.dice-game {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
   background: linear-gradient(180deg, #000000 0%, #1A1A1A 100%);
-  padding: 16px;
-  overflow: hidden;
 }
 
 .game-header {
@@ -18,13 +24,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  color: white;
 }
 
 .player-score,
 .bot-score {
   font-size: 32px;
   font-weight: 700;
-  color: white;
   font-family: var(--font-mono);
 }
 
@@ -32,7 +38,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
 }
 
 .round-number {
@@ -53,6 +59,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  padding: 20px 0;
   position: relative;
 }
 
@@ -63,7 +70,7 @@
   gap: 24px;
 }
 
-.bot {
+.player.bot {
   transform: rotate(180deg);
 }
 
@@ -83,7 +90,7 @@
 }
 
 .roll-button {
-  padding: 12px 24px;
+  padding: 12px 32px;
   background: #2196F3;
   border-radius: 12px;
   color: white;
@@ -110,15 +117,11 @@
   font-size: 48px;
   font-weight: 700;
   text-align: center;
-  color: white;
-  text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-  animation: popIn 0.3s ease-out;
-  z-index: 5;
-  background: rgba(0, 0, 0, 0.5);
-  padding: 16px 32px;
+  padding: 20px 40px;
   border-radius: 16px;
+  background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  z-index: 10;
 }
 
 .round-result.win {
@@ -131,17 +134,6 @@
 
 .round-result.draw {
   color: #FFC107;
-}
-
-@keyframes popIn {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.5);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
 }
 
 .game-field {
@@ -166,22 +158,19 @@
   margin-top: 20px;
 }
 
-.dice-container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
 .mode-selector {
   display: flex;
-  gap: 1rem;
-  padding: 1rem;
-  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  background: var(--tg-theme-bg-color);
 }
 
 .mode-selector button {
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 15px;
+  transition: all 0.2s;
   background: var(--tg-theme-secondary-bg-color);
   color: var(--tg-theme-text-color);
 }
