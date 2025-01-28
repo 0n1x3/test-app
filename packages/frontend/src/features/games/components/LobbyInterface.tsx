@@ -5,12 +5,14 @@ interface LobbyInterfaceProps {
   gameType: 'dice' | 'rps';
   onJoin?: (gameId: string) => void;
   onCreate?: () => void;
+  className?: string;
 }
 
 export const LobbyInterface: React.FC<LobbyInterfaceProps> = ({ 
   gameType,
   onJoin,
-  onCreate
+  onCreate,
+  className
 }) => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
@@ -26,7 +28,7 @@ export const LobbyInterface: React.FC<LobbyInterfaceProps> = ({
   };
 
   return (
-    <div className="lobby-container">
+    <div className={`lobby-container ${className || ''}`}>
       <button 
         onClick={handleCreate}
         disabled={loading}

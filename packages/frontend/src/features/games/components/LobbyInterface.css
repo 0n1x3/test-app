@@ -1,11 +1,73 @@
 .lobby-container {
-  padding: 1rem;
+  padding: 20px;
+  background: linear-gradient(180deg, #000000 0%, #1A1A1A 100%);
+  border-radius: 12px;
+  height: 100%;
 }
 
 .create-game-btn {
-  background: var(--tg-theme-button-color);
-  color: var(--tg-theme-button-text-color);
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  margin-bottom: 1rem;
+  width: 100%;
+  padding: 16px;
+  background: #2196F3;
+  border-radius: 12px;
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.create-game-btn:hover {
+  background: #1976D2;
+}
+
+.games-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.no-games {
+  text-align: center;
+  color: #808080;
+  padding: 32px 0;
+}
+
+.game-item {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.game-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.player-name {
+  color: white;
+  font-weight: 500;
+}
+
+.bet-info {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #2196F3;
+  font-size: 14px;
+}
+
+.join-button {
+  padding: 8px 16px;
+  background: #2196F3;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
 } 

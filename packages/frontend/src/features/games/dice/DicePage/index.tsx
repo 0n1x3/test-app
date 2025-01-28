@@ -8,19 +8,21 @@ import { PageContainer } from '@/components/_layout/PageContainer';
 import { PageHeader } from '@/components/_layout/PageHeader';
 import { useUserStore } from '@/store/useUserStore';
 import { DiceGame } from '../components/DiceGame';
+import { LobbyInterface } from '@/features/games/components/LobbyInterface';
 import './style.css';
 import { createBet, processGameResult } from '@/services/transactions';
 import { GameType } from '@/types/game';
 
 type GameMode = 'bot' | 'player';
+type GameState = 'setup' | 'lobby' | 'playing';
 type BetType = 'tokens' | 'real';
 
 export function DicePage() {
   const { t } = useTranslation();
   const [betType, setBetType] = useState<BetType>('tokens');
   const [gameMode, setGameMode] = useState<GameMode>('bot');
+  const [gameState, setGameState] = useState<GameState>('setup');
   const [betAmount, setBetAmount] = useState<number>(100);
-  const [gameStarted, setGameStarted] = useState(false);
 
   const updateUserBalance = useUserStore(state => state.updateBalance);
 
@@ -37,11 +39,15 @@ export function DicePage() {
         return;
       }
 
-      await createBet(betAmount, GameType.DICE);
-      updateUserBalance(-betAmount);
-      setGameStarted(true);
+      if (gameMode === 'bot') {
+        await createBet(betAmount, GameType.DICE);
+        updateUserBalance(-betAmount);
+        setGameState('playing');
+      } else {
+        setGameState('lobby');
+      }
     } catch (error: unknown) {
-      console.error('Error creating bet:', error);
+      console.error('Error starting game:', error);
       window.Telegram?.WebApp?.showPopup({
         title: t('common.error'),
         message: error instanceof Error ? error.message : t('pages.games.dice.errors.betFailed'),
@@ -54,11 +60,9 @@ export function DicePage() {
     if (result !== 'draw') {
       try {
         await processGameResult(GameType.DICE, result, betAmount);
-        
         if (result === 'win') {
           updateUserBalance(betAmount * 2);
         }
-        
       } catch (error: unknown) {
         console.error('Error processing game result:', error);
         window.Telegram?.WebApp?.showPopup({
@@ -68,7 +72,17 @@ export function DicePage() {
         });
       }
     }
-    setGameStarted(false);
+    setGameState('setup');
+  };
+
+  const handleCreateGame = async () => {
+    try {
+      await createBet(betAmount, GameType.DICE);
+      updateUserBalance(-betAmount);
+      setGameState('playing');
+    } catch (error) {
+      console.error('Error creating multiplayer game:', error);
+    }
   };
 
   return (
@@ -76,9 +90,8 @@ export function DicePage() {
       <PageContainer>
         <PageHeader title={t('pages.games.dice.title')} />
         
-        {!gameStarted ? (
-          <div className="dice-page">
-            {/* Выбор типа ставки */}
+        {gameState === 'setup' && (
+          <div className="dice-setup">
             <div className="bet-type-selector">
               <button
                 className={`bet-type-button ${betType === 'tokens' ? 'active' : ''}`}
@@ -96,7 +109,6 @@ export function DicePage() {
               </button>
             </div>
 
-            {/* Выбор режима игры */}
             <div className="game-mode-selector">
               <button
                 className={`game-mode-button ${gameMode === 'bot' ? 'active' : ''}`}
@@ -114,7 +126,6 @@ export function DicePage() {
               </button>
             </div>
 
-            {/* Выбор суммы ставки */}
             <div className="bet-amount-selector">
               <div className="bet-amount-label">
                 {t('pages.games.dice.betAmount')}
@@ -142,12 +153,23 @@ export function DicePage() {
               </div>
             </div>
 
-            {/* Кнопка начала игры */}
             <button className="start-game-button" onClick={handleStartGame}>
               {t('pages.games.dice.startGame')}
             </button>
           </div>
-        ) : (
+        )}
+
+        {gameState === 'lobby' && (
+          <div className="dice-lobby">
+            <LobbyInterface
+              gameType="dice"
+              onCreate={handleCreateGame}
+              className="styled-lobby"
+            />
+          </div>
+        )}
+
+        {gameState === 'playing' && (
           <DiceGame
             betAmount={betAmount}
             onGameEnd={handleGameEnd}
