@@ -6,8 +6,12 @@ import { GameType } from '@test-app/shared';
 
 @WebSocketGateway({
   cors: {
-    origin: ['http://localhost:3000'],
-    credentials: true,
+    origin: [
+      'https://test.timecommunity.xyz',
+      'http://localhost:3000'
+    ],
+    methods: ['GET', 'POST'],
+    credentials: true
   },
   port: 3005
 })

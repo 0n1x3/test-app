@@ -2,7 +2,18 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { Task } from './task.schema';
 
-@Schema({ timestamps: true })
+@Schema({ 
+  timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform: function (doc, ret) {
+      ret.id = ret._id.toString();
+      delete ret._id;
+      delete ret.__v;
+      return ret;
+    }
+  }
+})
 export class User extends Document {
   @Prop({ required: true, unique: true })
   telegramId: number;
@@ -30,3 +41,8 @@ export class User extends Document {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+// Добавляем виртуальное поле id
+UserSchema.virtual('id').get(function() {
+  return this._id.toHexString();
+});
