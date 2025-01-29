@@ -1,6 +1,5 @@
-import { Controller, Post, Body, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query } from '@nestjs/common';
 import { GameService } from './game.service';
-import { TelegramGuard } from '../guards/telegram.guard';
 import { GameType } from '@test-app/shared';
 
 @Controller('games')
@@ -14,7 +13,6 @@ export class GameController {
   }
 
   @Post('create')
-  // @UseGuards(TelegramGuard)
   async createGame(
     @Body() data: { 
       betAmount: number,

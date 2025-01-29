@@ -1,14 +1,12 @@
-import { Controller, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { GameType } from '../schemas/transaction.schema';
-import { TelegramGuard } from '../guards/telegram.guard';
 
 @Controller('transactions')
 export class TransactionsController {
   constructor(private transactionsService: TransactionsService) {}
 
   @Post('bet')
-  @UseGuards(TelegramGuard)
   async createBet(
     @Body() data: { userId: number; amount: number; game: GameType }
   ) {
@@ -28,7 +26,6 @@ export class TransactionsController {
   }
 
   @Post('result')
-  @UseGuards(TelegramGuard)
   async processGameResult(
     @Body() data: { 
       userId: number; 

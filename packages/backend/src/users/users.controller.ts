@@ -1,6 +1,5 @@
-import { Controller, Get, Post, Body, UseGuards, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Delete } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { TelegramGuard } from '../guards/telegram.guard';
 
 @Controller('users')
 export class UsersController {
