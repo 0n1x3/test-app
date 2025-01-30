@@ -14,7 +14,12 @@ export const LobbySchema = SchemaFactory.createForClass(Lobby);
 
 @Schema({ timestamps: true })
 export class Game extends Document {
-  @Prop({ required: true })
+  @Prop({ 
+    required: true,
+    default: function(this: Game) {
+      return `Game #${this._id}`;
+    }
+  })
   name: string;
 
   @Prop({ 

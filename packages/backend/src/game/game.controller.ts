@@ -1,35 +1,45 @@
-import { Controller, Post, Body, Get, Query } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query, Headers } from '@nestjs/common';
 import { GameService } from './game.service';
 import { GameType } from '@test-app/shared';
 
-@Controller('games')
+@Controller('api/games')
 export class GameController {
   constructor(private gameService: GameService) {}
 
-  @Get()
-  async getActiveGames(@Query('type') gameType: GameType) {
-    const games = await this.gameService.getActiveGames(gameType);
-    return { games };
+  @Get('list')
+  async getGames(@Headers('authorization') auth: string) {
+    try {
+      const games = await this.gameService.getActiveGames(GameType.RPS);
+      return { 
+        success: true, 
+        games: games.map(game => ({
+          ...game,
+          name: game.name || `Game #${game.id}`
+        }))
+      };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
   }
 
   @Post('create')
-  async createGame(
-    @Body() data: { 
-      betAmount: number,
-      gameType: GameType,
-      creatorId: number 
+  async createGame(@Body() data: { gameType: GameType; creatorId: number; betAmount: number }) {
+    try {
+      const user = await this.gameService.validateUser(data.creatorId);
+      const game = await this.gameService.createGame(
+        data.gameType,
+        user,
+        data.betAmount
+      );
+      return { 
+        success: true, 
+        game: {
+          ...game.toObject(),
+          name: game.name || `Game #${game.id}`
+        }
+      };
+    } catch (error) {
+      return { success: false, error: error.message };
     }
-  ) {
-    const user = await this.gameService.validateUser(data.creatorId);
-    const game = await this.gameService.createGame(
-      data.gameType,
-      user,
-      data.betAmount
-    );
-    return { 
-      success: true, 
-      gameId: game.id,
-      inviteLink: `https://t.me/neometria_bot/game?id=${game.id}`
-    };
   }
 } 
