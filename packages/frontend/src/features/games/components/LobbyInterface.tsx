@@ -3,6 +3,7 @@ import { GameType } from '@test-app/shared';
 import { useTranslation } from '@/providers/i18n';
 import { Icon } from '@iconify/react';
 import './LobbyInterface.css';
+// Тип TelegramWebApp теперь доступен глобально через Window.Telegram
 
 interface Game {
   id: string;

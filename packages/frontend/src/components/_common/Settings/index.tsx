@@ -1,11 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { useTranslation } from '@/providers/i18n';
 import { useModal } from '@/providers/modal';
 import type { Language } from '@/types/i18n';
-import type { TelegramWebApp } from '@/types/telegram';
 import { UserData } from '@/types/user';
 import './style.css';
 import { AvatarSelector } from '../AvatarSelector';
