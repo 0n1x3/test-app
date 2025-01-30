@@ -110,4 +110,8 @@ export class UsersService {
   async deleteUser(telegramId: number): Promise<void> {
     await this.userModel.deleteOne({ telegramId });
   }
+
+  async findByTelegramId(telegramId: number): Promise<UserDocument | null> {
+    return this.userModel.findOne({ telegramId }).exec();
+  }
 }

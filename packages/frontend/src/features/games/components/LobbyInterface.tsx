@@ -11,6 +11,7 @@ interface Game {
   players: any[];
   betAmount: number;
   status: 'waiting' | 'playing' | 'finished';
+  inviteLink?: string;
 }
 
 interface LobbyInterfaceProps {
@@ -20,66 +21,100 @@ interface LobbyInterfaceProps {
   className?: string;
 }
 
-export const LobbyInterface: React.FC<LobbyInterfaceProps> = ({ 
+export const LobbyInterface: React.FC<LobbyInterfaceProps> = ({
   gameType,
   onJoin,
   onCreate,
   className
 }) => {
   const { t } = useTranslation();
-  const [loading, setLoading] = useState(false);
   const [games, setGames] = useState<Game[]>([]);
-  const [inviteLink, setInviteLink] = useState<string>('');
-
-  // Получаем объект Telegram из window
+  const [loading, setLoading] = useState(false);
   const tg = window.Telegram?.WebApp;
 
-  useEffect(() => {
-    const fetchGames = async () => {
-      try {
-        const response = await fetch('https://test.timecommunity.xyz/api/games/list', {
-          headers: {
-            'Authorization': `tma ${tg?.initData}`
-          }
-        });
-        const data = await response.json();
-        if (data.games) {
-          setGames(data.games);
-        }
-      } catch (error) {
-        console.error('Error fetching games:', error);
-      }
-    };
+  const fetchGames = async () => {
+    try {
+      const response = await fetch('https://test.timecommunity.xyz/api/games/list');
+      const data = await response.json();
+      setGames(data.games.filter((g: Game) => g.type === gameType));
+    } catch (error) {
+      console.error('Error fetching games:', error);
+    }
+  };
 
+  useEffect(() => {
     if (tg?.initData) {
       fetchGames();
-      // Обновляем список каждые 5 секунд
       const interval = setInterval(fetchGames, 5000);
       return () => clearInterval(interval);
     }
   }, [tg?.initData]);
 
   const handleCreate = async () => {
-    if (loading || !onCreate) return;
+    if (!tg || !tg.initDataUnsafe?.user?.id) {
+      console.error('Telegram WebApp not initialized');
+      return;
+    }
+    
+    if (loading) return;
+    
     setLoading(true);
     try {
-      await onCreate();
+      const response = await fetch('https://test.timecommunity.xyz/api/games/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `tma ${tg.initData}`
+        },
+        body: JSON.stringify({
+          gameType,
+          creatorId: tg.initDataUnsafe.user.id,
+          betAmount: 100
+        }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setGames(prev => [...prev, data.game]);
+      }
+    } catch (error) {
+      tg.showPopup({
+        title: t('common.error'),
+        message: t('game.createError'),
+        buttons: [{ type: 'ok' }]
+      });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const copyInviteLink = async (game: Game) => {
+    if (!tg) {
+      console.error('Telegram WebApp not initialized');
+      return;
+    }
+
+    if (game.inviteLink) {
+      await navigator.clipboard.writeText(game.inviteLink);
+      tg.showPopup({
+        title: t('common.success'),
+        message: t('game.inviteLinkCopied'),
+        buttons: [{ type: 'ok' }]
+      });
     }
   };
 
   return (
     <div className={`lobby-container ${className || ''}`}>
       <button 
+        className="create-game-btn"
         onClick={handleCreate}
         disabled={loading}
-        className="create-game-btn"
       >
-        <Icon icon="mdi:plus" />
-        {loading ? t('common.loading') : t('game.create')}
+        <Icon icon="material-symbols:add-circle-outline" />
+        {t('game.create')}
       </button>
-      
+
       <div className="games-list">
         {games.length > 0 ? (
           games.map(game => (
@@ -96,16 +131,31 @@ export const LobbyInterface: React.FC<LobbyInterfaceProps> = ({
                 <div className="game-players">
                   <Icon icon="mdi:account-multiple" />
                   {game.players.length}/2
+                  <span className="player-status">
+                    {game.players.length === 2 
+                      ? t('game.playerJoined')
+                      : t('game.waitingForPlayers')
+                    }
+                  </span>
                 </div>
                 
-                {onJoin && (
+                <div className="game-actions">
                   <button 
-                    className="join-button"
-                    onClick={() => onJoin(game.id)}
+                    className="action-button copy-link"
+                    onClick={() => copyInviteLink(game)}
                   >
-                    {t('game.join')}
+                    <Icon icon="material-symbols:link" />
                   </button>
-                )}
+                  
+                  {onJoin && game.players.length < 2 && (
+                    <button 
+                      className="action-button join-button"
+                      onClick={() => onJoin(game.id)}
+                    >
+                      <Icon icon="material-symbols:login" />
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           ))

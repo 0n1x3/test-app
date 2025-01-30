@@ -150,6 +150,9 @@ importers:
         specifier: ^5.0.3
         version: 5.0.3(@types/react@18.3.13)(react@18.2.0)
     devDependencies:
+      '@twa-dev/types':
+        specifier: ^8.0.2
+        version: 8.0.2
       '@types/node':
         specifier: ^20.0.0
         version: 20.17.9
@@ -527,6 +530,9 @@ packages:
 
   '@tonconnect/ui@2.0.9':
     resolution: {integrity: sha512-ZxofTBf81NqrxyD0ybI8AuFHN11uKVg/00xTDFhP5FoPB8rYC7En9qE2VJ6IvwvtTpmh8jspi2ancOHUMBoCQA==}
+
+  '@twa-dev/types@8.0.2':
+    resolution: {integrity: sha512-ICQ6n4NaUPPzV3/GzflVQS6Nnu5QX2vr9OlOG8ZkFf3rSJXzRKazrLAbZlVhCPPWkIW3MMuELPsE6tByrA49qA==}
 
   '@types/caseless@0.12.5':
     resolution: {integrity: sha512-hWtVTC2q7hc7xZ/RLbxapMvDMgUnDvKvMOpKal4DrMyfGBUfB1oKaZlIRr6mJL+If3bAP6sV/QneGzF6tJjZDg==}
@@ -3273,6 +3279,8 @@ snapshots:
       ua-parser-js: 1.0.39
     transitivePeerDependencies:
       - encoding
+
+  '@twa-dev/types@8.0.2': {}
 
   '@types/caseless@0.12.5': {}
 

@@ -6,6 +6,7 @@ import { TransactionsModule } from '../transactions/transactions.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Game, GameSchema } from '../schemas/game.schema';
 import { UserSchema } from '../schemas/user.schema';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
@@ -13,7 +14,8 @@ import { UserSchema } from '../schemas/user.schema';
       { name: Game.name, schema: GameSchema },
       { name: 'User', schema: UserSchema }
     ]),
-    TransactionsModule
+    TransactionsModule,
+    UsersModule
   ],
   controllers: [GameController],
   providers: [GameGateway, GameService],

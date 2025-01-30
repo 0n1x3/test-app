@@ -153,6 +153,7 @@
     "createError": "Ошибка при создании игры",
     "inviteLinkCopied": "Ссылка-приглашение скопирована",
     "waitingForPlayers": "Ожидание игроков",
-    "betAmount": "Ставка"
+    "betAmount": "Ставка",
+    "playerJoined": "Игрок присоединился"
   }
 } 
