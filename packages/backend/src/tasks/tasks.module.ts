@@ -3,13 +3,17 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { TasksController } from './tasks.controller';
 import { TasksService } from './tasks.service';
 import { Task, TaskSchema } from '../schemas/task.schema';
-import { User, UserSchema } from '../schemas/user.schema';
+import { UserEntity, UserSchema } from '../schemas/user.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Task.name, schema: TaskSchema },
-      { name: User.name, schema: UserSchema }
+      { 
+        name: UserEntity.name, 
+        schema: UserSchema,
+        collection: 'users'
+      }
     ])
   ],
   controllers: [TasksController],

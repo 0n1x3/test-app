@@ -1,8 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { Task } from './task.schema';
+import { User, BaseUser } from '@test-app/shared';
 
-@Schema({ 
+@Schema({
+  collection: 'users',
   timestamps: true,
   toJSON: {
     virtuals: true,
@@ -14,15 +15,17 @@ import { Task } from './task.schema';
     }
   }
 })
-export class User extends Document {
-  @Prop({ required: true, unique: true })
+export class UserEntity implements BaseUser {
+  _id: Types.ObjectId;
+
+  @Prop({ required: true })
   telegramId: number;
 
   @Prop({ required: true })
   username: string;
 
   @Prop()
-  avatarUrl: string;
+  avatarUrl?: string;
 
   @Prop({ default: 0 })
   balance: number;
@@ -33,16 +36,29 @@ export class User extends Document {
   @Prop({ default: 0 })
   experience: number;
 
-  @Prop({ type: [{ type: Types.ObjectId, ref: 'Task' }], default: [] })
-  completedTasks: Task[];
+  @Prop({ type: [Object], default: [] })
+  completedTasks?: any[];
 
-  @Prop({ default: false })
+  @Prop({ default: true })
   isActive: boolean;
+
+  @Prop()
+  tonWallet?: string;
 }
 
-export const UserSchema = SchemaFactory.createForClass(User);
+export type UserDocument = UserEntity & Document;
+export const UserSchema = SchemaFactory.createForClass(UserEntity);
 
 // Добавляем виртуальное поле id
 UserSchema.virtual('id').get(function() {
   return this._id.toHexString();
 });
+
+// Функция для преобразования документа в User
+export function toUser(doc: UserDocument): User {
+  const obj = doc.toObject();
+  return {
+    ...obj,
+    id: doc._id.toString()
+  };
+}

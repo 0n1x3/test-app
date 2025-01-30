@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Game, GameType, User, GameState } from '@test-app/shared';
+import { Game, GameType, GameState, User } from '@test-app/shared';
 import { Server } from 'socket.io';
 import { TransactionsService } from '../transactions/transactions.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { UserDocument, toUser } from '../schemas/user.schema';
 
 @Injectable()
 export class GameService {
@@ -15,38 +16,38 @@ export class GameService {
   constructor(
     private transactionsService: TransactionsService,
     @InjectModel('Game') private gameModel: Model<Game>,
-    @InjectModel('User') private userModel: Model<User>
+    @InjectModel('User') private userModel: Model<UserDocument>
   ) {}
 
   setServer(server: Server) {
     this.server = server;
   }
 
-  async createGame(type: GameType, creator: User, betAmount: number) {
+  async createGame(type: GameType, creator: UserDocument, betAmount: number) {
     await this.transactionsService.createBet(creator.telegramId, betAmount, type);
     
     const game = new this.gameModel({
       type,
-      players: [creator],
+      players: [creator._id],
       betAmount,
-      status: 'waiting',
-      createdAt: new Date()
+      status: 'waiting'
     });
     
     return game.save();
   }
 
-  async validateUser(userId: number): Promise<User> {
+  async validateUser(userId: number): Promise<UserDocument> {
     const user = await this.userModel.findOne({ telegramId: userId });
     if (!user) throw new Error('User not found');
     return user;
   }
 
-  joinGame(gameId: string, user: User): Game {
+  async joinGame(gameId: string, userDoc: UserDocument): Promise<Game> {
     const game = this.games.get(gameId);
     if (!game) throw new Error('Game not found');
     
-    if (!game.players.find(p => p.id === user.id)) {
+    const user = toUser(userDoc);
+    if (!game.players.some(p => p.id === user.id)) {
       game.players.push(user);
     }
     
@@ -82,11 +83,14 @@ export class GameService {
     return game;
   }
 
-  async getActiveGames(gameType: GameType): Promise<Game[]> {
+  async getActiveGames(gameType: GameType) {
     return this.gameModel.find({ 
       type: gameType,
       status: 'waiting'
-    }).populate('players');
+    })
+    .populate('players')
+    .lean()
+    .exec();
   }
 
   // Другие методы для управления играми

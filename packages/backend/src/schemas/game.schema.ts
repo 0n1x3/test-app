@@ -1,7 +1,5 @@
 import { Schema, SchemaFactory, Prop } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
-import * as mongoose from 'mongoose';
-import { User } from './user.schema';
+import { Document, Types } from 'mongoose';
 
 @Schema()
 export class Lobby extends Document {
@@ -15,18 +13,25 @@ export class Lobby extends Document {
 export const LobbySchema = SchemaFactory.createForClass(Lobby);
 
 @Schema({ timestamps: true })
-export class Game {
-  @Prop({ required: true })
-  type: 'dice' | 'rps';
+export class Game extends Document {
+  @Prop({ 
+    type: String, 
+    enum: ['rps', 'dice'],
+    required: true 
+  })
+  type: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  players: User[];
+  @Prop([{ 
+    type: Types.ObjectId, 
+    ref: 'User' 
+  }])
+  players: Types.ObjectId[];
 
   @Prop({ required: true })
   betAmount: number;
 
   @Prop({ 
-    required: true,
+    type: String, 
     enum: ['waiting', 'playing', 'finished'],
     default: 'waiting'
   })

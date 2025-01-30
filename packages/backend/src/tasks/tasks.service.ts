@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Task } from '../schemas/task.schema';
-import { User } from '../schemas/user.schema';
+import { UserEntity, UserDocument } from '../schemas/user.schema';
 
 @Injectable()
 export class TasksService {
   constructor(
     @InjectModel(Task.name) private taskModel: Model<Task>,
-    @InjectModel(User.name) private userModel: Model<User>
+    @InjectModel(UserEntity.name) private userModel: Model<UserDocument>
   ) {}
 
   async getActiveTasks(userId: number): Promise<Task[]> {
@@ -23,7 +23,7 @@ export class TasksService {
     return tasks.filter(task => task.completedBy.get(userId.toString()));
   }
 
-  async completeTask(userId: number, taskId: string): Promise<User> {
+  async completeTask(userId: number, taskId: string): Promise<UserEntity> {
     const task = await this.taskModel.findById(taskId);
     if (!task || task.completedBy.get(userId.toString())) {
       throw new Error('Task already completed or not found');

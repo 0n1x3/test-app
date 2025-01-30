@@ -3,7 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { TransactionsService } from './transactions.service';
 import { TransactionsController } from './transactions.controller';
 import { Transaction, TransactionSchema } from '../schemas/transaction.schema';
-import { User, UserSchema } from '../schemas/user.schema';
+import { UserEntity, UserSchema } from '../schemas/user.schema';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
@@ -11,7 +11,7 @@ import { ConfigModule } from '@nestjs/config';
     ConfigModule.forRoot(),
     MongooseModule.forFeature([
       { name: Transaction.name, schema: TransactionSchema },
-      { name: 'User', schema: UserSchema }
+      { name: UserEntity.name, schema: UserSchema }
     ])
   ],
   controllers: [TransactionsController],

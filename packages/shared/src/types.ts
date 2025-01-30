@@ -4,13 +4,32 @@ export enum GameType {
   DICE = 'dice'
 }
 
+// Тип для API и WebSocket
 export interface User {
   id: string;
   telegramId: number;
   username: string;
   balance: number;
   avatarUrl?: string;
+  level?: number;
+  experience?: number;
+  isActive?: boolean;
+  tonWallet?: string;
 }
+
+// Тип для внутреннего использования в сервисах
+export interface BaseUser {
+  telegramId: number;
+  username: string;
+  balance: number;
+  avatarUrl?: string;
+  level?: number;
+  experience?: number;
+  isActive?: boolean;
+  tonWallet?: string;
+}
+
+export type UserDocument = User & Document;
 
 export interface Game {
   id: string;

@@ -3,6 +3,7 @@ import { Server, Socket } from 'socket.io';
 import { GameService } from './game.service';
 import { Game, User, WSEvents, verifyToken } from '@test-app/shared';
 import { GameType } from '@test-app/shared';
+import { UserDocument } from '../schemas/user.schema';
 
 @WebSocketGateway({
   cors: {
@@ -29,24 +30,23 @@ export class GameGateway {
   async handleCreateGame(
     @MessageBody() data: { 
       gameType: GameType,
-      creator: User,
+      creator: UserDocument,
       betAmount: number 
     },
   ) {
-    const game = this.gameService.createGame(
+    const game = await this.gameService.createGame(
       data.gameType,
       data.creator,
       data.betAmount
     );
-    this.server.emit(WSEvents.GAME_STATE_UPDATE, game);
+    this.server.emit(WSEvents.GAME_STATE_UPDATE, game.toObject());
     return { success: true, game };
   }
 
   @SubscribeMessage('joinGame')
-  async handleJoinGame(
-    @MessageBody() data: { gameId: string; user: User },
-  ) {
-    const game = this.gameService.joinGame(data.gameId, data.user);
+  async handleJoinGame(@MessageBody() data: { gameId: string; user: User }) {
+    const userDoc = await this.gameService.validateUser(data.user.telegramId);
+    const game = await this.gameService.joinGame(data.gameId, userDoc);
     this.server.to(game.id).emit(WSEvents.PLAYER_JOINED, { game });
     return { success: true, game };
   }
