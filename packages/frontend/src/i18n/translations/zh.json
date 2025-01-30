@@ -135,5 +135,14 @@
     "loading": "加载中...",
     "error": "错误",
     "retry": "重试"
+  },
+  "game": {
+    "create": "创建游戏",
+    "noGames": "没有活动游戏",
+    "join": "加入",
+    "createError": "创建游戏时出错",
+    "inviteLinkCopied": "邀请链接已复制",
+    "waitingForPlayers": "等待玩家",
+    "betAmount": "投注"
   }
 } 

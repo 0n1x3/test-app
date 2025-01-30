@@ -140,5 +140,14 @@
     "loading": "Loading...",
     "error": "Error",
     "retry": "Retry"
+  },
+  "game": {
+    "create": "Create Game",
+    "noGames": "No Active Games",
+    "join": "Join",
+    "createError": "Error creating game",
+    "inviteLinkCopied": "Invite link copied",
+    "waitingForPlayers": "Waiting for players",
+    "betAmount": "Bet"
   }
 } 

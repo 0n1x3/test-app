@@ -1,8 +1,10 @@
 .lobby-container {
-  padding: 20px;
-  background: linear-gradient(180deg, #000000 0%, #1A1A1A 100%);
-  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
   height: 100%;
+  background: var(--tg-theme-bg-color);
 }
 
 .create-game-btn {
@@ -17,57 +19,92 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin-bottom: 24px;
+  transition: background 0.2s;
 }
 
-.create-game-btn:hover {
+.create-game-btn:hover:not(:disabled) {
   background: #1976D2;
+}
+
+.create-game-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .games-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  flex: 1;
+}
+
+.game-item {
+  background: #1A1A1A;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.game-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+}
+
+.game-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.game-players {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #808080;
+  font-size: 14px;
+}
+
+.bet-amount {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #2196F3;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.join-button {
+  width: 100%;
+  padding: 12px;
+  background: rgba(33, 150, 243, 0.1);
+  border: 1px solid #2196F3;
+  border-radius: 8px;
+  color: #2196F3;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.join-button:hover {
+  background: #2196F3;
+  color: white;
 }
 
 .no-games {
   text-align: center;
   color: #808080;
   padding: 32px 0;
-}
-
-.game-item {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.game-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.player-name {
-  color: white;
-  font-weight: 500;
-}
-
-.bet-info {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: #2196F3;
-  font-size: 14px;
-}
-
-.join-button {
-  padding: 8px 16px;
-  background: #2196F3;
-  border-radius: 8px;
-  color: white;
-  font-size: 14px;
+  font-size: 15px;
 } 

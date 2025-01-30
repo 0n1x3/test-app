@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { GameType } from '@test-app/shared';
 import { useTranslation } from '@/providers/i18n';
 import { Icon } from '@iconify/react';
+import './LobbyInterface.css';
 
 interface Game {
   id: string;
@@ -52,51 +53,17 @@ export const LobbyInterface: React.FC<LobbyInterfaceProps> = ({
 
     if (tg?.initData) {
       fetchGames();
+      // Обновляем список каждые 5 секунд
+      const interval = setInterval(fetchGames, 5000);
+      return () => clearInterval(interval);
     }
   }, [tg?.initData]);
 
   const handleCreate = async () => {
-    if (loading || !tg?.initDataUnsafe?.user) return;
-    
+    if (loading || !onCreate) return;
     setLoading(true);
     try {
-      const response = await fetch('https://test.timecommunity.xyz/api/games/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `tma ${tg.initData}`
-        },
-        body: JSON.stringify({ 
-          gameType,
-          creatorId: tg.initDataUnsafe.user.id,
-          betAmount: 100
-        }),
-      });
-
-      const data = await response.json();
-      
-      if (data.success) {
-        const { game } = data;
-        setGames(prev => [...prev, game]);
-        
-        if (game.inviteLink) {
-          setInviteLink(game.inviteLink);
-          await navigator.clipboard.writeText(game.inviteLink);
-          tg.showPopup({
-            title: t('common.success'),
-            message: t('game.inviteLinkCopied'),
-            buttons: [{ type: 'ok' }]
-          });
-        }
-      } else {
-        throw new Error(data.error || 'Failed to create game');
-      }
-    } catch (error) {
-      tg.showPopup({
-        title: t('common.error'),
-        message: t('game.createError'),
-        buttons: [{ type: 'ok' }]
-      });
+      await onCreate();
     } finally {
       setLoading(false);
     }
@@ -117,22 +84,36 @@ export const LobbyInterface: React.FC<LobbyInterfaceProps> = ({
         {games.length > 0 ? (
           games.map(game => (
             <div key={game.id} className="game-item">
-              <h3>{game.name || `Game #${game.id}`}</h3>
-              <p>Type: {game.type}</p>
-              <p>Players: {game.players.length}/2</p>
-              <p>Bet: {game.betAmount}</p>
-              {onJoin && (
-                <button 
-                  className="join-button"
-                  onClick={() => onJoin(game.id)}
-                >
-                  {t('game.join')}
-                </button>
-              )}
+              <div className="game-header">
+                <div className="game-name">{game.name || `Game #${game.id}`}</div>
+                <div className="bet-amount">
+                  <Icon icon="material-symbols:diamond-rounded" />
+                  {game.betAmount}
+                </div>
+              </div>
+              
+              <div className="game-info">
+                <div className="game-players">
+                  <Icon icon="mdi:account-multiple" />
+                  {game.players.length}/2
+                </div>
+                
+                {onJoin && (
+                  <button 
+                    className="join-button"
+                    onClick={() => onJoin(game.id)}
+                  >
+                    {t('game.join')}
+                  </button>
+                )}
+              </div>
             </div>
           ))
         ) : (
-          <p>{t('game.noGames')}</p>
+          <div className="no-games">
+            <Icon icon="mdi:gamepad-variant-outline" className="no-games-icon" />
+            <p>{t('game.noGames')}</p>
+          </div>
         )}
       </div>
     </div>
