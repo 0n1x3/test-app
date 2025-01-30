@@ -33,6 +33,7 @@ export type UserDocument = User & Document;
 
 export interface Game {
   id: string;
+  name: string;
   type: GameType;
   players: User[];
   betAmount: number;

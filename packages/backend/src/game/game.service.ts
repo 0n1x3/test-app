@@ -24,16 +24,26 @@ export class GameService {
   }
 
   async createGame(type: GameType, creator: UserDocument, betAmount: number) {
-    await this.transactionsService.createBet(creator.telegramId, betAmount, type);
-    
-    const game = new this.gameModel({
-      type,
-      players: [creator._id],
-      betAmount,
-      status: 'waiting'
-    });
-    
-    return game.save();
+    try {
+      console.log('Creating game with:', { type, creator: creator.toObject(), betAmount });
+      
+      await this.transactionsService.createBet(creator.telegramId, betAmount, type);
+      
+      const game = new this.gameModel({
+        type,
+        name: `${creator.username}'s game`,
+        players: [creator._id],
+        betAmount,
+        status: 'waiting'
+      });
+      
+      const savedGame = await game.save();
+      console.log('Saved game:', savedGame);
+      return savedGame;
+    } catch (error) {
+      console.error('Error in createGame:', error);
+      throw error;
+    }
   }
 
   async validateUser(userId: number): Promise<UserDocument> {

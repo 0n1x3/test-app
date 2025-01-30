@@ -34,13 +34,20 @@ export class GameGateway {
       betAmount: number 
     },
   ) {
-    const game = await this.gameService.createGame(
-      data.gameType,
-      data.creator,
-      data.betAmount
-    );
-    this.server.emit(WSEvents.GAME_STATE_UPDATE, game.toObject());
-    return { success: true, game };
+    try {
+      console.log('Creating game with data:', data);
+      const game = await this.gameService.createGame(
+        data.gameType,
+        data.creator,
+        data.betAmount
+      );
+      console.log('Created game:', game);
+      this.server.emit(WSEvents.GAME_STATE_UPDATE, game.toObject());
+      return { success: true, game: game.toObject() };
+    } catch (error) {
+      console.error('Error creating game:', error);
+      return { success: false, error: error.message };
+    }
   }
 
   @SubscribeMessage('joinGame')

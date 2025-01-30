@@ -14,6 +14,9 @@ export const LobbySchema = SchemaFactory.createForClass(Lobby);
 
 @Schema({ timestamps: true })
 export class Game extends Document {
+  @Prop({ required: true })
+  name: string;
+
   @Prop({ 
     type: String, 
     enum: ['rps', 'dice'],
@@ -41,7 +44,7 @@ export class Game extends Document {
   currentRound: number;
 
   @Prop()
-  rounds: Array<{
+  rounds?: Array<{
     player1: number;
     player2: number;
     result: 'win' | 'lose' | 'draw';
