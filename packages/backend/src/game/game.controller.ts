@@ -63,4 +63,16 @@ export class GameController {
     const game = await this.gameService.joinGame(gameId, user);
     return { success: true, game };
   }
+
+  @Get('active')
+  async getActiveGames(@Query('type') type: GameType) {
+    try {
+      const games = await this.gameService.getActiveGames(type);
+      console.log('Active games:', games); // Для отладки
+      return { success: true, games };
+    } catch (error) {
+      console.error('Error getting active games:', error);
+      throw error;
+    }
+  }
 } 

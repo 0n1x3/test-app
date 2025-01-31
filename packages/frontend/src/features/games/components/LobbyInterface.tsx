@@ -35,9 +35,13 @@ export const LobbyInterface: React.FC<LobbyInterfaceProps> = ({
 
   const fetchGames = async () => {
     try {
-      const response = await fetch('https://test.timecommunity.xyz/api/games/list');
+      const response = await fetch(`https://test.timecommunity.xyz/api/games/active?type=${gameType}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch games');
+      }
       const data = await response.json();
-      setGames(data.games.filter((g: Game) => g.type === gameType));
+      console.log('Fetched games:', data); // Для отладки
+      setGames(data.games || []);
     } catch (error) {
       console.error('Error fetching games:', error);
     }
@@ -54,6 +58,7 @@ export const LobbyInterface: React.FC<LobbyInterfaceProps> = ({
   const handleCreateGame = async () => {
     try {
       if (!tg?.initData) return;
+      setLoading(true);
 
       const response = await fetch('https://test.timecommunity.xyz/api/games/create', {
         method: 'POST',
@@ -62,7 +67,7 @@ export const LobbyInterface: React.FC<LobbyInterfaceProps> = ({
         },
         body: JSON.stringify({
           type: gameType,
-          betAmount: 100, // или другая сумма
+          betAmount: 100,
           initData: tg.initData
         }),
       });
@@ -74,9 +79,21 @@ export const LobbyInterface: React.FC<LobbyInterfaceProps> = ({
       const data = await response.json();
       if (data.success) {
         await fetchGames(); // Обновляем список игр
+        tg?.showPopup({
+          title: t('common.success'),
+          message: t('game.created'),
+          buttons: [{ type: 'ok' }]
+        });
       }
     } catch (error) {
       console.error('Error creating game:', error);
+      tg?.showPopup({
+        title: t('common.error'),
+        message: t('game.createError'),
+        buttons: [{ type: 'ok' }]
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
