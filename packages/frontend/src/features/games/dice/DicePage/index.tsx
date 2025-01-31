@@ -97,13 +97,14 @@ export function DicePage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          gameId,
+          gameId: `game_${gameId}`,
           initData: tg.initData
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to join game');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to join game');
       }
 
       const data = await response.json();
@@ -114,7 +115,7 @@ export function DicePage() {
       console.error('Error joining game:', error);
       tg?.showPopup({
         title: t('common.error'),
-        message: t('game.joinError'),
+        message: error instanceof Error ? error.message : t('game.joinError'),
         buttons: [{ type: 'ok' }]
       });
     }
