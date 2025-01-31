@@ -6,7 +6,8 @@ import './LobbyInterface.css';
 // Тип TelegramWebApp теперь доступен глобально через Window.Telegram
 
 interface Game {
-  id: string;
+  _id?: string;  // MongoDB использует _id
+  id?: string;   // Для обратной совместимости
   name: string;
   type: GameType;
   players: any[];
@@ -22,7 +23,8 @@ interface LobbyInterfaceProps {
   className?: string;
 }
 
-const formatGameName = (name: string, id: string) => {
+const formatGameName = (name: string, id: string | undefined) => {
+  if (!id) return name;
   const shortId = id.slice(-4); // Берем последние 4 символа ID
   return `${name} #${shortId}`;
 };
@@ -166,50 +168,56 @@ export const LobbyInterface: React.FC<LobbyInterfaceProps> = ({
 
       <div className="games-list">
         {games.length > 0 ? (
-          games.map(game => (
-            <div key={game.id} className="game-item">
-              <div className="game-header">
-                <div className="game-name">
-                  {formatGameName(game.name || 'Game', game.id)}
-                </div>
-                <div className="bet-amount">
-                  <Icon icon="material-symbols:diamond-rounded" />
-                  {game.betAmount}
-                </div>
-              </div>
-              
-              <div className="game-info">
-                <div className="game-players">
-                  <Icon icon="mdi:account-multiple" />
-                  {game.players.length}/2
-                  <span className="player-status">
-                    {game.players.length === 2 
-                      ? t('game.playerJoined')
-                      : t('game.waitingForPlayers')
-                    }
-                  </span>
+          games.map(game => {
+            const gameId = game._id || game.id;
+            return (
+              <div key={gameId} className="game-item">
+                <div className="game-header">
+                  <div className="game-name">
+                    {formatGameName(game.name || 'Game', game._id || game.id)}
+                  </div>
+                  <div className="bet-amount">
+                    <Icon icon="material-symbols:diamond-rounded" />
+                    {game.betAmount}
+                  </div>
                 </div>
                 
-                <div className="game-actions">
-                  <button 
-                    className="action-button copy-link"
-                    onClick={() => copyInviteLink(game)}
-                  >
-                    <Icon icon="material-symbols:link" />
-                  </button>
+                <div className="game-info">
+                  <div className="game-players">
+                    <Icon icon="mdi:account-multiple" />
+                    {game.players.length}/2
+                    <span className="player-status">
+                      {game.players.length === 2 
+                        ? t('game.playerJoined')
+                        : t('game.waitingForPlayers')
+                      }
+                    </span>
+                  </div>
                   
-                  {game.players.length < 2 && (
+                  <div className="game-actions">
                     <button 
-                      className="action-button join-game"
-                      onClick={() => onJoin?.(game.id)}
+                      className="action-button copy-link"
+                      onClick={() => copyInviteLink(game)}
                     >
-                      <Icon icon="material-symbols:login" />
+                      <Icon icon="material-symbols:link" />
                     </button>
-                  )}
+                    
+                    {game.players.length < 2 && (
+                      <button 
+                        className="action-button join-game"
+                        onClick={() => {
+                          const gameId = game._id || game.id;
+                          if (gameId) onJoin?.(gameId);
+                        }}
+                      >
+                        <Icon icon="material-symbols:login" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <div className="no-games">
             <Icon icon="mdi:gamepad-variant-outline" className="no-games-icon" />
