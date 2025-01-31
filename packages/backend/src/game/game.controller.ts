@@ -17,27 +17,36 @@ export class GameController {
   }
 
   @Post('create')
-  async createGame(@Body() data: { 
-    gameType: GameType;
-    creatorId: number;
-    betAmount: number;
-  }) {
-    const user = await this.usersService.findByTelegramId(data.creatorId);
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
+  async createGame(
+    @Body() data: { type: GameType; betAmount: number },
+    @Headers('Authorization') authHeader: string
+  ) {
+    try {
+      const initData = authHeader.replace('Bearer ', '');
+      const params = new URLSearchParams(initData);
+      const userStr = params.get('user');
+      
+      if (!userStr) {
+        throw new Error('No user data found');
+      }
 
-    const game = await this.gameService.createGame(
-      data.gameType,
-      user,
-      data.betAmount
-    );
-    
-    return { 
-      success: true,
-      game,
-      inviteLink: `https://t.me/your_bot_name?start=game_${game.id}`
-    };
+      const userData = JSON.parse(decodeURIComponent(userStr));
+      const user = await this.usersService.findByTelegramId(userData.id);
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      const game = await this.gameService.createGame(data.type, user, data.betAmount);
+
+      return { 
+        success: true,
+        game,
+        inviteLink: `https://t.me/neometria_bot/game?startapp=${game.id}`
+      };
+    } catch (error) {
+      console.error('Error creating game:', error);
+      throw error;
+    }
   }
 
   @Post('join/:gameId')

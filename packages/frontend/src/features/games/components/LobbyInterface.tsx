@@ -90,18 +90,37 @@ export const LobbyInterface: React.FC<LobbyInterfaceProps> = ({
   };
 
   const copyInviteLink = async (game: Game) => {
-    if (!tg) {
-      console.error('Telegram WebApp not initialized');
-      return;
-    }
+    if (!game.inviteLink) return;
 
-    if (game.inviteLink) {
+    try {
       await navigator.clipboard.writeText(game.inviteLink);
-      tg.showPopup({
+      tg?.showPopup({
         title: t('common.success'),
         message: t('game.inviteLinkCopied'),
         buttons: [{ type: 'ok' }]
       });
+    } catch (error) {
+      // Fallback для устройств без clipboard API
+      const textarea = document.createElement('textarea');
+      textarea.value = game.inviteLink;
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        tg?.showPopup({
+          title: t('common.success'),
+          message: t('game.inviteLinkCopied'),
+          buttons: [{ type: 'ok' }]
+        });
+      } catch (e) {
+        console.error('Fallback copy failed:', e);
+        tg?.showPopup({
+          title: t('common.error'),
+          message: game.inviteLink,
+          buttons: [{ type: 'ok' }]
+        });
+      }
+      document.body.removeChild(textarea);
     }
   };
 

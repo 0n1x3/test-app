@@ -54,6 +54,15 @@ export class Game extends Document {
     player2: number;
     result: 'win' | 'lose' | 'draw';
   }>;
+
+  @Prop({ 
+    type: String,
+    required: true,
+    default: function() {
+      return `https://t.me/neometria_bot/game?startapp=${this._id}`;
+    }
+  })
+  inviteLink: string;
 }
 
 export const GameSchema = SchemaFactory.createForClass(Game); 
