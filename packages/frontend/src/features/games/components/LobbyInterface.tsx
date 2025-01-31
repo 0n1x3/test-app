@@ -22,6 +22,11 @@ interface LobbyInterfaceProps {
   className?: string;
 }
 
+const formatGameName = (name: string, id: string) => {
+  const shortId = id.slice(-4); // Берем последние 4 символа ID
+  return `${name} #${shortId}`;
+};
+
 export const LobbyInterface: React.FC<LobbyInterfaceProps> = ({
   gameType,
   onJoin,
@@ -164,7 +169,9 @@ export const LobbyInterface: React.FC<LobbyInterfaceProps> = ({
           games.map(game => (
             <div key={game.id} className="game-item">
               <div className="game-header">
-                <div className="game-name">{game.name || `Game #${game.id}`}</div>
+                <div className="game-name">
+                  {formatGameName(game.name || 'Game', game.id)}
+                </div>
                 <div className="bet-amount">
                   <Icon icon="material-symbols:diamond-rounded" />
                   {game.betAmount}
@@ -191,10 +198,10 @@ export const LobbyInterface: React.FC<LobbyInterfaceProps> = ({
                     <Icon icon="material-symbols:link" />
                   </button>
                   
-                  {onJoin && game.players.length < 2 && (
+                  {game.players.length < 2 && (
                     <button 
-                      className="action-button join-button"
-                      onClick={() => onJoin(game.id)}
+                      className="action-button join-game"
+                      onClick={() => onJoin?.(game.id)}
                     >
                       <Icon icon="material-symbols:login" />
                     </button>

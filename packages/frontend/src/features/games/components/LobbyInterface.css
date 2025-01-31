@@ -45,7 +45,7 @@
 }
 
 .game-item {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(33, 33, 33, 0.5);
   border-radius: 12px;
   padding: 16px;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -139,4 +139,15 @@
 .no-games-icon {
   font-size: 48px;
   opacity: 0.5;
+}
+
+.join-game {
+  border: 1px solid #4CAF50;
+  color: #4CAF50;
+  background: rgba(76, 175, 80, 0.1);
+}
+
+.join-game:hover {
+  background: #4CAF50;
+  color: white;
 } 
