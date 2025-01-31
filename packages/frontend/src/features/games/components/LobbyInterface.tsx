@@ -51,41 +51,32 @@ export const LobbyInterface: React.FC<LobbyInterfaceProps> = ({
     }
   }, [tg?.initData]);
 
-  const handleCreate = async () => {
-    if (!tg || !tg.initDataUnsafe?.user?.id) {
-      console.error('Telegram WebApp not initialized');
-      return;
-    }
-    
-    if (loading) return;
-    
-    setLoading(true);
+  const handleCreateGame = async () => {
     try {
+      if (!tg?.initData) return;
+
       const response = await fetch('https://test.timecommunity.xyz/api/games/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `tma ${tg.initData}`
         },
         body: JSON.stringify({
-          gameType,
-          creatorId: tg.initDataUnsafe.user.id,
-          betAmount: 100
+          type: gameType,
+          betAmount: 100, // или другая сумма
+          initData: tg.initData
         }),
       });
 
+      if (!response.ok) {
+        throw new Error('Failed to create game');
+      }
+
       const data = await response.json();
       if (data.success) {
-        setGames(prev => [...prev, data.game]);
+        await fetchGames(); // Обновляем список игр
       }
     } catch (error) {
-      tg.showPopup({
-        title: t('common.error'),
-        message: t('game.createError'),
-        buttons: [{ type: 'ok' }]
-      });
-    } finally {
-      setLoading(false);
+      console.error('Error creating game:', error);
     }
   };
 
@@ -128,7 +119,7 @@ export const LobbyInterface: React.FC<LobbyInterfaceProps> = ({
     <div className={`lobby-container ${className || ''}`}>
       <button 
         className="create-game-btn"
-        onClick={handleCreate}
+        onClick={handleCreateGame}
         disabled={loading}
       >
         <Icon icon="material-symbols:add-circle-outline" />

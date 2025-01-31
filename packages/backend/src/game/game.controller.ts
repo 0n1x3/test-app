@@ -17,13 +17,14 @@ export class GameController {
   }
 
   @Post('create')
-  async createGame(
-    @Body() data: { type: GameType; betAmount: number },
-    @Headers('Authorization') authHeader: string
-  ) {
+  async createGame(@Body() data: { 
+    type: GameType; 
+    betAmount: number;
+    initData: string;
+  }) {
     try {
-      const initData = authHeader.replace('Bearer ', '');
-      const params = new URLSearchParams(initData);
+      // Парсим данные пользователя из initData
+      const params = new URLSearchParams(data.initData);
       const userStr = params.get('user');
       
       if (!userStr) {
