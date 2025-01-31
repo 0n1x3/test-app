@@ -42,7 +42,7 @@ export class GameController {
       return { 
         success: true,
         game,
-        inviteLink: `https://t.me/neometria_bot/game?startapp=${game.id}`
+        inviteLink: `https://t.me/neometria_bot/app?startapp=game_${game._id}`
       };
     } catch (error) {
       console.error('Error creating game:', error);
@@ -50,18 +50,28 @@ export class GameController {
     }
   }
 
-  @Post('join/:gameId')
-  async joinGame(
-    @Param('gameId') gameId: string,
-    @Body() data: { playerId: number }
-  ) {
-    const user = await this.usersService.findByTelegramId(data.playerId);
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
+  @Post('join')
+  async joinGame(@Body() data: { gameId: string; initData: string }) {
+    try {
+      const params = new URLSearchParams(data.initData);
+      const userStr = params.get('user');
+      
+      if (!userStr) {
+        throw new Error('No user data found');
+      }
 
-    const game = await this.gameService.joinGame(gameId, user);
-    return { success: true, game };
+      const userData = JSON.parse(decodeURIComponent(userStr));
+      const user = await this.usersService.findByTelegramId(userData.id);
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      const game = await this.gameService.joinGame(data.gameId, user);
+      return { success: true, game };
+    } catch (error) {
+      console.error('Error joining game:', error);
+      throw error;
+    }
   }
 
   @Get('active')

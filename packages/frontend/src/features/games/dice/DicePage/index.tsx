@@ -85,6 +85,41 @@ export function DicePage() {
     }
   };
 
+  const handleJoinGame = async (gameId: string) => {
+    const tg = window.Telegram?.WebApp;
+    
+    try {
+      if (!tg?.initData) return;
+
+      const response = await fetch(`https://test.timecommunity.xyz/api/games/join`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          gameId,
+          initData: tg.initData
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to join game');
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        setGameState('playing');
+      }
+    } catch (error) {
+      console.error('Error joining game:', error);
+      tg?.showPopup({
+        title: t('common.error'),
+        message: t('game.joinError'),
+        buttons: [{ type: 'ok' }]
+      });
+    }
+  };
+
   return (
     <SafeArea>
       <PageContainer>
@@ -164,6 +199,7 @@ export function DicePage() {
             <LobbyInterface
               gameType="dice"
               onCreate={handleCreateGame}
+              onJoin={handleJoinGame}
               className="styled-lobby"
             />
           </div>
