@@ -101,6 +101,17 @@ export const LobbyInterface: React.FC<LobbyInterfaceProps> = ({
     if (!game.inviteLink) return;
 
     try {
+      // Для мобильных устройств
+      if (navigator.share) {
+        await navigator.share({
+          title: 'Присоединяйся к игре!',
+          text: 'Нажми на ссылку, чтобы присоединиться:',
+          url: game.inviteLink
+        });
+        return;
+      }
+
+      // Для остальных устройств
       await navigator.clipboard.writeText(game.inviteLink);
       tg?.showPopup({
         title: t('common.success'),
@@ -111,8 +122,11 @@ export const LobbyInterface: React.FC<LobbyInterfaceProps> = ({
       // Fallback для устройств без clipboard API
       const textarea = document.createElement('textarea');
       textarea.value = game.inviteLink;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
       document.body.appendChild(textarea);
       textarea.select();
+      
       try {
         document.execCommand('copy');
         tg?.showPopup({
@@ -122,13 +136,15 @@ export const LobbyInterface: React.FC<LobbyInterfaceProps> = ({
         });
       } catch (e) {
         console.error('Fallback copy failed:', e);
+        // Если копирование не удалось, показываем ссылку
         tg?.showPopup({
           title: t('common.error'),
           message: game.inviteLink,
           buttons: [{ type: 'ok' }]
         });
+      } finally {
+        document.body.removeChild(textarea);
       }
-      document.body.removeChild(textarea);
     }
   };
 

@@ -4,7 +4,7 @@
   gap: 16px;
   padding: 16px;
   height: 100%;
-  background: var(--tg-theme-bg-color, #000000);
+  background-color: #000000;
   min-height: calc(100vh - env(safe-area-inset-bottom) - env(safe-area-inset-top));
 }
 
@@ -14,19 +14,27 @@
   justify-content: center;
   gap: 8px;
   height: 48px;
-  background: #2196F3;
+  background: linear-gradient(90deg, #2196F3 0%, #4CAF50 100%);
   border-radius: 12px;
   color: white;
   font-size: 16px;
   font-weight: 600;
   border: none;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: all 0.2s;
+  padding: 0 24px;
+  width: 100%;
+}
+
+.create-game-btn:active {
+  transform: scale(0.98);
+  opacity: 0.9;
 }
 
 .create-game-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .games-list {
