@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { Icon } from '@iconify/react';
 import { useTranslation } from '@/providers/i18n';
@@ -71,6 +71,9 @@ export function MultiplayerDiceGame({ gameId, betAmount, onGameEnd }: Multiplaye
   
   // Сохраняем ссылку на сокет
   const socketRef = useRef<Socket | null>(null);
+  // Референция для отслеживания монтирования компонента
+  const isMountedRef = useRef<boolean>(true);
+  
   const currentUser = useUserStore(state => ({ 
     id: state.telegramId || 0, // Устанавливаем значение по умолчанию
     name: state.username || 'Вы',
@@ -81,8 +84,8 @@ export function MultiplayerDiceGame({ gameId, betAmount, onGameEnd }: Multiplaye
   useEffect(() => {
     console.log('Connecting to game:', gameId);
     
-    // Создаем флаг для отслеживания размонтирования
-    let isMounted = true;
+    // Устанавливаем флаг монтирования
+    isMountedRef.current = true;
     
     const socket = io('https://test.timecommunity.xyz', {
       path: '/socket.io',
@@ -103,8 +106,7 @@ export function MultiplayerDiceGame({ gameId, betAmount, onGameEnd }: Multiplaye
     });
     
     socket.on('gameState', (data: GameStateData) => {
-      // Проверяем, монтирован ли еще компонент
-      if (!isMounted) return;
+      if (!isMountedRef.current) return;
       
       console.log('Received game state:', data);
       
@@ -112,7 +114,7 @@ export function MultiplayerDiceGame({ gameId, betAmount, onGameEnd }: Multiplaye
       if (data.players && data.players.length > 1) {
         // Находим оппонента (не текущего пользователя)
         const opponentData = data.players.find(p => p.telegramId !== currentUser.id);
-        if (opponentData) {
+        if (opponentData && isMountedRef.current) {
           setOpponent({
             id: String(opponentData.telegramId),
             name: opponentData.username || 'Игрок #' + String(opponentData.telegramId).slice(-4),
@@ -120,18 +122,20 @@ export function MultiplayerDiceGame({ gameId, betAmount, onGameEnd }: Multiplaye
           });
         }
         
-        setGameStatus('ready');
-      } else {
+        if (isMountedRef.current) {
+          setGameStatus('ready');
+        }
+      } else if (isMountedRef.current) {
         setGameStatus('waiting');
       }
       
       // Если игра уже идет, обновляем состояние раунда и счет
-      if (data.status === 'playing') {
+      if (data.status === 'playing' && isMountedRef.current) {
         setGameStatus('playing');
         setRound(data.currentRound || 1);
         
         // Определяем, чей сейчас ход
-        if (data.currentPlayer) {
+        if (data.currentPlayer && isMountedRef.current) {
           setIsYourTurn(data.currentPlayer === String(currentUser.id));
         }
         
@@ -148,10 +152,10 @@ export function MultiplayerDiceGame({ gameId, betAmount, onGameEnd }: Multiplaye
           // Определяем, какой счет показать текущему игроку
           const isPlayer1 = data.players[0]?.telegramId === currentUser.id;
           
-          if (isPlayer1) {
+          if (isPlayer1 && isMountedRef.current) {
             setPlayerScore(player1Wins);
             setOpponentScore(player2Wins);
-          } else {
+          } else if (isMountedRef.current) {
             setPlayerScore(player2Wins);
             setOpponentScore(player1Wins);
           }
@@ -164,13 +168,15 @@ export function MultiplayerDiceGame({ gameId, betAmount, onGameEnd }: Multiplaye
       
       // Обрабатываем ход противника
       if (data.userId !== String(currentUser.id)) {
-        setOpponentValue(data.value);
-        setIsRolling(false);
-        
-        // Переключаем ход на текущего игрока, если это необходимо
-        if (data.nextMove === String(currentUser.id)) {
-          setIsYourTurn(true);
-          setIsWaiting(false);
+        if (isMountedRef.current) {
+          setOpponentValue(data.value);
+          setIsRolling(false);
+          
+          // Переключаем ход на текущего игрока, если это необходимо
+          if (data.nextMove === String(currentUser.id)) {
+            setIsYourTurn(true);
+            setIsWaiting(false);
+          }
         }
       }
     });
@@ -182,21 +188,25 @@ export function MultiplayerDiceGame({ gameId, betAmount, onGameEnd }: Multiplaye
       const isPlayer1 = data.players[0] === currentUser.id;
       
       // Показываем результат
-      setRoundResult(isPlayer1 ? data.result : 
-        data.result === 'win' ? 'lose' : 
-        data.result === 'lose' ? 'win' : 'draw');
-      
-      setShowResult(true);
-      
-      // Скрываем результат через 2 секунды
-      setTimeout(() => {
-        setShowResult(false);
-        setRoundResult(null);
+      if (isMountedRef.current) {
+        setRoundResult(isPlayer1 ? data.result : 
+          data.result === 'win' ? 'lose' : 
+          data.result === 'lose' ? 'win' : 'draw');
         
-        // Сбрасываем значения кубиков
-        setPlayerValue(null);
-        setOpponentValue(null);
-      }, 2000);
+        setShowResult(true);
+        
+        // Скрываем результат через 2 секунды
+        setTimeout(() => {
+          setShowResult(false);
+          setRoundResult(null);
+          
+          // Сбрасываем значения кубиков
+          if (isMountedRef.current) {
+            setPlayerValue(null);
+            setOpponentValue(null);
+          }
+        }, 2000);
+      }
     });
     
     socket.on('gameEnd', (data: GameEndData) => {
@@ -213,8 +223,10 @@ export function MultiplayerDiceGame({ gameId, betAmount, onGameEnd }: Multiplaye
     socket.on('diceGameStarted', (data: { gameId: string, firstPlayer: string, status: string }) => {
       console.log('Dice game started:', data);
       
-      setGameStatus('playing');
-      setIsYourTurn(data.firstPlayer === String(currentUser.id));
+      if (isMountedRef.current) {
+        setGameStatus('playing');
+        setIsYourTurn(data.firstPlayer === String(currentUser.id));
+      }
     });
     
     socket.on('error', (error: Error) => {
@@ -225,26 +237,36 @@ export function MultiplayerDiceGame({ gameId, betAmount, onGameEnd }: Multiplaye
     socket.on('connect_error', (error) => {
       console.error('Socket connection error:', error);
       // Показываем сообщение об ошибке пользователю
-      window.Telegram?.WebApp?.showPopup({
-        title: 'Ошибка подключения',
-        message: 'Не удалось подключиться к игре. Попробуйте еще раз.',
-        buttons: [{ type: 'ok' }]
-      });
+      if (isMountedRef.current) {
+        window.Telegram?.WebApp?.showPopup({
+          title: 'Ошибка подключения',
+          message: 'Не удалось подключиться к игре. Попробуйте еще раз.',
+          buttons: [{ type: 'ok' }]
+        });
+      }
     });
     
     // Очистка при размонтировании компонента
     return () => {
       console.log('Disconnecting socket');
-      isMounted = false; // Устанавливаем флаг в false при размонтировании
+      isMountedRef.current = false;
       if (socketRef.current) {
+        socketRef.current.off('connect');
+        socketRef.current.off('gameState');
+        socketRef.current.off('diceMove');
+        socketRef.current.off('roundResult');
+        socketRef.current.off('gameEnd');
+        socketRef.current.off('diceGameStarted');
+        socketRef.current.off('connect_error');
+        socketRef.current.off('error');
         socketRef.current.disconnect();
       }
     };
   }, [currentUser.id, gameId, onGameEnd]);
 
   // Функция для броска кубика
-  const handleRoll = () => {
-    if (isRolling || !isYourTurn) return;
+  const handleRoll = useCallback(() => {
+    if (isRolling || !isYourTurn || !isMountedRef.current) return;
     
     setIsRolling(true);
     setIsWaiting(true);
@@ -256,8 +278,10 @@ export function MultiplayerDiceGame({ gameId, betAmount, onGameEnd }: Multiplaye
     }
     
     const value = Math.floor(Math.random() * 6) + 1;
-    setPlayerValue(value);
-    setIsYourTurn(false);
+    if (isMountedRef.current) {
+      setPlayerValue(value);
+      setIsYourTurn(false);
+    }
     
     socket.emit('diceMove', {
       gameId,
@@ -267,12 +291,16 @@ export function MultiplayerDiceGame({ gameId, betAmount, onGameEnd }: Multiplaye
     
     // Имитация задержки броска кубика
     setTimeout(() => {
-      setIsRolling(false);
+      if (isMountedRef.current) {
+        setIsRolling(false);
+      }
     }, 1000);
-  };
+  }, [currentUser.id, gameId, isRolling, isYourTurn]);
   
   // Функция для запуска игры
-  const handleStartGame = () => {
+  const handleStartGame = useCallback(() => {
+    if (!isMountedRef.current) return;
+    
     const socket = socketRef.current;
     if (!socket) {
       console.error('Socket not connected');
@@ -280,7 +308,7 @@ export function MultiplayerDiceGame({ gameId, betAmount, onGameEnd }: Multiplaye
     }
     
     socket.emit('startDiceGame', { gameId });
-  };
+  }, [gameId]);
   
   // Функция для копирования ссылки-приглашения
   const copyInviteLink = () => {
