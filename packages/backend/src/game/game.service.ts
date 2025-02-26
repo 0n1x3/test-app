@@ -309,5 +309,25 @@ export class GameService {
     return game;
   }
 
+  // Добавляем метод getGameById в GameService
+  async getGameById(gameId: string) {
+    try {
+      console.log('Getting game by ID:', gameId);
+      // Используем модель Game для поиска игры по ID
+      const game = await this.gameModel.findById(gameId);
+      
+      if (!game) {
+        console.log('Game not found:', gameId);
+        return null;
+      }
+      
+      console.log('Game found:', game);
+      return game;
+    } catch (error) {
+      console.error('Error getting game by ID:', error);
+      return null;
+    }
+  }
+
   // Другие методы для управления играми
 } 

@@ -137,6 +137,27 @@ export class GameGateway {
     }
   }
 
+  @SubscribeMessage('joinGameRoom')
+  async handleJoinGameRoom(@MessageBody() data: { gameId: string }, client: Socket) {
+    try {
+      console.log('Client joining game room:', data.gameId, 'Client ID:', client.id);
+      
+      // Добавляем клиента в комнату
+      client.join(data.gameId);
+      
+      // Получаем текущее состояние игры и отправляем его только этому клиенту
+      const gameState = await this.gameService.getGameById(data.gameId);
+      if (gameState) {
+        client.emit('gameState', gameState);
+      }
+      
+      return { success: true };
+    } catch (error) {
+      console.error('Error joining game room:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
   handleConnection(client: Socket) {
     try {
       const token = client.handshake.auth.token;

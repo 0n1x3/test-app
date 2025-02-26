@@ -179,6 +179,11 @@ export function DicePage() {
     checkPendingGame();
   }, []);
 
+  // Добавьте в useEffect для просмотра рендеров
+  useEffect(() => {
+    console.log('DicePage rendered');
+  }, []);
+
   return (
     <SafeArea>
       <PageContainer>

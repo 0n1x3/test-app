@@ -24,7 +24,10 @@ export const useUserStore = create<UserState>((set) => ({
   level: 1,
   experience: 0,
   isActive: false,
-  setUserData: (data) => set(data),
+  setUserData: (data) => {
+    console.log('Setting user data:', data);
+    set(data);
+  },
   fetchUserData: async () => {
     try {
       const webApp = window.Telegram?.WebApp;
