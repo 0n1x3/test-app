@@ -77,13 +77,15 @@ export function MultiplayerDiceGame({ gameId, betAmount, onGameEnd }: Multiplaye
     avatar: state.avatarUrl || '/avatars/nft1.png'
   }));
 
-  // Подключение к сокету и настройка обработчиков событий
+  // Добавляем флаг для отслеживания монтирования компонента
   useEffect(() => {
     console.log('Connecting to game:', gameId);
     
-    // Создаем соединение с сервером WebSocket
+    // Создаем флаг для отслеживания размонтирования
+    let isMounted = true;
+    
     const socket = io('https://test.timecommunity.xyz', {
-      path: '/api/socket.io',
+      path: '/socket.io',
       auth: {
         gameId,
         telegramId: currentUser.id
@@ -101,6 +103,9 @@ export function MultiplayerDiceGame({ gameId, betAmount, onGameEnd }: Multiplaye
     });
     
     socket.on('gameState', (data: GameStateData) => {
+      // Проверяем, монтирован ли еще компонент
+      if (!isMounted) return;
+      
       console.log('Received game state:', data);
       
       // Обновляем состояние игры на основе полученных данных
@@ -216,9 +221,21 @@ export function MultiplayerDiceGame({ gameId, betAmount, onGameEnd }: Multiplaye
       console.error('Socket error:', error);
     });
     
+    // Обработчик ошибок подключения
+    socket.on('connect_error', (error) => {
+      console.error('Socket connection error:', error);
+      // Показываем сообщение об ошибке пользователю
+      window.Telegram?.WebApp?.showPopup({
+        title: 'Ошибка подключения',
+        message: 'Не удалось подключиться к игре. Попробуйте еще раз.',
+        buttons: [{ type: 'ok' }]
+      });
+    });
+    
     // Очистка при размонтировании компонента
     return () => {
       console.log('Disconnecting socket');
+      isMounted = false; // Устанавливаем флаг в false при размонтировании
       if (socketRef.current) {
         socketRef.current.disconnect();
       }

@@ -14,7 +14,8 @@ import { UserDocument } from '../schemas/user.schema';
     methods: ['GET', 'POST'],
     credentials: true
   },
-  port: 3005
+  port: 3005,
+  path: '/socket.io'
 })
 export class GameGateway {
   @WebSocketServer()
