@@ -87,6 +87,7 @@ export function MultiplayerDiceGame({ gameId, betAmount, onGameEnd }: Multiplaye
     // Устанавливаем флаг монтирования
     isMountedRef.current = true;
     
+    // Создаем сокет только один раз
     const socket = io('https://test.timecommunity.xyz', {
       path: '/socket.io',
       auth: {
@@ -97,16 +98,27 @@ export function MultiplayerDiceGame({ gameId, betAmount, onGameEnd }: Multiplaye
     
     socketRef.current = socket;
     
+    // Отслеживаем последнее состояние игры, чтобы избежать повторных обновлений
+    let lastGameState: string = '';
+    
     // Регистрируем обработчики событий
     socket.on('connect', () => {
       console.log('Socket connected');
       
-      // Присоединяемся к комнате игры
+      // Присоединяемся к комнате игры только один раз при подключении
       socket.emit('joinGameRoom', { gameId });
     });
     
     socket.on('gameState', (data: GameStateData) => {
       if (!isMountedRef.current) return;
+      
+      // Предотвращаем повторную обработку одинаковых данных
+      const gameStateString = JSON.stringify(data);
+      if (gameStateString === lastGameState) {
+        console.log('Ignoring duplicate game state');
+        return;
+      }
+      lastGameState = gameStateString;
       
       console.log('Received game state:', data);
       
@@ -115,18 +127,23 @@ export function MultiplayerDiceGame({ gameId, betAmount, onGameEnd }: Multiplaye
         // Находим оппонента (не текущего пользователя)
         const opponentData = data.players.find(p => p.telegramId !== currentUser.id);
         if (opponentData && isMountedRef.current) {
-          setOpponent({
-            id: String(opponentData.telegramId),
-            name: opponentData.username || 'Игрок #' + String(opponentData.telegramId).slice(-4),
-            avatar: opponentData.avatarUrl || '/avatars/nft2.png'
+          setOpponent(prev => {
+            // Проверяем, изменился ли оппонент
+            if (prev.id === String(opponentData.telegramId)) return prev;
+            
+            return {
+              id: String(opponentData.telegramId),
+              name: opponentData.username || 'Игрок #' + String(opponentData.telegramId).slice(-4),
+              avatar: opponentData.avatarUrl || '/avatars/nft2.png'
+            };
           });
         }
         
         if (isMountedRef.current) {
-          setGameStatus('ready');
+          setGameStatus(prev => prev === 'ready' ? prev : 'ready');
         }
       } else if (isMountedRef.current) {
-        setGameStatus('waiting');
+        setGameStatus(prev => prev === 'waiting' ? prev : 'waiting');
       }
       
       // Если игра уже идет, обновляем состояние раунда и счет
@@ -250,15 +267,10 @@ export function MultiplayerDiceGame({ gameId, betAmount, onGameEnd }: Multiplaye
     return () => {
       console.log('Disconnecting socket');
       isMountedRef.current = false;
+      
       if (socketRef.current) {
-        socketRef.current.off('connect');
-        socketRef.current.off('gameState');
-        socketRef.current.off('diceMove');
-        socketRef.current.off('roundResult');
-        socketRef.current.off('gameEnd');
-        socketRef.current.off('diceGameStarted');
-        socketRef.current.off('connect_error');
-        socketRef.current.off('error');
+        // Отключаем все обработчики перед отключением сокета
+        socketRef.current.off();
         socketRef.current.disconnect();
       }
     };
