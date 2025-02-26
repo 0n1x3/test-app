@@ -155,5 +155,159 @@ export class GameService {
     .exec();
   }
 
+  // Получение игры по ID
+  async getDiceGameById(gameId: string): Promise<Game | null> {
+    try {
+      const game = await this.gameModel.findById(gameId)
+        .populate('players')
+        .exec();
+      
+      return game;
+    } catch (error) {
+      console.error('Error getting dice game by ID:', error);
+      return null;
+    }
+  }
+
+  // Записываем ход игрока
+  async recordDiceMove(gameId: string, userId: number, value: number): Promise<Game> {
+    const game = await this.gameModel.findById(gameId)
+      .populate('players')
+      .exec();
+    
+    if (!game) {
+      throw new Error('Game not found');
+    }
+    
+    // Проверяем, чей ход
+    if (game.currentPlayer && game.currentPlayer !== userId.toString()) {
+      throw new Error('Not your turn');
+    }
+    
+    // Получение индекса текущего игрока
+    const playerIndex = game.players.findIndex(p => 
+      p.telegramId === userId
+    );
+    
+    if (playerIndex === -1) {
+      throw new Error('Player not found in game');
+    }
+    
+    // Если ещё нет истории раундов, создаем её
+    if (!game.rounds) {
+      game.rounds = [];
+    }
+    
+    // Если это первый игрок в текущем раунде
+    if (!game.rounds[game.currentRound - 1]) {
+      game.rounds[game.currentRound - 1] = {
+        player1: value,
+        player2: 0,
+        result: 'draw' // Временное значение
+      };
+      
+      // Переход хода к другому игроку
+      const nextPlayerIndex = (playerIndex + 1) % game.players.length;
+      const nextPlayer = game.players[nextPlayerIndex];
+      game.currentPlayer = nextPlayer.telegramId.toString();
+    } 
+    // Если это второй игрок в раунде
+    else {
+      game.rounds[game.currentRound - 1].player2 = value;
+      
+      // Определяем результат раунда
+      const player1Value = game.rounds[game.currentRound - 1].player1;
+      const player2Value = value;
+      
+      let result: 'win' | 'lose' | 'draw';
+      
+      if (player1Value > player2Value) {
+        result = 'win';
+      } else if (player1Value < player2Value) {
+        result = 'lose';
+      } else {
+        result = 'draw';
+      }
+      
+      game.rounds[game.currentRound - 1].result = result;
+      
+      // Отправляем результат раунда
+      this.server.to(gameId).emit('roundResult', {
+        round: game.currentRound,
+        players: game.players.map(p => p.telegramId),
+        result,
+        player1Value,
+        player2Value
+      });
+      
+      // Проверяем, закончилась ли игра
+      let player1Wins = 0;
+      let player2Wins = 0;
+      
+      game.rounds.forEach(round => {
+        if (round.result === 'win') player1Wins++;
+        else if (round.result === 'lose') player2Wins++;
+      });
+      
+      if (player1Wins >= 2 || player2Wins >= 2) {
+        game.status = 'finished';
+        
+        // Определяем победителя
+        const winner = player1Wins >= 2 
+          ? game.players[0].telegramId 
+          : game.players[1].telegramId;
+        
+        // Отправляем уведомление о завершении игры
+        this.server.to(gameId).emit('gameEnd', {
+          gameId,
+          winner,
+          score: [player1Wins, player2Wins]
+        });
+        
+        // Начисляем выигрыш победителю
+        const totalBet = game.betAmount * 2;
+        await this.transactionsService.processPayout(
+          winner,
+          totalBet,
+          'dice_win'
+        );
+      } else {
+        // Переходим к следующему раунду
+        game.currentRound++;
+        
+        // Первый ход в новом раунде отдаем первому игроку
+        game.currentPlayer = game.players[0].telegramId.toString();
+      }
+    }
+    
+    await game.save();
+    return game;
+  }
+
+  // Начало игры в кубики
+  async startDiceGame(gameId: string): Promise<Game> {
+    const game = await this.gameModel.findById(gameId)
+      .populate('players')
+      .exec();
+    
+    if (!game) {
+      throw new Error('Game not found');
+    }
+    
+    if (game.players.length !== 2) {
+      throw new Error('Game requires exactly 2 players');
+    }
+    
+    game.status = 'playing';
+    game.currentRound = 1;
+    
+    // Выбираем случайно первого игрока
+    const randomIndex = Math.floor(Math.random() * 2);
+    game.currentPlayer = game.players[randomIndex].telegramId.toString();
+    
+    await game.save();
+    return game;
+  }
+
   // Другие методы для управления играми
 } 

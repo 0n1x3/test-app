@@ -1,5 +1,6 @@
 import { Schema, SchemaFactory, Prop } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import { UserDocument } from './user.schema';
 
 @Schema()
 export class Lobby extends Document {
@@ -29,11 +30,8 @@ export class Game extends Document {
   })
   type: string;
 
-  @Prop([{ 
-    type: Types.ObjectId, 
-    ref: 'User' 
-  }])
-  players: Types.ObjectId[];
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
+  players: UserDocument[];
 
   @Prop({ required: true })
   betAmount: number;
@@ -46,6 +44,9 @@ export class Game extends Document {
   status: string;
 
   @Prop()
+  currentPlayer: string;
+
+  @Prop({ type: Number, default: 0 })
   currentRound: number;
 
   @Prop()

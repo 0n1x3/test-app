@@ -70,4 +70,41 @@ export class TransactionsService {
 
     await Promise.all(updates);
   }
+
+  // Добавляем метод выплаты выигрыша
+  async processPayout(userId: number, amount: number, reason: string): Promise<any> {
+    try {
+      console.log(`Processing payout: ${amount} to user ${userId} for reason: ${reason}`);
+      
+      // Находим пользователя
+      const user = await this.userModel.findOne({ telegramId: userId });
+      
+      if (!user) {
+        throw new Error(`User with telegramId ${userId} not found`);
+      }
+      
+      // Создаем транзакцию выплаты
+      const transaction = new this.transactionModel({
+        user: user._id,
+        amount: amount,
+        type: 'win',
+        status: 'completed',
+        metadata: {
+          reason,
+          gameType: reason.split('_')[0] // 'dice_win' -> 'dice'
+        }
+      });
+      
+      await transaction.save();
+      
+      // Обновляем баланс пользователя
+      user.balance += amount;
+      await user.save();
+      
+      return transaction;
+    } catch (error) {
+      console.error('Error processing payout:', error);
+      throw error;
+    }
+  }
 } 

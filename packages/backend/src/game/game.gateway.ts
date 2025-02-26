@@ -72,6 +72,70 @@ export class GameGateway {
     return { games: [] };
   }
 
+  @SubscribeMessage('diceMove')
+  async handleDiceMove(
+    @MessageBody() data: { gameId: string; value: number; userId: number }
+  ) {
+    try {
+      console.log('Dice move:', data);
+      const game = await this.gameService.getDiceGameById(data.gameId);
+      
+      if (!game) {
+        return { success: false, error: 'Game not found' };
+      }
+      
+      // Находим индекс игрока
+      const playerIndex = game.players.findIndex(
+        playerId => playerId.toString() === data.userId.toString()
+      );
+      
+      if (playerIndex === -1) {
+        return { success: false, error: 'Player not in game' };
+      }
+      
+      // Обновляем состояние игры
+      const updatedGame = await this.gameService.recordDiceMove(
+        data.gameId,
+        data.userId,
+        data.value
+      );
+      
+      // Сообщаем всем подключенным клиентам о ходе
+      this.server.to(data.gameId).emit('diceMove', {
+        gameId: data.gameId,
+        userId: data.userId,
+        value: data.value,
+        nextMove: updatedGame.currentPlayer
+      });
+      
+      return { success: true };
+    } catch (error) {
+      console.error('Error handling dice move:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  @SubscribeMessage('startDiceGame')
+  async handleStartDiceGame(
+    @MessageBody() data: { gameId: string }
+  ) {
+    try {
+      const game = await this.gameService.startDiceGame(data.gameId);
+      
+      // Используем оператор опционального доступа для предотвращения ошибок
+      this.server.to(data.gameId).emit('diceGameStarted', {
+        gameId: data.gameId,
+        firstPlayer: game.currentPlayer ?? '',
+        status: 'playing'
+      });
+      
+      return { success: true, game };
+    } catch (error) {
+      console.error('Error starting dice game:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
   handleConnection(client: Socket) {
     try {
       const token = client.handshake.auth.token;

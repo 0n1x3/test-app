@@ -32,12 +32,15 @@ export interface BaseUser {
 export type UserDocument = User & Document;
 
 export interface Game {
-  id: string;
+  _id?: string;
+  id?: string;
   name: string;
   type: GameType;
   players: User[];
   betAmount: number;
   status: 'waiting' | 'playing' | 'finished';
+  inviteLink?: string;
+  currentPlayer?: string;
   currentRound?: number;
   rounds?: Array<{
     player1: number;

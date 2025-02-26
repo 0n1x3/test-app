@@ -152,3 +152,46 @@
 .copy-invite-button:active {
   transform: scale(0.98);
 }
+
+/* Добавляем стили для индикатора хода */
+.turn-indicator {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 12px;
+}
+
+.your-turn {
+  color: #4CAF50;
+  background: rgba(76, 175, 80, 0.1);
+}
+
+.opponent-turn {
+  color: #FFC107;
+  background: rgba(255, 193, 7, 0.1);
+}
+
+/* Стили для сообщения об ожидании */
+.waiting-message {
+  margin-top: 20px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 12px;
+  text-align: center;
+  color: #FFFFFF;
+  font-size: 16px;
+}
+
+.share-link {
+  margin-top: 12px;
+}
+
+/* Стили для кнопки старта игры */
+.start-game-button {
+  background: #4CAF50;
+}
+
+.start-game-button:hover {
+  background: #388E3C;
+}
