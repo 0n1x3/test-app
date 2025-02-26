@@ -12,6 +12,7 @@ import { LobbyInterface } from '@/features/games/components/LobbyInterface';
 import './style.css';
 import { createBet, processGameResult } from '@/services/transactions';
 import { GameType } from '@/types/game';
+import { toast } from 'react-hot-toast';
 
 type GameMode = 'bot' | 'player';
 type GameState = 'setup' | 'lobby' | 'playing';
@@ -89,30 +90,65 @@ export function DicePage() {
     const tg = window.Telegram?.WebApp;
     
     try {
-      if (!tg?.initData) return;
-
-      const response = await fetch(`https://test.timecommunity.xyz/api/games/join`, {
+      if (!tg?.initData) {
+        console.error('Telegram WebApp initData недоступен');
+        toast.error('Не удалось получить данные Telegram');
+        return;
+      }
+      
+      console.log(`Отправка запроса на присоединение к игре: ${gameId}`);
+      
+      const response = await fetch('https://test.timecommunity.xyz/api/games/join', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          gameId: `game_${gameId}`,
+          gameId: gameId.startsWith('game_') ? gameId : `game_${gameId}`,
           initData: tg.initData
         }),
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to join game');
+        let errorMessage = 'Ошибка при присоединении к игре';
+        
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || `Ошибка ${response.status}: ${response.statusText}`;
+        } catch (parseError) {
+          console.error('Не удалось разобрать ответ с ошибкой:', parseError);
+        }
+        
+        console.error('Ошибка при присоединении к игре:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorMessage
+        });
+        
+        tg?.showPopup({
+          title: t('common.error'),
+          message: errorMessage,
+          buttons: [{ type: 'ok' }]
+        });
+        
+        return;
       }
 
       const data = await response.json();
+      console.log('Успешное присоединение к игре:', data);
+      
       if (data.success) {
+        tg?.showPopup({
+          title: t('common.success'),
+          message: t('game.joinSuccess'),
+          buttons: [{ type: 'ok' }]
+        });
+        
         setGameState('playing');
       }
     } catch (error) {
-      console.error('Error joining game:', error);
+      console.error('Ошибка при обработке присоединения к игре:', error);
+      
       tg?.showPopup({
         title: t('common.error'),
         message: error instanceof Error ? error.message : t('game.joinError'),

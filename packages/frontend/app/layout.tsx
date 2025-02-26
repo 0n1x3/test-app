@@ -13,6 +13,7 @@ import { I18nProvider } from '@/providers/i18n';
 import { ModalProvider } from '@/providers/modal';
 import { PortalContainer } from '@/components/_layout/PortalContainer';
 import { useUserStore } from '@/store/useUserStore';
+import { Toaster } from 'react-hot-toast';
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'] });
 const robotoMono = Roboto_Mono({
@@ -74,6 +75,7 @@ export default function RootLayout({
                 <BottomNav />
               </div>
               <PortalContainer />
+              <Toaster position="top-center" />
             </ModalProvider>
           </TonProvider>
         </I18nProvider>

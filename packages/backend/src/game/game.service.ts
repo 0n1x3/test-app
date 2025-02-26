@@ -53,15 +53,67 @@ export class GameService {
   }
 
   async joinGame(gameId: string, userDoc: UserDocument): Promise<Game> {
-    const game = this.games.get(gameId);
-    if (!game) throw new Error('Game not found');
-    
-    const user = toUser(userDoc);
-    if (!game.players.some(p => p.id === user.id)) {
-      game.players.push(user);
+    try {
+      console.log(`Попытка присоединиться к игре с ID: ${gameId}`);
+      
+      // Ищем игру в MongoDB вместо локального хранилища
+      const game = await this.gameModel.findById(gameId).exec();
+      
+      if (!game) {
+        console.error(`Игра с ID ${gameId} не найдена в базе данных`);
+        throw new Error(`Game with ID ${gameId} not found`);
+      }
+      
+      console.log(`Игра найдена: ${game.name}, тип: ${game.type}, статус: ${game.status}`);
+      
+      // Проверяем статус игры
+      if (game.status !== 'waiting') {
+        console.error(`Невозможно присоединиться к игре ${gameId} в статусе ${game.status}`);
+        throw new Error(`Cannot join game in status ${game.status}`);
+      }
+      
+      // Проверяем, не присоединился ли уже этот игрок
+      const playerExists = game.players.some(
+        (playerId) => playerId.toString() === userDoc._id.toString()
+      );
+      
+      if (playerExists) {
+        console.log(`Игрок ${userDoc.username} уже присоединён к игре ${gameId}`);
+        return game;
+      }
+      
+      // Проверяем, не заполнена ли игра
+      if (game.type === 'dice' && game.players.length >= 2) {
+        console.error(`Игра ${gameId} уже заполнена (${game.players.length} игроков)`);
+        throw new Error('Game is already full');
+      }
+      
+      // Добавляем игрока в игру
+      console.log(`Добавляем игрока ${userDoc.username} в игру ${gameId}`);
+      game.players.push(userDoc._id);
+      
+      // Если игра заполнена, меняем статус
+      if (game.type === 'dice' && game.players.length >= 2) {
+        game.status = 'playing';
+      }
+      
+      // Сохраняем обновленную игру
+      const updatedGame = await game.save();
+      console.log(`Игрок ${userDoc.username} успешно присоединился к игре ${gameId}`);
+      
+      // Если есть WebSocket сервер, отправляем уведомление
+      if (this.server) {
+        this.server.emit('gameUpdated', { 
+          gameId: updatedGame.id,
+          game: updatedGame
+        });
+      }
+      
+      return updatedGame;
+    } catch (error) {
+      console.error(`Ошибка при присоединении к игре ${gameId}:`, error);
+      throw error;
     }
-    
-    return game;
   }
 
   startTurnTimer(lobbyId: string) {

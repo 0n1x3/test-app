@@ -53,29 +53,43 @@ export class GameController {
   @Post('join')
   async joinGame(@Body() data: { gameId: string; initData: string }) {
     try {
+      console.log('Получен запрос на присоединение к игре:', data.gameId);
+      
       // Парсим gameId из формата game_<id>
       const gameId = data.gameId.startsWith('game_') 
         ? data.gameId.substring(5) 
         : data.gameId;
-
+      
+      console.log('Обработанный ID игры:', gameId);
+      
+      // Парсим данные пользователя
       const params = new URLSearchParams(data.initData);
       const userStr = params.get('user');
       
       if (!userStr) {
+        console.error('Данные пользователя не найдены в initData');
         throw new Error('No user data found');
       }
 
       const userData = JSON.parse(decodeURIComponent(userStr));
+      console.log('Данные пользователя:', { id: userData.id, username: userData.username });
+      
       const user = await this.usersService.findByTelegramId(userData.id);
       
       if (!user) {
+        console.error(`Пользователь с ID ${userData.id} не найден`);
         throw new NotFoundException('User not found');
       }
+      
+      console.log(`Пользователь найден: ${user.username}, ID: ${user._id}`);
 
+      // Присоединяем пользователя к игре
       const game = await this.gameService.joinGame(gameId, user);
+      console.log('Пользователь успешно присоединился к игре');
+      
       return { success: true, game };
     } catch (error) {
-      console.error('Error joining game:', error);
+      console.error('Ошибка при присоединении к игре:', error);
       throw error;
     }
   }
