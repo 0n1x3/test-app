@@ -3,7 +3,7 @@
 import Script from 'next/script'
 import { useEffect } from 'react';
 import { Inter, Roboto_Mono } from 'next/font/google';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import '@/styles/globals.css';
 import '@/styles/base/components.css';
 import { TonProvider } from '@/providers/ton';
@@ -28,6 +28,7 @@ export default function RootLayout({
 }) {
   const pathname = usePathname();
   const { fetchUserData } = useUserStore();
+  const router = useRouter();
 
   useEffect(() => {
     if (!document.getElementById('portal-root')) {
@@ -45,6 +46,31 @@ export default function RootLayout({
           e.preventDefault();
         }
       }, { passive: false });
+
+      // Обработка параметров запуска
+      const startParam = tg.initDataUnsafe && 'start_param' in tg.initDataUnsafe 
+        ? (tg.initDataUnsafe as any).start_param 
+        : undefined;
+      console.log('Start param:', startParam);
+      
+      if (startParam && startParam.startsWith('game_')) {
+        // Получаем ID игры и перенаправляем на страницу игры в режиме лобби
+        const gameId = startParam.substring(5);
+        console.log('Redirecting to game:', gameId);
+        
+        // Если пользователь уже на странице игры, просто открываем игру
+        if (pathname.includes('/games/dice')) {
+          // В этом случае нужно внедрить функционал открытия игры через событие
+          // Можно использовать localStorage или глобальное состояние
+          localStorage.setItem('pendingGameJoin', gameId);
+          window.location.reload(); // Перезагружаем страницу для применения изменений
+        } else {
+          // Иначе перенаправляем на страницу игры
+          router.push(`/games/dice`);
+          // Сохраняем ID игры для дальнейшей обработки
+          localStorage.setItem('pendingGameJoin', gameId);
+        }
+      }
     }
   }, []);
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { useTranslation } from '@/providers/i18n';
 import { SafeArea } from '@/components/_layout/SafeArea';
@@ -13,6 +13,7 @@ import './style.css';
 import { createBet, processGameResult } from '@/services/transactions';
 import { GameType } from '@/types/game';
 import { toast } from 'react-hot-toast';
+import { MultiplayerDiceGame } from '../components/MultiplayerDiceGame';
 
 type GameMode = 'bot' | 'player';
 type GameState = 'setup' | 'lobby' | 'playing';
@@ -24,6 +25,7 @@ export function DicePage() {
   const [gameMode, setGameMode] = useState<GameMode>('bot');
   const [gameState, setGameState] = useState<GameState>('setup');
   const [betAmount, setBetAmount] = useState<number>(100);
+  const [activeGameId, setActiveGameId] = useState<string | null>(null);
 
   const updateUserBalance = useUserStore(state => state.updateBalance);
 
@@ -138,6 +140,9 @@ export function DicePage() {
       console.log('Успешное присоединение к игре:', data);
       
       if (data.success) {
+        setActiveGameId(gameId);
+        setGameMode('player');
+        
         tg?.showPopup({
           title: t('common.success'),
           message: t('game.joinSuccess'),
@@ -156,6 +161,29 @@ export function DicePage() {
       });
     }
   };
+
+  // Добавляем useEffect для проверки сохраненного gameId
+  useEffect(() => {
+    const checkPendingGame = async () => {
+      const pendingGameId = localStorage.getItem('pendingGameJoin');
+      
+      if (pendingGameId) {
+        console.log('Found pending game join:', pendingGameId);
+        localStorage.removeItem('pendingGameJoin'); // Удаляем сохраненный ID
+        
+        // Устанавливаем режим игры с игроком
+        setGameMode('player');
+        setGameState('lobby');
+        
+        // С небольшой задержкой присоединяемся к игре
+        setTimeout(() => {
+          handleJoinGame(pendingGameId);
+        }, 1000);
+      }
+    };
+    
+    checkPendingGame();
+  }, []);
 
   return (
     <SafeArea>
@@ -243,10 +271,20 @@ export function DicePage() {
         )}
 
         {gameState === 'playing' && (
-          <DiceGame
-            betAmount={betAmount}
-            onGameEnd={handleGameEnd}
-          />
+          <>
+            {gameMode === 'bot' ? (
+              <DiceGame
+                betAmount={betAmount}
+                onGameEnd={handleGameEnd}
+              />
+            ) : (
+              <MultiplayerDiceGame
+                gameId={activeGameId || ''}
+                betAmount={betAmount}
+                onGameEnd={handleGameEnd}
+              />
+            )}
+          </>
         )}
       </PageContainer>
     </SafeArea>

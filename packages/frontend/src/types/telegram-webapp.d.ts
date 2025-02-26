@@ -24,6 +24,7 @@ declare global {
       auth_date: number;
       hash: string;
       query_id?: string;
+      start_param?: string;
     };
     themeParams?: {
       bg_color: string;
