@@ -25,68 +25,122 @@ interface MultiplayerDiceGameProps {
   onGameEnd: (result: GameResult) => void;
 }
 
-// Упрощенная версия компонента
+// Упрощенная версия с предотвращением ошибки #185
 export function MultiplayerDiceGame({ gameId, betAmount, onGameEnd }: MultiplayerDiceGameProps) {
   // Минимальный набор состояний
-  const [gameStatus, setGameStatus] = useState<'waiting' | 'ready' | 'playing' | 'finished'>('waiting');
-  const [opponent, setOpponent] = useState({ name: 'Противник', avatar: '/avatars/nft5.png' });
-  
-  // Референция для сокета
-  const socketRef = useRef<Socket | null>(null);
+  const [gameStatus, setGameStatus] = useState('waiting');
   const currentUser = useUserStore(state => ({ 
     id: state.telegramId || 0,
-    name: state.username || 'Вы',
-    avatar: state.avatarUrl || '/avatars/nft1.png'
+    name: state.username || 'Вы'
   }));
-
-  // Упрощенный эффект для подключения к сокету
+  
+  // Предотвращаем обновления после размонтирования
+  const mountedRef = useRef(true);
+  const socketRef = useRef<Socket | null>(null);
+  
+  // Первоначальная настройка - выполняется только при монтировании
   useEffect(() => {
-    console.log('Connecting to game:', gameId);
+    console.log('MultiplayerDiceGame mounted, gameId:', gameId);
     
-    // Создаем сокет
-    const socket = io('https://test.timecommunity.xyz', {
-      path: '/socket.io',
-      auth: {
-        gameId,
-        telegramId: currentUser.id
-      }
-    });
+    // Явно устанавливаем флаг монтирования
+    mountedRef.current = true;
     
-    socketRef.current = socket;
-    
-    // Минимальный набор обработчиков
-    socket.on('connect', () => {
-      console.log('Socket connected');
-      socket.emit('joinGameRoom', { gameId });
-    });
-    
-    // Отключаем сокет при размонтировании
+    // Очистка при размонтировании
     return () => {
-      console.log('Disconnecting socket');
+      mountedRef.current = false;
+      console.log('MultiplayerDiceGame unmounted');
+      
       if (socketRef.current) {
         socketRef.current.disconnect();
+        socketRef.current = null;
       }
     };
-  }, [currentUser.id, gameId]);
-
+  }, []); // Пустой массив зависимостей - выполняется только один раз
+  
+  // Отдельный эффект для подключения к сокету - запускается при изменении gameId
+  // Этот паттерн разделения эффектов помогает избежать циклов обновления
+  useEffect(() => {
+    if (!mountedRef.current) return;
+    
+    // Функция для безопасного подключения к сокету
+    const connectToSocket = () => {
+      if (!mountedRef.current) return;
+      
+      // Отключаем старый сокет, если он существует
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+      
+      // Устанавливаем новое соединение
+      try {
+        console.log('Attempting to connect to socket, gameId:', gameId);
+        
+        const newSocket = io('https://test.timecommunity.xyz', {
+          path: '/socket.io',
+          auth: {
+            gameId,
+            telegramId: currentUser.id
+          }
+        });
+        
+        // Сохраняем референцию на сокет
+        socketRef.current = newSocket;
+        
+        // Настраиваем обработчики событий
+        newSocket.on('connect', () => {
+          if (!mountedRef.current) return;
+          console.log('Socket connected');
+          
+          // Только если компонент смонтирован, присоединяемся к комнате
+          setTimeout(() => {
+            if (mountedRef.current && socketRef.current) {
+              socketRef.current.emit('joinGameRoom', { gameId });
+            }
+          }, 100);
+        });
+        
+        // Обработчик отключения
+        newSocket.on('disconnect', () => {
+          console.log('Socket disconnected');
+        });
+        
+        // Минимальная обработка состояния игры
+        newSocket.on('gameState', (data) => {
+          if (!mountedRef.current) return;
+          console.log('Received game state:', data);
+        });
+        
+      } catch (error) {
+        console.error('Error connecting to socket:', error);
+      }
+    };
+    
+    // Используем setTimeout, чтобы гарантировать асинхронное выполнение
+    // Это поможет избежать циклов обновления
+    const timer = setTimeout(() => {
+      connectToSocket();
+    }, 100);
+    
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [gameId, currentUser.id]);
+  
   // Функция для копирования ссылки-приглашения
   const copyInviteLink = () => {
-    try {
-      const link = `https://t.me/neometria_bot?startapp=game_${gameId}`;
-      navigator.clipboard.writeText(link)
-        .then(() => {
-          window.Telegram?.WebApp?.showPopup({
-            title: 'Успех',
-            message: 'Ссылка скопирована в буфер обмена',
-            buttons: [{ type: 'ok' }]
-          });
-        })
-        .catch(error => {
-          console.error('Ошибка копирования:', error);
+    const link = `https://t.me/neometria_bot?startapp=game_${gameId}`;
+    navigator.clipboard.writeText(link)
+      .then(() => {
+        window.Telegram?.WebApp?.showPopup({
+          title: 'Успех',
+          message: 'Ссылка скопирована в буфер обмена',
+          buttons: [{ type: 'ok' }]
         });
-    } catch (error) {
-      console.error('Ошибка при копировании ссылки:', error);
-    }
+      })
+      .catch(error => {
+        console.error('Ошибка копирования:', error);
+      });
   };
 
   // Упрощенный рендер

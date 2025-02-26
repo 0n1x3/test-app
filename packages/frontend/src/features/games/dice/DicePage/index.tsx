@@ -89,9 +89,9 @@ export function DicePage() {
   };
 
   const handleJoinGame = async (gameId: string) => {
-    const tg = window.Telegram?.WebApp;
-    
     try {
+      const tg = window.Telegram?.WebApp;
+      
       if (!tg?.initData) {
         console.error('Telegram WebApp initData недоступен');
         toast.error('Не удалось получить данные Telegram');
@@ -106,7 +106,7 @@ export function DicePage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          gameId: gameId.startsWith('game_') ? gameId : `game_${gameId}`,
+          gameId: gameId.startsWith('game_') ? gameId.replace('game_', '') : gameId,
           initData: tg.initData
         }),
       });
@@ -121,12 +121,6 @@ export function DicePage() {
           console.error('Не удалось разобрать ответ с ошибкой:', parseError);
         }
         
-        console.error('Ошибка при присоединении к игре:', {
-          status: response.status,
-          statusText: response.statusText,
-          errorMessage
-        });
-        
         tg?.showPopup({
           title: t('common.error'),
           message: errorMessage,
@@ -140,14 +134,16 @@ export function DicePage() {
       console.log('Успешное присоединение к игре:', data);
       
       if (data.success) {
-        setActiveGameId(gameId);
-        setGameMode('player');
-        
-        setGameState('playing');
+        setTimeout(() => {
+          setActiveGameId(gameId);
+          setGameMode('player');
+          setGameState('playing');
+        }, 0);
       }
     } catch (error) {
       console.error('Ошибка при обработке присоединения к игре:', error);
       
+      const tg = window.Telegram?.WebApp;
       tg?.showPopup({
         title: t('common.error'),
         message: error instanceof Error ? error.message : t('game.joinError'),

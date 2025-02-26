@@ -155,6 +155,29 @@ export const LobbyInterface: React.FC<LobbyInterfaceProps> = ({
     }
   };
 
+  const handleJoinGame = async (gameId: string) => {
+    setTimeout(() => {
+      onJoin?.(gameId);
+    }, 0);
+  };
+
+  const copyGameLink = (gameId: string) => {
+    try {
+      const link = `https://t.me/neometria_bot?startapp=game_${gameId}`;
+      navigator.clipboard.writeText(link);
+      
+      setTimeout(() => {
+        window.Telegram?.WebApp?.showPopup({
+          title: 'Успех',
+          message: 'Ссылка скопирована в буфер обмена',
+          buttons: [{ type: 'ok' }]
+        });
+      }, 0);
+    } catch (error) {
+      console.error('Ошибка копирования ссылки:', error);
+    }
+  };
+
   return (
     <div className={`lobby-container ${className || ''}`}>
       <button 
@@ -207,7 +230,7 @@ export const LobbyInterface: React.FC<LobbyInterfaceProps> = ({
                         className="action-button join-game"
                         onClick={() => {
                           const gameId = game._id || game.id;
-                          if (gameId) onJoin?.(gameId);
+                          if (gameId) handleJoinGame(gameId);
                         }}
                       >
                         <Icon icon="material-symbols:login" />
