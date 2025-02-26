@@ -125,4 +125,30 @@
 
 .roll-button:disabled {
   background: rgba(33, 150, 243, 0.5);
-} 
+}
+
+.copy-invite-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 10px 16px;
+  background: rgba(33, 150, 243, 0.15);
+  border-radius: 8px;
+  color: #2196F3;
+  font-size: 14px;
+  transition: all 0.2s;
+  width: auto;
+  max-width: 300px;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.copy-invite-button:hover {
+  background: rgba(33, 150, 243, 0.25);
+}
+
+.copy-invite-button:active {
+  transform: scale(0.98);
+}

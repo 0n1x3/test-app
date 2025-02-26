@@ -59,7 +59,7 @@ export class Game extends Document {
     type: String,
     required: true,
     default: function() {
-      return `https://t.me/neometria_bot/game?startapp=${this._id}`;
+      return `https://t.me/neometria_bot?startapp=game_${this._id}`;
     }
   })
   inviteLink: string;

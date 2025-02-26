@@ -143,12 +143,6 @@ export function DicePage() {
         setActiveGameId(gameId);
         setGameMode('player');
         
-        tg?.showPopup({
-          title: t('common.success'),
-          message: t('game.joinSuccess'),
-          buttons: [{ type: 'ok' }]
-        });
-        
         setGameState('playing');
       }
     } catch (error) {

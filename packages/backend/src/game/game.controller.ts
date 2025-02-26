@@ -42,7 +42,7 @@ export class GameController {
       return { 
         success: true,
         game,
-        inviteLink: `https://t.me/neometria_bot/game?startapp=game_${game._id}`
+        inviteLink: `https://t.me/neometria_bot?startapp=game_${game._id}`
       };
     } catch (error) {
       console.error('Error creating game:', error);

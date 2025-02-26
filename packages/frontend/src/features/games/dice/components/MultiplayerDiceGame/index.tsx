@@ -116,6 +116,51 @@ export function MultiplayerDiceGame({ gameId, betAmount, onGameEnd }: Multiplaye
     }, 1000);
   };
 
+  // Добавляем функцию для корректного копирования ссылки
+  const copyInviteLink = () => {
+    try {
+      const link = `https://t.me/neometria_bot?startapp=game_${gameId}`;
+      
+      // Пытаемся скопировать ссылку
+      navigator.clipboard.writeText(link)
+        .then(() => {
+          window.Telegram?.WebApp?.showPopup({
+            title: 'Успех',
+            message: 'Ссылка скопирована в буфер обмена',
+            buttons: [{ type: 'ok' }]
+          });
+        })
+        .catch((error) => {
+          console.error('Ошибка копирования:', error);
+          
+          // Альтернативный метод копирования
+          const textarea = document.createElement('textarea');
+          textarea.value = link;
+          document.body.appendChild(textarea);
+          textarea.select();
+          
+          try {
+            document.execCommand('copy');
+            window.Telegram?.WebApp?.showPopup({
+              title: 'Успех',
+              message: 'Ссылка скопирована в буфер обмена',
+              buttons: [{ type: 'ok' }]
+            });
+          } catch (err) {
+            window.Telegram?.WebApp?.showPopup({
+              title: 'Ошибка',
+              message: 'Не удалось скопировать ссылку',
+              buttons: [{ type: 'ok' }]
+            });
+          }
+          
+          document.body.removeChild(textarea);
+        });
+    } catch (error) {
+      console.error('Ошибка при копировании ссылки:', error);
+    }
+  };
+
   return (
     <div className="multiplayer-dice-game">
       <div className="game-header">
@@ -158,6 +203,14 @@ export function MultiplayerDiceGame({ gameId, betAmount, onGameEnd }: Multiplaye
           </button>
         </div>
       </div>
+
+      <button 
+        className="copy-invite-button"
+        onClick={copyInviteLink}
+      >
+        <Icon icon="material-symbols:content-copy" />
+        Скопировать ссылку-приглашение
+      </button>
     </div>
   );
 } 
