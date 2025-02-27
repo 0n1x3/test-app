@@ -284,27 +284,73 @@ export class GameService {
 
   // Начало игры в кубики
   async startDiceGame(gameId: string): Promise<Game> {
-    const game = await this.gameModel.findById(gameId)
-      .populate('players')
-      .exec();
-    
-    if (!game) {
-      throw new Error('Game not found');
+    try {
+      console.log(`Запуск игры в кости с ID: ${gameId}`);
+      
+      // Находим игру по ID
+      const game = await this.gameModel.findById(gameId).exec();
+      
+      if (!game) {
+        console.error(`Игра с ID ${gameId} не найдена`);
+        throw new Error('Game not found');
+      }
+      
+      // Проверяем тип игры
+      if (game.type !== 'dice') {
+        console.error(`Неверный тип игры: ${game.type}, ожидался: dice`);
+        throw new Error('Invalid game type');
+      }
+      
+      // Проверяем количество игроков
+      if (game.players.length < 2) {
+        console.error(`Недостаточное количество игроков для начала игры: ${game.players.length}`);
+        throw new Error('Not enough players to start the game');
+      }
+      
+      // Проверяем статус игры
+      if (game.status !== 'waiting') {
+        console.error(`Игра уже в статусе: ${game.status}`);
+        throw new Error(`Game is already in ${game.status} status`);
+      }
+      
+      // Обновляем статус игры на "playing"
+      game.status = 'playing';
+      game.currentRound = 1;
+      
+      // Определяем, кто ходит первым (случайно)
+      const firstPlayerIndex = Math.floor(Math.random() * 2); // 0 или 1
+      
+      // Заполняем игроков актуальными данными
+      const populatedPlayers = [];
+      for (const playerId of game.players) {
+        const player = await this.userModel.findById(playerId).exec();
+        if (player) {
+          populatedPlayers.push(player);
+        }
+      }
+      
+      await game.save();
+      
+      console.log(`Игра ${gameId} успешно запущена. Первым ходит игрок с индексом ${firstPlayerIndex}`);
+      
+      // Отправляем событие о начале игры через WebSocket
+      if (this.server) {
+        this.server.to(`game_${gameId}`).emit('diceGameStarted', {
+          gameId,
+          firstPlayer: firstPlayerIndex,
+          players: populatedPlayers.map(p => ({
+            telegramId: p.telegramId,
+            username: p.username,
+            avatarUrl: p.avatarUrl
+          }))
+        });
+      }
+      
+      return game;
+    } catch (error) {
+      console.error('Ошибка при запуске игры в кости:', error);
+      throw error;
     }
-    
-    if (game.players.length !== 2) {
-      throw new Error('Game requires exactly 2 players');
-    }
-    
-    game.status = 'playing';
-    game.currentRound = 1;
-    
-    // Выбираем случайно первого игрока
-    const randomIndex = Math.floor(Math.random() * 2);
-    game.currentPlayer = game.players[randomIndex].telegramId.toString();
-    
-    await game.save();
-    return game;
   }
 
   // Добавляем метод getGameById в GameService

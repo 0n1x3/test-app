@@ -55,9 +55,20 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
 }
 
 export function useTranslation() {
-  const context = useContext(I18nContext);
-  if (!context) {
-    throw new Error('useTranslation must be used within I18nProvider');
-  }
-  return context;
+  const locale = useLocale();
+  
+  const t = (key: string, params?: Record<string, any>) => {
+    const translation = translations[locale][key] || key;
+    
+    if (!params) return translation;
+    
+    // Заменяем параметры в формате {{paramName}}
+    return Object.entries(params).reduce(
+      (result, [paramName, value]) => 
+        result.replace(new RegExp(`{{${paramName}}}`, 'g'), String(value)),
+      translation
+    );
+  };
+  
+  return { t };
 } 

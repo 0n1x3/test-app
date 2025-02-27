@@ -1,12 +1,18 @@
 .dice-container {
   perspective: 1000px;
-  width: var(--size);
-  height: var(--size);
+  width: var(--dice-size);
+  height: var(--dice-size);
   position: relative;
-  --size: 80px;
-  --dot-size: 8px;
-  --dot-color: #333;
-  margin: 30px auto;
+  --dice-size: 80px;
+  margin: 20px auto;
+}
+
+.dice-container.small {
+  --dice-size: 60px;
+}
+
+.dice-container.large {
+  --dice-size: 80px;
 }
 
 .dice {
@@ -21,74 +27,108 @@
   position: absolute;
   width: 100%;
   height: 100%;
-  background: white;
-  border: 2px solid #ccc;
+  background-color: white;
+  border: 2px solid #e0e0e0;
   border-radius: 10%;
-  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10%;
+  box-sizing: border-box;
 }
 
-/* Позиционирование граней */
-.face-1 { transform: translateZ(calc(var(--size) / 2)); }         /* Передняя (1) */
-.face-2 { transform: rotateY(90deg) translateZ(calc(var(--size) / 2)); }   /* Правая (2) */
-.face-6 { transform: rotateY(180deg) translateZ(calc(var(--size) / 2)); }  /* Задняя (6) */
-.face-5 { transform: rotateY(-90deg) translateZ(calc(var(--size) / 2)); }  /* Левая (5) */
-.face-3 { transform: rotateX(90deg) translateZ(calc(var(--size) / 2)); }   /* Верхняя (3) */
-.face-4 { transform: rotateX(-90deg) translateZ(calc(var(--size) / 2)); }  /* Нижняя (4) */
+/* Позиционирование граней кубика */
+.face-1 { transform: translateZ(calc(var(--dice-size) / 2)); }
+.face-2 { transform: rotateY(90deg) translateZ(calc(var(--dice-size) / 2)); }
+.face-3 { transform: rotateX(90deg) translateZ(calc(var(--dice-size) / 2)); }
+.face-4 { transform: rotateX(-90deg) translateZ(calc(var(--dice-size) / 2)); }
+.face-5 { transform: rotateY(-90deg) translateZ(calc(var(--dice-size) / 2)); }
+.face-6 { transform: rotateY(180deg) translateZ(calc(var(--dice-size) / 2)); }
 
-/* Точки на гранях */
-.face-1 {
-  background-image: radial-gradient(circle at center, var(--dot-color) var(--dot-size), transparent 0);
+/* Расположение точек на гранях */
+.face-1::before {
+  content: "";
+  width: 20%;
+  height: 20%;
+  background-color: #333;
+  border-radius: 50%;
+  position: absolute;
 }
 
-.face-2 {
-  background-image: 
-    radial-gradient(circle at 25% 25%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 75% 75%, var(--dot-color) var(--dot-size), transparent 0);
+.face-2::before, .face-2::after {
+  content: "";
+  width: 20%;
+  height: 20%;
+  background-color: #333;
+  border-radius: 50%;
+  position: absolute;
 }
+.face-2::before { top: 20%; left: 20%; }
+.face-2::after { bottom: 20%; right: 20%; }
 
-.face-3 {
-  background-image: 
-    radial-gradient(circle at 25% 25%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 50% 50%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 75% 75%, var(--dot-color) var(--dot-size), transparent 0);
+.face-3::before, .face-3::after {
+  content: "";
+  width: 20%;
+  height: 20%;
+  background-color: #333;
+  border-radius: 50%;
+  position: absolute;
 }
+.face-3::before { top: 20%; left: 20%; }
+.face-3::after { bottom: 20%; right: 20%; }
+.face-3::after { content: ""; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
-.face-4 {
-  background-image: 
-    radial-gradient(circle at 25% 25%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 75% 25%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 25% 75%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 75% 75%, var(--dot-color) var(--dot-size), transparent 0);
+.face-4::before { content: ""; top: 20%; left: 20%; }
+.face-4::after { content: ""; top: 20%; right: 20%; }
+.face-4::before, .face-4::after, .face-4 span:nth-child(1), .face-4 span:nth-child(2) {
+  content: "";
+  width: 20%;
+  height: 20%;
+  background-color: #333;
+  border-radius: 50%;
+  position: absolute;
 }
+.face-4 span:nth-child(1) { bottom: 20%; left: 20%; }
+.face-4 span:nth-child(2) { bottom: 20%; right: 20%; }
 
-.face-5 {
-  background-image: 
-    radial-gradient(circle at 25% 25%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 75% 25%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 50% 50%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 25% 75%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 75% 75%, var(--dot-color) var(--dot-size), transparent 0);
+.face-5::before, .face-5::after, .face-5 span:nth-child(1), .face-5 span:nth-child(2), .face-5 span:nth-child(3) {
+  content: "";
+  width: 20%;
+  height: 20%;
+  background-color: #333;
+  border-radius: 50%;
+  position: absolute;
 }
+.face-5::before { top: 20%; left: 20%; }
+.face-5::after { top: 20%; right: 20%; }
+.face-5 span:nth-child(1) { bottom: 20%; left: 20%; }
+.face-5 span:nth-child(2) { bottom: 20%; right: 20%; }
+.face-5 span:nth-child(3) { top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
-.face-6 {
-  background-image: 
-    radial-gradient(circle at 25% 25%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 75% 25%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 25% 50%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 75% 50%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 25% 75%, var(--dot-color) var(--dot-size), transparent 0),
-    radial-gradient(circle at 75% 75%, var(--dot-color) var(--dot-size), transparent 0);
+.face-6::before, .face-6::after, .face-6 span:nth-child(1), .face-6 span:nth-child(2), .face-6 span:nth-child(3), .face-6 span:nth-child(4) {
+  content: "";
+  width: 20%;
+  height: 20%;
+  background-color: #333;
+  border-radius: 50%;
+  position: absolute;
 }
+.face-6::before { top: 20%; left: 20%; }
+.face-6::after { top: 20%; right: 20%; }
+.face-6 span:nth-child(1) { top: 50%; left: 20%; transform: translateY(-50%); }
+.face-6 span:nth-child(2) { top: 50%; right: 20%; transform: translateY(-50%); }
+.face-6 span:nth-child(3) { bottom: 20%; left: 20%; }
+.face-6 span:nth-child(4) { bottom: 20%; right: 20%; }
 
-/* Анимация */
+/* Анимация броска */
 @keyframes roll {
   0% { transform: rotateX(0) rotateY(0) rotateZ(0); }
-  100% { transform: rotateX(720deg) rotateY(720deg) rotateZ(360deg); }
+  25% { transform: rotateX(90deg) rotateY(45deg) rotateZ(45deg); }
+  50% { transform: rotateX(180deg) rotateY(90deg) rotateZ(90deg); }
+  75% { transform: rotateX(270deg) rotateY(135deg) rotateZ(135deg); }
+  100% { transform: rotateX(360deg) rotateY(180deg) rotateZ(180deg); }
 }
 
 .rolling {
-  animation: roll 1.5s ease-out infinite;
-}
-
-.dice-container.small { --size: 60px; --dot-size: 6px; }
-.dice-container.large { --size: 80px; --dot-size: 8px; } 
+  animation: roll 1s linear infinite;
+} 

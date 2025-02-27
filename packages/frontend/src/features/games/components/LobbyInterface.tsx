@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { GameType } from '@test-app/shared';
 import { useTranslation } from '@/providers/i18n';
 import { Icon } from '@iconify/react';
 import './LobbyInterface.css';
+import { GameCard } from './GameCard';
+import { GameType } from '@/types/game';
 // Тип TelegramWebApp теперь доступен глобально через Window.Telegram
 
 interface Game {
@@ -17,10 +18,9 @@ interface Game {
 }
 
 interface LobbyInterfaceProps {
-  gameType: 'dice' | 'rps';
-  onJoin?: (gameId: string) => void;
+  gameType: GameType;
+  onJoin: (gameId: string) => void;
   onCreate?: () => void;
-  className?: string;
 }
 
 const formatGameName = (name: string, id: string | undefined) => {
@@ -29,38 +29,39 @@ const formatGameName = (name: string, id: string | undefined) => {
   return `${name} #${shortId}`;
 };
 
-export const LobbyInterface: React.FC<LobbyInterfaceProps> = ({
-  gameType,
+export function LobbyInterface({ 
+  gameType, 
   onJoin,
-  onCreate,
-  className
-}) => {
+  onCreate
+}: LobbyInterfaceProps) {
   const { t } = useTranslation();
   const [games, setGames] = useState<Game[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const tg = window.Telegram?.WebApp;
+
+  useEffect(() => {
+    fetchGames();
+    // Устанавливаем интервал для обновления списка игр
+    const interval = setInterval(fetchGames, 10000);
+    return () => clearInterval(interval);
+  }, [gameType]);
 
   const fetchGames = async () => {
     try {
+      setLoading(true);
       const response = await fetch(`https://test.timecommunity.xyz/api/games/active?type=${gameType}`);
       if (!response.ok) {
         throw new Error('Failed to fetch games');
       }
       const data = await response.json();
-      console.log('Fetched games:', data); // Для отладки
+      console.log('Fetched games:', data);
       setGames(data.games || []);
     } catch (error) {
       console.error('Error fetching games:', error);
+    } finally {
+      setLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (tg?.initData) {
-      fetchGames();
-      const interval = setInterval(fetchGames, 5000);
-      return () => clearInterval(interval);
-    }
-  }, [tg?.initData]);
 
   const handleCreateGame = async () => {
     try {
@@ -157,7 +158,7 @@ export const LobbyInterface: React.FC<LobbyInterfaceProps> = ({
 
   const handleJoinGame = async (gameId: string) => {
     setTimeout(() => {
-      onJoin?.(gameId);
+      onJoin(gameId);
     }, 0);
   };
 
@@ -179,75 +180,32 @@ export const LobbyInterface: React.FC<LobbyInterfaceProps> = ({
   };
 
   return (
-    <div className={`lobby-container ${className || ''}`}>
-      <button 
-        className="create-game-btn"
-        onClick={handleCreateGame}
-        disabled={loading}
-      >
-        <Icon icon="material-symbols:add-circle-outline" />
-        {t('game.create')}
-      </button>
-
-      <div className="games-list">
-        {games.length > 0 ? (
-          games.map(game => {
-            const gameId = game._id || game.id;
-            return (
-              <div key={gameId} className="game-item">
-                <div className="game-header">
-                  <div className="game-name">
-                    {formatGameName(game.name || 'Game', game._id || game.id)}
-                  </div>
-                  <div className="bet-amount">
-                    <Icon icon="material-symbols:diamond-rounded" />
-                    {game.betAmount}
-                  </div>
-                </div>
-                
-                <div className="game-info">
-                  <div className="game-players">
-                    <Icon icon="mdi:account-multiple" />
-                    {game.players.length}/2
-                    <span className="player-status">
-                      {game.players.length === 2 
-                        ? t('game.playerJoined')
-                        : t('game.waitingForPlayers')
-                      }
-                    </span>
-                  </div>
-                  
-                  <div className="game-actions">
-                    <button 
-                      className="action-button copy-link"
-                      onClick={() => copyInviteLink(game)}
-                    >
-                      <Icon icon="material-symbols:link" />
-                    </button>
-                    
-                    {game.players.length < 2 && (
-                      <button 
-                        className="action-button join-game"
-                        onClick={() => {
-                          const gameId = game._id || game.id;
-                          if (gameId) handleJoinGame(gameId);
-                        }}
-                      >
-                        <Icon icon="material-symbols:login" />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            );
-          })
+    <div className="lobby-interface">
+      <div className="active-games-list">
+        {loading ? (
+          <div className="loading-indicator">
+            <span className="loading-spinner"></span>
+            <p>Загрузка игр...</p>
+          </div>
+        ) : games.length > 0 ? (
+          games.map((game) => (
+            <GameCard
+              key={game._id || `game-${Math.random()}`}
+              game={game}
+              onJoin={() => {
+                if (game._id) {
+                  onJoin(game._id);
+                }
+              }}
+            />
+          ))
         ) : (
-          <div className="no-games">
-            <Icon icon="mdi:gamepad-variant-outline" className="no-games-icon" />
-            <p>{t('game.noGames')}</p>
+          <div className="no-games-message">
+            <p>Нет активных игр</p>
+            <p className="no-games-hint">Создайте свою игру или подождите, пока другие игроки создадут игры</p>
           </div>
         )}
       </div>
     </div>
   );
-}; 
+} 

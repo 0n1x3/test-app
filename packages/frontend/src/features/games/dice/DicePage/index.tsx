@@ -261,7 +261,7 @@ export function DicePage() {
         
       case 'lobby':
         return <LobbyInterface
-          gameType="dice"
+          gameType={GameType.DICE}
           onJoin={handleJoinGame}
           onCreate={handleCreateGame}
         />;
