@@ -3,17 +3,17 @@
   flex-direction: column;
   width: 100%;
   max-width: 100%;
-  min-height: calc(100vh - 120px);
+  min-height: calc(100vh - 150px);
   position: relative;
   z-index: 2;
-  padding: 8px;
+  padding: 4px;
 }
 
 /* Верхняя часть - счет и информация о раунде */
 .game-header {
   width: 100%;
-  margin-bottom: 16px;
-  padding: 12px;
+  margin-bottom: 8px;
+  padding: 8px;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
   z-index: 3;
@@ -88,26 +88,26 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
   position: relative;
   z-index: 5;
 }
 
 .player-dice-container, .bot-dice-container {
-  margin: 8px 0;
+  margin: 4px 0;
 }
 
 .player-name, .bot-name {
   font-size: 16px;
   font-weight: bold;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   color: white;
 }
 
 .dice-wrapper {
   position: relative;
   z-index: 2;
-  height: 100px;
+  height: 80px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -117,7 +117,7 @@
   font-size: 20px;
   font-weight: bold;
   color: white;
-  margin: 8px 0;
+  margin: 4px 0;
   position: relative;
   z-index: 3;
 }
@@ -125,11 +125,11 @@
 /* Кнопки и результаты */
 .controls-area {
   width: 100%;
-  min-height: 80px;
+  min-height: 60px;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 16px;
+  margin-top: 8px;
   position: relative;
   z-index: 10;
 }
@@ -189,30 +189,37 @@
 
 /* Адаптивность для мобильных устройств */
 @media (max-width: 480px) {
+  .dice-game {
+    padding: 4px;
+    min-height: calc(100vh - 160px);
+  }
+  
   .game-header {
-    padding: 12px;
-  }
-  
-  .player-avatar, .bot-avatar {
-    width: 32px;
-    height: 32px;
-  }
-  
-  .player-score, .bot-score {
-    font-size: 20px;
-  }
-  
-  .game-field {
-    margin-bottom: 16px;
+    padding: 8px;
+    margin-bottom: 8px;
   }
   
   .dice-wrapper {
-    height: 100px;
+    height: 70px;
+  }
+  
+  .vs-indicator {
+    margin: 2px 0;
+    font-size: 18px;
+  }
+  
+  .player-name, .bot-name {
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+  
+  .controls-area {
+    min-height: 50px;
   }
   
   .roll-button {
-    padding: 10px 24px;
-    font-size: 16px;
+    padding: 8px 20px;
+    font-size: 14px;
   }
   
   .game-result {

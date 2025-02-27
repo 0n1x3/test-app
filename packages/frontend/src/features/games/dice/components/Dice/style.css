@@ -233,4 +233,27 @@
 @keyframes roll {
   0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
   100% { transform: rotateX(720deg) rotateY(360deg) rotateZ(360deg); }
+}
+
+/* Уменьшаем размер кубика для мобильных устройств */
+@media (max-width: 480px) {
+  .dice {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .dice.small {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .dice.medium {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .dice.large {
+    width: 70px;
+    height: 70px;
+  }
 } 
