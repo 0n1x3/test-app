@@ -6,14 +6,14 @@
   min-height: calc(100vh - 120px);
   position: relative;
   z-index: 2;
-  padding: 16px;
+  padding: 8px;
 }
 
 /* Верхняя часть - счет и информация о раунде */
 .game-header {
   width: 100%;
-  margin-bottom: 24px;
-  padding: 16px;
+  margin-bottom: 16px;
+  padding: 12px;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
   z-index: 3;
@@ -33,8 +33,8 @@
 }
 
 .player-avatar, .bot-avatar {
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -55,7 +55,7 @@
 }
 
 .player-score, .bot-score {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
   color: white;
 }
@@ -67,7 +67,7 @@
 }
 
 .round-number {
-  font-size: 16px;
+  font-size: 14px;
   color: rgba(255, 255, 255, 0.7);
   margin-bottom: 4px;
 }
@@ -85,42 +85,39 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
   width: 100%;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   position: relative;
   z-index: 5;
 }
 
 .player-dice-container, .bot-dice-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 16px 0;
+  margin: 8px 0;
 }
 
 .player-name, .bot-name {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
   color: white;
 }
 
 .dice-wrapper {
   position: relative;
   z-index: 2;
-  height: 120px;
+  height: 100px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .vs-indicator {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
   color: white;
-  margin: 16px 0;
+  margin: 8px 0;
   position: relative;
   z-index: 3;
 }
@@ -142,8 +139,8 @@
   color: white;
   border: none;
   border-radius: 24px;
-  padding: 12px 32px;
-  font-size: 18px;
+  padding: 10px 24px;
+  font-size: 16px;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.2s;
@@ -165,9 +162,9 @@
 }
 
 .game-result {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
-  padding: 16px 24px;
+  padding: 12px 16px;
   border-radius: 12px;
   animation: fadeIn 0.5s ease;
   text-align: center;

@@ -116,11 +116,7 @@ export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
         <div className="score">
           <div className="player-side">
             <div className="player-avatar">
-              {avatarUrl ? (
-                <img src={avatarUrl} alt={username || 'Игрок'} />
-              ) : (
-                <Icon icon="mdi:account-circle" />
-              )}
+              <Icon icon="mdi:account-circle" />
             </div>
             <div className="player-score">{playerScore}</div>
           </div>
@@ -143,11 +139,11 @@ export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
       </div>
 
       <div className="game-field">
-        <div className="player-dice-container">
-          <div className="player-name">Вы</div>
+        <div className="bot-dice-container">
+          <div className="bot-name">Бот</div>
           <div className="dice-wrapper">
             <Dice 
-              value={playerDice} 
+              value={botDice} 
               rolling={isRolling}
               size="large"
             />
@@ -156,11 +152,11 @@ export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
         
         <div className="vs-indicator">VS</div>
         
-        <div className="bot-dice-container">
-          <div className="bot-name">Бот</div>
+        <div className="player-dice-container">
+          <div className="player-name">Вы</div>
           <div className="dice-wrapper">
             <Dice 
-              value={botDice} 
+              value={playerDice} 
               rolling={isRolling}
               size="large"
             />
