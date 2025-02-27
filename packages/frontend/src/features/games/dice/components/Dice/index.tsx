@@ -4,9 +4,10 @@ import { useEffect, useState, useRef } from 'react';
 import './style.css';
 
 interface DiceProps {
-  value: number | null;
-  isRolling: boolean;
-  size?: 'small' | 'large';
+  value: number;
+  rolling?: boolean;
+  size?: 'small' | 'medium' | 'large';
+  onRollEnd?: () => void;
 }
 
 type DiceRotation = {
@@ -28,13 +29,13 @@ const valueToRotation: Record<number, DiceRotation> = {
   4: { x: 90, y: 0, z: 0 }                    // Нижняя грань (4)
 };
 
-export function Dice({ value, isRolling, size = 'large' }: DiceProps) {
+export function Dice({ value, rolling, size = 'large', onRollEnd }: DiceProps) {
   const [rotation, setRotation] = useState<DiceRotation>(INITIAL_ROTATION);
   const rotationRef = useRef(INITIAL_ROTATION);
   const animationRef = useRef<number>();
 
   const animate = () => {
-    if (!isRolling) {
+    if (!rolling) {
       cancelAnimationFrame(animationRef.current!);
       return;
     }
@@ -53,7 +54,7 @@ export function Dice({ value, isRolling, size = 'large' }: DiceProps) {
   };
 
   useEffect(() => {
-    if (isRolling) {
+    if (rolling) {
       animationRef.current = requestAnimationFrame(animate);
     } else if (value) {
       console.log('Setting dice to value:', value);
@@ -72,12 +73,12 @@ export function Dice({ value, isRolling, size = 'large' }: DiceProps) {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isRolling, value]);
+  }, [rolling, value]);
 
   return (
     <div className={`dice-container ${size}`}>
       <div 
-        className={`dice ${isRolling ? 'rolling' : ''}`}
+        className={`dice ${rolling ? 'rolling' : ''}`}
         style={{
           transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg) rotateZ(${rotation.z}deg)`
         }}

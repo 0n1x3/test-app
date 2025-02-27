@@ -250,7 +250,11 @@ export function MultiplayerDiceGame({
               
               <div className="dice-container">
                 {player.roll !== undefined ? (
-                  <Dice value={player.roll} isRolling={false} size={diceSize} />
+                  <Dice 
+                    value={player.roll} 
+                    rolling={false}
+                    size={diceSize} 
+                  />
                 ) : (
                   <div className="empty-dice"></div>
                 )}

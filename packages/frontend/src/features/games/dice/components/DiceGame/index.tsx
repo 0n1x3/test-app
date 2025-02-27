@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { useTranslation } from '@/providers/i18n';
 import { Dice } from '../Dice';
@@ -19,35 +19,43 @@ export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
   const [round, setRound] = useState(1);
   const [playerScore, setPlayerScore] = useState(0);
   const [botScore, setBotScore] = useState(0);
-  const [playerValue, setPlayerValue] = useState<number | null>(null);
-  const [botValue, setBotValue] = useState<number | null>(null);
+  const [playerDice, setPlayerDice] = useState<number[]>([1, 1]);
+  const [botDice, setBotDice] = useState<number[]>([1, 1]);
   const [isRolling, setIsRolling] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const [roundResult, setRoundResult] = useState<GameResult | null>(null);
 
-  const handleRoll = () => {
-    if (isRolling) return;
-    
+  const rollDice = () => {
     setIsRolling(true);
-    setShowResult(false);
     
+    // Генерируем случайные значения для кубиков
+    const newPlayerDice = [
+      Math.floor(Math.random() * 6) + 1,
+      Math.floor(Math.random() * 6) + 1
+    ];
+    
+    const newBotDice = [
+      Math.floor(Math.random() * 6) + 1,
+      Math.floor(Math.random() * 6) + 1
+    ];
+    
+    // Устанавливаем новые значения после анимации
     setTimeout(() => {
-      const playerRoll = Math.floor(Math.random() * 6) + 1;
-      const botRoll = Math.floor(Math.random() * 6) + 1;
-      
-      console.log('Generated rolls:', { player: playerRoll, bot: botRoll });
-      
-      setPlayerValue(playerRoll);
-      setBotValue(botRoll);
+      setPlayerDice(newPlayerDice);
+      setBotDice(newBotDice);
+      setIsRolling(false);
       
       // Определяем результат
+      const playerSum = newPlayerDice.reduce((a, b) => a + b, 0);
+      const botSum = newBotDice.reduce((a, b) => a + b, 0);
+      
       let result: GameResult;
-      if (playerRoll === botRoll) {
-        result = 'draw';
-      } else if (playerRoll > botRoll) {
+      if (playerSum > botSum) {
         result = 'win';
-      } else {
+      } else if (playerSum < botSum) {
         result = 'lose';
+      } else {
+        result = 'draw';
       }
       
       console.log('Round result:', result);
@@ -75,18 +83,17 @@ export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
 
       setRoundResult(result);
       setShowResult(true);
-      setIsRolling(false);
 
       // Переход к следующему раунду если игра не закончена
       if (result !== 'draw') {
-      setTimeout(() => {
+        setTimeout(() => {
           const currentPlayerScore = playerScore;
           const currentBotScore = botScore;
           
           if (currentPlayerScore < 2 && currentBotScore < 2) {
             setRound(prev => prev + 1);
-            setPlayerValue(null);
-            setBotValue(null);
+            setPlayerDice([1, 1]);
+            setBotDice([1, 1]);
             setShowResult(false);
             setRoundResult(null);
           }
@@ -95,56 +102,91 @@ export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
         // При ничьей сразу переходим к следующему раунду
         setTimeout(() => {
           setRound(prev => prev + 1);
-          setPlayerValue(null);
-          setBotValue(null);
+          setPlayerDice([1, 1]);
+          setBotDice([1, 1]);
           setShowResult(false);
           setRoundResult(null);
-      }, 2000);
+        }, 2000);
       }
-    }, 2000);
+    }, 1000);
   };
 
+  useEffect(() => {
+    if (roundResult !== null) {
+      // Показываем результат и вызываем onGameEnd через 2 секунды
+      const timer = setTimeout(() => {
+        onGameEnd(roundResult);
+      }, 2000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [roundResult, onGameEnd]);
+
   return (
-        <div className="dice-game">
-          <div className="game-header">
-            <div className="score">
-              <div className="player-score">{playerScore}</div>
-              <div className="round">
+    <div className="dice-game">
+      <div className="game-header">
+        <div className="score">
+          <div className="player-score">{playerScore}</div>
+          <div className="round">
             <div className="round-number">Round {round}/3</div>
-                <div className="bet-amount">
-                  <Icon icon="material-symbols:diamond-rounded" />
-                  {betAmount}
-                </div>
-              </div>
-              <div className="bot-score">{botScore}</div>
+            <div className="bet-amount">
+              <Icon icon="material-symbols:diamond-rounded" />
+              {betAmount}
             </div>
           </div>
+          <div className="bot-score">{botScore}</div>
+        </div>
+      </div>
 
-          <div className="game-area">
-            <div className="player bot">
-              <div className="player-avatar">
-                <Icon icon="mdi:robot" className="avatar-icon" />
-              </div>
-              <Dice value={botValue} isRolling={isRolling} />
-            </div>
-
-            {showResult && (
-              <div className={`round-result ${roundResult}`}>
-                {t(`pages.games.dice.results.${roundResult}`)}
-              </div>
-            )}
-
-            <div className="player human">
-              <Dice value={playerValue} isRolling={isRolling} />
-              <button 
-                className="roll-button"
-                onClick={handleRoll}
-                disabled={isRolling || showResult}
-              >
-                {t('pages.games.dice.roll')}
-              </button>
-            </div>
+      <div className="dice-container">
+        <div className="player-dice">
+          <h3>Ваши кубики</h3>
+          <div className="dice-row">
+            {playerDice.map((value, index) => (
+              <Dice 
+                key={`player-${index}`} 
+                value={value} 
+                rolling={isRolling}
+              />
+            ))}
           </div>
+          <div className="dice-sum">
+            Сумма: {playerDice.reduce((a, b) => a + b, 0)}
+          </div>
+        </div>
+        
+        <div className="vs-indicator">VS</div>
+        
+        <div className="bot-dice">
+          <h3>Кубики бота</h3>
+          <div className="dice-row">
+            {botDice.map((value, index) => (
+              <Dice 
+                key={`bot-${index}`} 
+                value={value} 
+                rolling={isRolling}
+              />
+            ))}
+          </div>
+          <div className="dice-sum">
+            Сумма: {botDice.reduce((a, b) => a + b, 0)}
+          </div>
+        </div>
+      </div>
+      
+      {showResult ? (
+        <div className={`game-result ${roundResult}`}>
+          {t(`pages.games.dice.results.${roundResult}`)}
+        </div>
+      ) : (
+        <button 
+          className="roll-button" 
+          onClick={rollDice} 
+          disabled={isRolling || showResult}
+        >
+          {t('pages.games.dice.roll')}
+        </button>
+      )}
     </div>
   );
 } 
