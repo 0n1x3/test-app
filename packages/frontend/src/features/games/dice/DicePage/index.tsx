@@ -28,6 +28,7 @@ export function DicePage() {
   const [gameState, setGameState] = useState<GameState>('setup');
   const [betAmount, setBetAmount] = useState<number>(100);
   const [activeGameId, setActiveGameId] = useState<string | null>(null);
+  const [showLobby, setShowLobby] = useState<boolean>(true);
 
   const updateUserBalance = useUserStore(state => state.updateBalance);
 
@@ -219,15 +220,44 @@ export function DicePage() {
   const renderGameContent = () => {
     switch (gameState) {
       case 'setup':
-        return <GameSetup 
-          betType={betType}
-          setBetType={setBetType}
-          gameMode={gameMode}
-          setGameMode={setGameMode}
-          betAmount={betAmount}
-          setBetAmount={setBetAmount}
-          onStartGame={handleStartGame}
-        />;
+        return (
+          <div className="dice-page">
+            <div className="game-mode-tabs">
+              <button 
+                className={`mode-tab ${showLobby ? 'active' : ''}`}
+                onClick={() => setShowLobby(true)}
+              >
+                Активные игры
+              </button>
+              <button 
+                className={`mode-tab ${!showLobby ? 'active' : ''}`}
+                onClick={() => setShowLobby(false)}
+              >
+                Создать игру
+              </button>
+            </div>
+            
+            {showLobby ? (
+              <LobbyInterface 
+                gameType={GameType.DICE}
+                onJoin={(gameId: string) => {
+                  window.location.href = `/game/${gameId}`;
+                }}
+                onCreate={() => setShowLobby(false)}
+              />
+            ) : (
+              <GameSetup
+                betType={betType}
+                setBetType={setBetType}
+                gameMode={gameMode}
+                setGameMode={setGameMode}
+                betAmount={betAmount}
+                setBetAmount={setBetAmount}
+                onStartGame={handleStartGame}
+              />
+            )}
+          </div>
+        );
         
       case 'lobby':
         return <LobbyInterface
