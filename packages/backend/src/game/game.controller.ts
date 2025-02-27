@@ -122,4 +122,49 @@ export class GameController {
       throw error;
     }
   }
+
+  @Post('start')
+  async startGame(@Body() data: { gameId: string; initData: string }) {
+    try {
+      console.log(`Получен запрос на старт игры с ID: ${data.gameId}`);
+      
+      // Парсим данные пользователя из initData
+      const params = new URLSearchParams(data.initData);
+      const userStr = params.get('user');
+      
+      if (!userStr) {
+        throw new Error('No user data found');
+      }
+      
+      const userData = JSON.parse(decodeURIComponent(userStr));
+      const user = await this.usersService.findByTelegramId(userData.id);
+      
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      
+      // Проверяем, есть ли у пользователя права на старт игры (он должен быть игроком)
+      const game = await this.gameService.getGameById(data.gameId);
+      
+      if (!game) {
+        throw new NotFoundException('Game not found');
+      }
+      
+      const isPlayer = game.players.some(
+        playerId => playerId.toString() === user._id.toString()
+      );
+      
+      if (!isPlayer) {
+        throw new Error('User is not a player in this game');
+      }
+      
+      // Запускаем игру
+      const startedGame = await this.gameService.startDiceGame(data.gameId);
+      
+      return { success: true, game: startedGame };
+    } catch (error) {
+      console.error('Ошибка при старте игры:', error);
+      throw error;
+    }
+  }
 } 

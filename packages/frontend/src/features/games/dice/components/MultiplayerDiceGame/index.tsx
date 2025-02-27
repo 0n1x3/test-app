@@ -85,84 +85,93 @@ export function MultiplayerDiceGame({
     }
   }, [gameId]);
   
-  // Инициализируем сокет
-  const initSocket = useCallback(() => {
-    // Если сокет уже существует, не создаем новый
-    if (socketRef.current) return;
-    
-    try {
-      const socket = io('https://test.timecommunity.xyz');
-      socketRef.current = socket;
-      
-      socket.on('connect', () => {
-        if (!mountedRef.current) return;
-        console.log('Socket connected');
-        
-        // Присоединяемся к комнате игры
-        socket.emit('joinGameRoom', { gameId }, (response: any) => {
-          console.log('Joined game room:', response);
-        });
-      });
-      
-      // Обработка обновлений состояния игры
-      socket.on('gameState', (data: any) => {
-        if (!mountedRef.current) return;
-        console.log('Received game state update:', data);
-        setGameState({
-          players: data.players || [],
-          status: data.status,
-          currentPlayer: data.currentPlayer,
-          result: data.result,
-        });
-      });
-      
-      // Обработка начала игры
-      socket.on('diceGameStarted', (data: any) => {
-        if (!mountedRef.current) return;
-        console.log('Dice game started:', data);
-        if (data.gameId === gameId) {
-          setGameState(prev => ({
-            ...prev,
-            status: 'playing',
-            currentPlayer: data.firstPlayer,
-          }));
-        }
-      });
-      
-      socket.on('disconnect', () => {
-        console.log('Socket disconnected');
-      });
-      
-    } catch (error) {
-      console.error('Error initializing socket:', error);
-    }
-  }, [gameId]);
-  
-  // При монтировании компонента
+  // Обработка событий сокета
   useEffect(() => {
-    console.log('MultiplayerDiceGame mounted with gameId:', gameId);
-    mountedRef.current = true;
+    if (!gameId) return;
     
-    // Проверяем, есть ли savedGameId в localStorage для присоединения
-    const pendingGameId = localStorage.getItem('pendingGameJoin');
-    if (pendingGameId === gameId && !hasJoined) {
-      // Если это та игра, к которой нужно присоединиться, делаем это
-      joinGame();
-      localStorage.removeItem('pendingGameJoin');
-    }
+    // Инициализация сокета
+    socketRef.current = io('https://test.timecommunity.xyz', {
+      path: '/socket.io',
+      auth: {
+        token: localStorage.getItem('userToken') || ''
+      }
+    });
     
-    // Инициализируем сокет
-    initSocket();
+    const socket = socketRef.current;
     
-    // При размонтировании компонента
+    socket.on('connect', () => {
+      console.log('Socket connected');
+      
+      // После соединения присоединяемся к комнате игры
+      socket.emit('joinGameRoom', { gameId }, (response: any) => {
+        console.log('Joined game room:', response);
+      });
+    });
+    
+    // Обработка события готовности игры к старту
+    socket.on('gameReadyToStart', async (data: { gameId: string, players: number }) => {
+      console.log('Game ready to start:', data);
+      
+      if (data.gameId === gameId && data.players === 2) {
+        // Задержка для обеспечения стабильности UI
+        setTimeout(async () => {
+          try {
+            console.log('Starting game automatically...');
+            const response = await fetch(`https://test.timecommunity.xyz/api/games/start`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ 
+                gameId,
+                initData: window.Telegram?.WebApp?.initData || ''
+              })
+            });
+            
+            if (!response.ok) {
+              throw new Error('Failed to start game');
+            }
+            
+            console.log('Game started successfully');
+          } catch (error) {
+            console.error('Error starting game:', error);
+            toast.error('Ошибка при запуске игры');
+          }
+        }, 1000);
+      }
+    });
+    
+    // Обновление состояния игры
+    socket.on('gameState', (state: any) => {
+      console.log('Received game state:', state);
+      setGameState(prevState => ({
+        ...prevState,
+        ...state
+      }));
+    });
+    
+    // Начало игры
+    socket.on('diceGameStarted', (data: any) => {
+      console.log('Dice game started:', data);
+      setGameState(prevState => ({
+        ...prevState,
+        status: 'playing',
+        currentPlayer: data.firstPlayer
+      }));
+    });
+    
+    socket.on('disconnect', () => {
+      console.log('Socket disconnected');
+    });
+    
+    socket.on('error', (error: any) => {
+      console.error('Socket error:', error);
+    });
+    
     return () => {
-      mountedRef.current = false;
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        socketRef.current = null;
+      if (socket) {
+        socket.disconnect();
       }
     };
-  }, [gameId, initSocket, joinGame, hasJoined]);
+  }, [gameId]);
   
   // Функция для броска кубика
   const rollDice = () => {
@@ -188,6 +197,10 @@ export function MultiplayerDiceGame({
         console.error('Не удалось скопировать ссылку:', err);
       });
   };
+
+  // Определяем размер кубиков в зависимости от размера экрана
+  const isMobile = window.innerWidth < 768;
+  const diceSize = isMobile ? 'small' : 'large';
 
   return (
     <div className="multiplayer-dice-game">
@@ -237,7 +250,7 @@ export function MultiplayerDiceGame({
               
               <div className="dice-container">
                 {player.roll !== undefined ? (
-                  <Dice value={player.roll} isRolling={false} />
+                  <Dice value={player.roll} isRolling={false} size={diceSize} />
                 ) : (
                   <div className="empty-dice"></div>
                 )}
