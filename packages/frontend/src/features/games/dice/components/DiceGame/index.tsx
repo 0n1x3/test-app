@@ -140,7 +140,6 @@ export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
 
       <div className="game-field">
         <div className="bot-dice-container">
-          <div className="bot-name">Бот</div>
           <div className="dice-wrapper">
             <Dice 
               value={botDice} 
@@ -153,7 +152,6 @@ export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
         <div className="vs-indicator">VS</div>
         
         <div className="player-dice-container">
-          <div className="player-name">Вы</div>
           <div className="dice-wrapper">
             <Dice 
               value={playerDice} 
