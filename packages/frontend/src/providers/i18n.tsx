@@ -9,7 +9,7 @@ import type { Language, Translation } from '@/types/i18n';
 const translations: Record<Language, Translation> = { ru, en, zh };
 
 interface I18nContextType {
-  t: (key: string) => string;
+  t: (key: string, params?: Record<string, any>) => string;
   language: Language;
   setLanguage: (lang: Language) => void;
 }
@@ -26,7 +26,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const t = (key: string) => {
+  const t = (key: string, params?: Record<string, any>) => {
     const keys = key.split('.');
     let value: any = translations[language];
     
@@ -38,6 +38,15 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
           console.warn(`Translation key not found: ${key}`);
           return key.split('.').pop() || key;
         }
+      }
+      
+      // Если есть параметры, заменяем их в строке
+      if (params && typeof value === 'string') {
+        return Object.entries(params).reduce(
+          (result, [paramName, paramValue]) => 
+            result.replace(new RegExp(`{{${paramName}}}`, 'g'), String(paramValue)),
+          value
+        );
       }
       
       return typeof value === 'string' ? value : key;
@@ -55,20 +64,9 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
 }
 
 export function useTranslation() {
-  const locale = useLocale();
-  
-  const t = (key: string, params?: Record<string, any>) => {
-    const translation = translations[locale][key] || key;
-    
-    if (!params) return translation;
-    
-    // Заменяем параметры в формате {{paramName}}
-    return Object.entries(params).reduce(
-      (result, [paramName, value]) => 
-        result.replace(new RegExp(`{{${paramName}}}`, 'g'), String(value)),
-      translation
-    );
-  };
-  
-  return { t };
+  const context = useContext(I18nContext);
+  if (!context) {
+    throw new Error('useTranslation must be used within I18nProvider');
+  }
+  return context;
 } 
