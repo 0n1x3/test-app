@@ -14,6 +14,8 @@ import { createBet, processGameResult } from '@/services/transactions';
 import { GameType } from '@/types/game';
 import { toast } from 'react-hot-toast';
 import { MultiplayerDiceGame } from '../components/MultiplayerDiceGame';
+import { ErrorBoundary } from '@/components/_shared/ErrorBoundary';
+import { GameSetup } from '../components/GameSetup';
 
 type GameMode = 'bot' | 'player';
 type GameState = 'setup' | 'lobby' | 'playing';
@@ -180,107 +182,71 @@ export function DicePage() {
     console.log('DicePage rendered');
   }, []);
 
+  // Разделяем рендеринг на отдельные компоненты для каждого состояния
+  const renderGameContent = () => {
+    switch (gameState) {
+      case 'setup':
+        return <GameSetup 
+          betType={betType}
+          setBetType={setBetType}
+          gameMode={gameMode}
+          setGameMode={setGameMode}
+          betAmount={betAmount}
+          setBetAmount={setBetAmount}
+          onStartGame={handleStartGame}
+        />;
+        
+      case 'lobby':
+        return <LobbyInterface
+          gameType="dice"
+          onJoin={handleJoinGame}
+          onCreate={handleCreateGame}
+        />;
+        
+      case 'playing':
+        if (gameMode === 'bot') {
+          return <DiceGame 
+            betAmount={betAmount} 
+            onGameEnd={handleGameEnd} 
+          />;
+        } else if (activeGameId) {
+          return (
+            <ErrorBoundary>
+              <div className="isolated-game-container">
+                <MultiplayerDiceGame 
+                  key={`game-${activeGameId}`}
+                  gameId={activeGameId} 
+                  betAmount={betAmount} 
+                  onGameEnd={handleGameEnd} 
+                />
+              </div>
+            </ErrorBoundary>
+          );
+        } else {
+          return (
+            <div className="game-error">
+              <h3>Ошибка при загрузке игры</h3>
+              <button 
+                className="back-button"
+                onClick={() => setGameState('setup')}
+              >
+                Вернуться к настройкам
+              </button>
+            </div>
+          );
+        }
+        
+      default:
+        return null;
+    }
+  };
+
+  // Упрощаем основной рендеринг
   return (
     <SafeArea>
       <PageContainer>
         <PageHeader title={t('pages.games.dice.title')} />
-        
-        {gameState === 'setup' && (
-          <div className="dice-setup">
-            <div className="bet-type-selector">
-              <button
-                className={`bet-type-button ${betType === 'tokens' ? 'active' : ''}`}
-                onClick={() => setBetType('tokens')}
-              >
-                <Icon icon="material-symbols:diamond-rounded" />
-                {t('pages.games.dice.tokens')}
-              </button>
-              <button
-                className={`bet-type-button ${betType === 'real' ? 'active' : ''}`}
-                onClick={() => setBetType('real')}
-              >
-                <Icon icon="cryptocurrency:ton" />
-                TON
-              </button>
-            </div>
-
-            <div className="game-mode-selector">
-              <button
-                className={`game-mode-button ${gameMode === 'bot' ? 'active' : ''}`}
-                onClick={() => setGameMode('bot')}
-              >
-                <Icon icon="mdi:robot" className="mode-icon" />
-                {t('pages.games.dice.playWithBot')}
-              </button>
-              <button
-                className={`game-mode-button ${gameMode === 'player' ? 'active' : ''}`}
-                onClick={() => setGameMode('player')}
-              >
-                <Icon icon="mdi:account-multiple" className="mode-icon" />
-                {t('pages.games.dice.playWithPlayer')}
-              </button>
-            </div>
-
-            <div className="bet-amount-selector">
-              <div className="bet-amount-label">
-                {t('pages.games.dice.betAmount')}
-              </div>
-              <div className="bet-amount-controls">
-                <button
-                  className="bet-control-button"
-                  onClick={() => setBetAmount(prev => Math.max(100, prev - 100))}
-                >
-                  -
-                </button>
-                <div className="bet-amount">
-                  <Icon 
-                    icon={betType === 'tokens' ? "material-symbols:diamond-rounded" : "cryptocurrency:ton"} 
-                    className="bet-currency-icon" 
-                  />
-                  {betAmount}
-                </div>
-                <button
-                  className="bet-control-button"
-                  onClick={() => setBetAmount(prev => prev + 100)}
-                >
-                  +
-                </button>
-              </div>
-            </div>
-
-            <button className="start-game-button" onClick={handleStartGame}>
-              {t('pages.games.dice.startGame')}
-            </button>
-          </div>
-        )}
-
-        {gameState === 'lobby' && (
-          <div className="dice-lobby">
-            <LobbyInterface
-              gameType="dice"
-              onCreate={handleCreateGame}
-              onJoin={handleJoinGame}
-              className="styled-lobby"
-            />
-          </div>
-        )}
-
-        {gameState === 'playing' && (
-          <>
-            {gameMode === 'bot' ? (
-              <DiceGame
-                betAmount={betAmount}
-                onGameEnd={handleGameEnd}
-              />
-            ) : (
-              <MultiplayerDiceGame
-                gameId={activeGameId || ''}
-                betAmount={betAmount}
-                onGameEnd={handleGameEnd}
-              />
-            )}
-          </>
-        )}
+        {renderGameContent()}
       </PageContainer>
     </SafeArea>
   );
