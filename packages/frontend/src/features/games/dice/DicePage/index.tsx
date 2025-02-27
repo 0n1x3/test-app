@@ -50,23 +50,41 @@ export function DicePage() {
         setGameState('playing');
       } else {
         // Создаем игру и перенаправляем на отдельную страницу
-        const response = await fetch('/api/games/create', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            gameType: 'dice',
-            betAmount,
-          }),
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-          // Вместо установки activeGameId, перенаправляем на отдельную страницу
-          window.location.href = `/game/${data.game._id}`;
-        } else {
+        try {
+          const tg = window.Telegram?.WebApp;
+          if (!tg?.initData) {
+            toast.error(t('pages.games.dice.errors.notAuthenticated'));
+            return;
+          }
+          
+          const response = await fetch('/api/games/create', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              type: 'dice', // Измените gameType на type для соответствия ожиданиям сервера
+              betAmount,
+              initData: tg.initData
+            }),
+          });
+          
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            console.error('Ошибка сервера при создании игры:', errorData);
+            throw new Error(errorData.message || 'Ошибка сервера');
+          }
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            // Перенаправляем на отдельную страницу
+            window.location.href = `/game/${data.game._id}`;
+          } else {
+            toast.error(t('pages.games.dice.errors.createGame'));
+          }
+        } catch (error) {
+          console.error('Ошибка при создании игры:', error);
           toast.error(t('pages.games.dice.errors.createGame'));
         }
       }
