@@ -19,8 +19,8 @@ export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
   const [round, setRound] = useState(1);
   const [playerScore, setPlayerScore] = useState(0);
   const [botScore, setBotScore] = useState(0);
-  const [playerDice, setPlayerDice] = useState<number[]>([1, 1]);
-  const [botDice, setBotDice] = useState<number[]>([1, 1]);
+  const [playerDice, setPlayerDice] = useState<number>(1);
+  const [botDice, setBotDice] = useState<number>(1);
   const [isRolling, setIsRolling] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const [roundResult, setRoundResult] = useState<GameResult | null>(null);
@@ -28,16 +28,9 @@ export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
   const rollDice = () => {
     setIsRolling(true);
     
-    // Генерируем 2 кубика для игрока и 2 для бота
-    const newPlayerDice = [
-      Math.floor(Math.random() * 6) + 1,
-      Math.floor(Math.random() * 6) + 1
-    ];
-    
-    const newBotDice = [
-      Math.floor(Math.random() * 6) + 1,
-      Math.floor(Math.random() * 6) + 1
-    ];
+    // Генерируем одиночные значения для кубиков игрока и бота
+    const newPlayerDice = Math.floor(Math.random() * 6) + 1;
+    const newBotDice = Math.floor(Math.random() * 6) + 1;
     
     // Устанавливаем новые значения после анимации
     setTimeout(() => {
@@ -45,14 +38,11 @@ export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
       setBotDice(newBotDice);
       setIsRolling(false);
       
-      // Определяем результат
-      const playerSum = newPlayerDice.reduce((a, b) => a + b, 0);
-      const botSum = newBotDice.reduce((a, b) => a + b, 0);
-      
+      // Определяем результат на основе сравнения значений кубиков
       let result: GameResult;
-      if (playerSum > botSum) {
+      if (newPlayerDice > newBotDice) {
         result = 'win';
-      } else if (playerSum < botSum) {
+      } else if (newPlayerDice < newBotDice) {
         result = 'lose';
       } else {
         result = 'draw';
@@ -92,8 +82,8 @@ export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
           
           if (currentPlayerScore < 2 && currentBotScore < 2) {
             setRound(prev => prev + 1);
-            setPlayerDice([1, 1]);
-            setBotDice([1, 1]);
+            setPlayerDice(1);
+            setBotDice(1);
             setShowResult(false);
             setRoundResult(null);
           }
@@ -102,8 +92,8 @@ export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
         // При ничьей сразу переходим к следующему раунду
         setTimeout(() => {
           setRound(prev => prev + 1);
-          setPlayerDice([1, 1]);
-          setBotDice([1, 1]);
+          setPlayerDice(1);
+          setBotDice(1);
           setShowResult(false);
           setRoundResult(null);
         }, 2000);
@@ -140,36 +130,26 @@ export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
 
       <div className="dice-container">
         <div className="player-dice">
-          <h3>Ваши кубики</h3>
+          <h3>Ваш кубик</h3>
           <div className="dice-row">
-            {playerDice.slice(0, 2).map((value, index) => (
-              <Dice 
-                key={`player-${index}`} 
-                value={value} 
-                rolling={isRolling}
-              />
-            ))}
-          </div>
-          <div className="dice-sum">
-            Сумма: {playerDice.reduce((a, b) => a + b, 0)}
+            <Dice 
+              value={playerDice} 
+              rolling={isRolling}
+              size="large"
+            />
           </div>
         </div>
         
         <div className="vs-indicator">VS</div>
         
         <div className="bot-dice">
-          <h3>Кубики бота</h3>
+          <h3>Кубик бота</h3>
           <div className="dice-row">
-            {botDice.slice(0, 2).map((value, index) => (
-              <Dice 
-                key={`bot-${index}`} 
-                value={value} 
-                rolling={isRolling}
-              />
-            ))}
-          </div>
-          <div className="dice-sum">
-            Сумма: {botDice.reduce((a, b) => a + b, 0)}
+            <Dice 
+              value={botDice} 
+              rolling={isRolling}
+              size="large"
+            />
           </div>
         </div>
       </div>
