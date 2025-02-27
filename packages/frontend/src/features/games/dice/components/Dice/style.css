@@ -82,8 +82,8 @@
 .face-1::after {
   content: '';
   position: absolute;
-  width: 20%;
-  height: 20%;
+  width: 16%;
+  height: 16%;
   background: black;
   border-radius: 50%;
   top: 50%;
@@ -96,8 +96,8 @@
 .face-2::after {
   content: '';
   position: absolute;
-  width: 20%;
-  height: 20%;
+  width: 16%;
+  height: 16%;
   background: black;
   border-radius: 50%;
 }
@@ -116,8 +116,8 @@
 .face-3 .dot {
   content: '';
   position: absolute;
-  width: 20%;
-  height: 20%;
+  width: 16%;
+  height: 16%;
   background: black;
   border-radius: 50%;
 }
@@ -138,8 +138,8 @@
 /* Грань 4 */
 .face-4 .dot {
   position: absolute;
-  width: 20%;
-  height: 20%;
+  width: 16%;
+  height: 16%;
   background: black;
   border-radius: 50%;
 }
@@ -163,8 +163,8 @@
 /* Грань 5 */
 .face-5 .dot {
   position: absolute;
-  width: 20%;
-  height: 20%;
+  width: 16%;
+  height: 16%;
   background: black;
   border-radius: 50%;
 }
@@ -193,36 +193,36 @@
 /* Грань 6 */
 .face-6 .dot {
   position: absolute;
-  width: 20%;
-  height: 20%;
+  width: 14%;
+  height: 14%;
   background: black;
   border-radius: 50%;
 }
 .face-6 .dot:nth-child(1) {
-  top: 20%;
-  left: 20%;
+  top: 18%;
+  left: 18%;
 }
 .face-6 .dot:nth-child(2) {
-  top: 20%;
-  right: 20%;
+  top: 18%;
+  right: 18%;
 }
 .face-6 .dot:nth-child(3) {
   top: 50%;
-  left: 20%;
+  left: 18%;
   transform: translateY(-50%);
 }
 .face-6 .dot:nth-child(4) {
   top: 50%;
-  right: 20%;
+  right: 18%;
   transform: translateY(-50%);
 }
 .face-6 .dot:nth-child(5) {
-  bottom: 20%;
-  left: 20%;
+  bottom: 18%;
+  left: 18%;
 }
 .face-6 .dot:nth-child(6) {
-  bottom: 20%;
-  right: 20%;
+  bottom: 18%;
+  right: 18%;
 }
 
 /* Анимация вращения кубика */
