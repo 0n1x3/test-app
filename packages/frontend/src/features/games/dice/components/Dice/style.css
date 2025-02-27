@@ -35,10 +35,7 @@
   height: 100%;
   border-radius: 10%;
   background: white;
-  display: grid;
-  grid-template: repeat(3, 1fr) / repeat(3, 1fr);
-  gap: 2px;
-  padding: 10px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3) inset;
 }
 
 /* Устанавливаем корректное положение для каждой грани */
@@ -81,35 +78,152 @@
 .dice.medium .face-3 { transform: translateY(-35px) rotateX(90deg); }
 .dice.medium .face-4 { transform: translateY(35px) rotateX(-90deg); }
 
-/* Стили для точек на кубике */
-.face::before,
-.face::after {
+/* Точки на гранях */
+.face-1::after {
   content: '';
   position: absolute;
-  width: 12px;
-  height: 12px;
+  width: 20%;
+  height: 20%;
   background: black;
   border-radius: 50%;
-}
-
-/* Размещение точек для разных граней */
-.face-1::before {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
 
-.face-2::before {
-  top: 25%;
-  left: 25%;
-}
-
+/* Грань 2 */
+.face-2::before,
 .face-2::after {
-  bottom: 25%;
-  right: 25%;
+  content: '';
+  position: absolute;
+  width: 20%;
+  height: 20%;
+  background: black;
+  border-radius: 50%;
+}
+.face-2::before {
+  top: 20%;
+  left: 20%;
+}
+.face-2::after {
+  bottom: 20%;
+  right: 20%;
 }
 
-/* Добавьте аналогичные правила для других граней */
+/* Грань 3 */
+.face-3::before,
+.face-3::after,
+.face-3 .dot {
+  content: '';
+  position: absolute;
+  width: 20%;
+  height: 20%;
+  background: black;
+  border-radius: 50%;
+}
+.face-3::before {
+  top: 20%;
+  left: 20%;
+}
+.face-3::after {
+  bottom: 20%;
+  right: 20%;
+}
+.face-3 .dot {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Грань 4 */
+.face-4 .dot {
+  position: absolute;
+  width: 20%;
+  height: 20%;
+  background: black;
+  border-radius: 50%;
+}
+.face-4 .dot:nth-child(1) {
+  top: 20%;
+  left: 20%;
+}
+.face-4 .dot:nth-child(2) {
+  top: 20%;
+  right: 20%;
+}
+.face-4 .dot:nth-child(3) {
+  bottom: 20%;
+  left: 20%;
+}
+.face-4 .dot:nth-child(4) {
+  bottom: 20%;
+  right: 20%;
+}
+
+/* Грань 5 */
+.face-5 .dot {
+  position: absolute;
+  width: 20%;
+  height: 20%;
+  background: black;
+  border-radius: 50%;
+}
+.face-5 .dot:nth-child(1) {
+  top: 20%;
+  left: 20%;
+}
+.face-5 .dot:nth-child(2) {
+  top: 20%;
+  right: 20%;
+}
+.face-5 .dot:nth-child(3) {
+  bottom: 20%;
+  left: 20%;
+}
+.face-5 .dot:nth-child(4) {
+  bottom: 20%;
+  right: 20%;
+}
+.face-5 .dot:nth-child(5) {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Грань 6 */
+.face-6 .dot {
+  position: absolute;
+  width: 20%;
+  height: 20%;
+  background: black;
+  border-radius: 50%;
+}
+.face-6 .dot:nth-child(1) {
+  top: 20%;
+  left: 20%;
+}
+.face-6 .dot:nth-child(2) {
+  top: 20%;
+  right: 20%;
+}
+.face-6 .dot:nth-child(3) {
+  top: 50%;
+  left: 20%;
+  transform: translateY(-50%);
+}
+.face-6 .dot:nth-child(4) {
+  top: 50%;
+  right: 20%;
+  transform: translateY(-50%);
+}
+.face-6 .dot:nth-child(5) {
+  bottom: 20%;
+  left: 20%;
+}
+.face-6 .dot:nth-child(6) {
+  bottom: 20%;
+  right: 20%;
+}
 
 /* Анимация вращения кубика */
 .dice.rolling {

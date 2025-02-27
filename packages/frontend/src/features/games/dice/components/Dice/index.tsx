@@ -75,6 +75,24 @@ export function Dice({ value, rolling, size = 'large', onRollEnd }: DiceProps) {
     };
   }, [rolling, value]);
 
+  // Функция для рендеринга правильного количества точек для каждой грани
+  const renderDots = (faceValue: number) => {
+    if (faceValue === 1) {
+      return null; // Для грани 1 точка добавляется через CSS ::after
+    }
+    
+    if (faceValue === 2 || faceValue === 3) {
+      return <div className="dot"></div>; // Третья точка для грани 3
+    }
+    
+    // Для граней 4, 5, 6 создаем нужное количество точек
+    const dots = [];
+    for (let i = 0; i < faceValue; i++) {
+      dots.push(<div key={i} className="dot"></div>);
+    }
+    return dots;
+  };
+
   return (
     <div className={`dice-container ${size}`}>
       <div 
@@ -85,10 +103,18 @@ export function Dice({ value, rolling, size = 'large', onRollEnd }: DiceProps) {
       >
         <div className="face face-1"></div>
         <div className="face face-2"></div>
-        <div className="face face-6"></div>
-        <div className="face face-5"></div>
-        <div className="face face-3"></div>
-        <div className="face face-4"></div>
+        <div className="face face-3">
+          {value === 3 && <div className="dot"></div>}
+        </div>
+        <div className="face face-4">
+          {value === 4 && Array.from({length: 4}).map((_, i) => <div key={i} className="dot"></div>)}
+        </div>
+        <div className="face face-5">
+          {value === 5 && Array.from({length: 5}).map((_, i) => <div key={i} className="dot"></div>)}
+        </div>
+        <div className="face face-6">
+          {value === 6 && Array.from({length: 6}).map((_, i) => <div key={i} className="dot"></div>)}
+        </div>
       </div>
     </div>
   );

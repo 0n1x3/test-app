@@ -28,7 +28,7 @@ export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
   const rollDice = () => {
     setIsRolling(true);
     
-    // Генерируем случайные значения для кубиков
+    // Генерируем 2 кубика для игрока и 2 для бота
     const newPlayerDice = [
       Math.floor(Math.random() * 6) + 1,
       Math.floor(Math.random() * 6) + 1
@@ -142,7 +142,7 @@ export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
         <div className="player-dice">
           <h3>Ваши кубики</h3>
           <div className="dice-row">
-            {playerDice.map((value, index) => (
+            {playerDice.slice(0, 2).map((value, index) => (
               <Dice 
                 key={`player-${index}`} 
                 value={value} 
@@ -160,7 +160,7 @@ export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
         <div className="bot-dice">
           <h3>Кубики бота</h3>
           <div className="dice-row">
-            {botDice.map((value, index) => (
+            {botDice.slice(0, 2).map((value, index) => (
               <Dice 
                 key={`bot-${index}`} 
                 value={value} 
