@@ -49,15 +49,30 @@ export function DicePage() {
         updateUserBalance(-betAmount);
         setGameState('playing');
       } else {
-        setGameState('lobby');
+        // Создаем игру и перенаправляем на отдельную страницу
+        const response = await fetch('/api/games/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            gameType: 'dice',
+            betAmount,
+          }),
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          // Вместо установки activeGameId, перенаправляем на отдельную страницу
+          window.location.href = `/game/${data.game._id}`;
+        } else {
+          toast.error(t('pages.games.dice.errors.createGame'));
+        }
       }
-    } catch (error: unknown) {
-      console.error('Error starting game:', error);
-      window.Telegram?.WebApp?.showPopup({
-        title: t('common.error'),
-        message: error instanceof Error ? error.message : t('pages.games.dice.errors.betFailed'),
-        buttons: [{ type: 'ok' }]
-      });
+    } catch (error) {
+      console.error('Ошибка при начале игры:', error);
+      toast.error(t('pages.games.dice.errors.startGame'));
     }
   };
 
