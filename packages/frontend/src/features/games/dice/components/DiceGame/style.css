@@ -3,15 +3,17 @@
   flex-direction: column;
   align-items: center;
   padding: 16px;
-  height: 100%;
+  width: 100%;
   max-width: 100%;
-  overflow: hidden;
+  position: relative;
+  z-index: 2;
 }
 
 .bet-info {
   display: flex;
   align-items: center;
   margin-bottom: 24px;
+  z-index: 3;
 }
 
 .bet-amount {
@@ -31,6 +33,8 @@
   width: 100%;
   margin-bottom: 24px;
   gap: 16px;
+  position: relative;
+  z-index: 5;
 }
 
 .player-dice, .bot-dice {
@@ -77,6 +81,8 @@
   cursor: pointer;
   transition: all 0.2s;
   margin-top: 16px;
+  position: relative;
+  z-index: 10;
 }
 
 .roll-button:hover {

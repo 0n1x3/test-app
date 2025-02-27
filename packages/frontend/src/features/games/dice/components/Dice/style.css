@@ -1,134 +1,122 @@
 .dice-container {
+  display: inline-block;
   perspective: 1000px;
-  width: var(--dice-size);
-  height: var(--dice-size);
+  margin: 16px;
   position: relative;
-  --dice-size: 80px;
-  margin: 20px auto;
-}
-
-.dice-container.small {
-  --dice-size: 60px;
-}
-
-.dice-container.large {
-  --dice-size: 80px;
+  z-index: 2;
 }
 
 .dice {
-  width: 100%;
-  height: 100%;
+  width: 80px;
+  height: 80px;
   position: relative;
   transform-style: preserve-3d;
-  transition: transform 0.6s ease;
+  transition: transform 1s ease-out;
+}
+
+.dice.small {
+  width: 50px;
+  height: 50px;
+}
+
+.dice.medium {
+  width: 70px;
+  height: 70px;
+}
+
+.dice.large {
+  width: 100px;
+  height: 100px;
 }
 
 .face {
   position: absolute;
   width: 100%;
   height: 100%;
-  background-color: white;
-  border: 2px solid #e0e0e0;
   border-radius: 10%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10%;
-  box-sizing: border-box;
+  background: white;
+  display: grid;
+  grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+  gap: 2px;
+  padding: 10px;
 }
 
-/* Позиционирование граней кубика */
-.face-1 { transform: translateZ(calc(var(--dice-size) / 2)); }
-.face-2 { transform: rotateY(90deg) translateZ(calc(var(--dice-size) / 2)); }
-.face-3 { transform: rotateX(90deg) translateZ(calc(var(--dice-size) / 2)); }
-.face-4 { transform: rotateX(-90deg) translateZ(calc(var(--dice-size) / 2)); }
-.face-5 { transform: rotateY(-90deg) translateZ(calc(var(--dice-size) / 2)); }
-.face-6 { transform: rotateY(180deg) translateZ(calc(var(--dice-size) / 2)); }
+/* Устанавливаем корректное положение для каждой грани */
+.face-1 {
+  transform: translateZ(40px);
+}
 
-/* Расположение точек на гранях */
+.face-6 {
+  transform: translateZ(-40px) rotateY(180deg);
+}
+
+.face-2 {
+  transform: translateX(40px) rotateY(90deg);
+}
+
+.face-5 {
+  transform: translateX(-40px) rotateY(-90deg);
+}
+
+.face-3 {
+  transform: translateY(-40px) rotateX(90deg);
+}
+
+.face-4 {
+  transform: translateY(40px) rotateX(-90deg);
+}
+
+/* Масштабируем трансформацию для разных размеров */
+.dice.small .face-1 { transform: translateZ(25px); }
+.dice.small .face-6 { transform: translateZ(-25px) rotateY(180deg); }
+.dice.small .face-2 { transform: translateX(25px) rotateY(90deg); }
+.dice.small .face-5 { transform: translateX(-25px) rotateY(-90deg); }
+.dice.small .face-3 { transform: translateY(-25px) rotateX(90deg); }
+.dice.small .face-4 { transform: translateY(25px) rotateX(-90deg); }
+
+.dice.medium .face-1 { transform: translateZ(35px); }
+.dice.medium .face-6 { transform: translateZ(-35px) rotateY(180deg); }
+.dice.medium .face-2 { transform: translateX(35px) rotateY(90deg); }
+.dice.medium .face-5 { transform: translateX(-35px) rotateY(-90deg); }
+.dice.medium .face-3 { transform: translateY(-35px) rotateX(90deg); }
+.dice.medium .face-4 { transform: translateY(35px) rotateX(-90deg); }
+
+/* Стили для точек на кубике */
+.face::before,
+.face::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: black;
+  border-radius: 50%;
+}
+
+/* Размещение точек для разных граней */
 .face-1::before {
-  content: "";
-  width: 20%;
-  height: 20%;
-  background-color: #333;
-  border-radius: 50%;
-  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
-.face-2::before, .face-2::after {
-  content: "";
-  width: 20%;
-  height: 20%;
-  background-color: #333;
-  border-radius: 50%;
-  position: absolute;
+.face-2::before {
+  top: 25%;
+  left: 25%;
 }
-.face-2::before { top: 20%; left: 20%; }
-.face-2::after { bottom: 20%; right: 20%; }
 
-.face-3::before, .face-3::after {
-  content: "";
-  width: 20%;
-  height: 20%;
-  background-color: #333;
-  border-radius: 50%;
-  position: absolute;
+.face-2::after {
+  bottom: 25%;
+  right: 25%;
 }
-.face-3::before { top: 20%; left: 20%; }
-.face-3::after { bottom: 20%; right: 20%; }
-.face-3::after { content: ""; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
-.face-4::before { content: ""; top: 20%; left: 20%; }
-.face-4::after { content: ""; top: 20%; right: 20%; }
-.face-4::before, .face-4::after, .face-4 span:nth-child(1), .face-4 span:nth-child(2) {
-  content: "";
-  width: 20%;
-  height: 20%;
-  background-color: #333;
-  border-radius: 50%;
-  position: absolute;
+/* Добавьте аналогичные правила для других граней */
+
+/* Анимация вращения кубика */
+.dice.rolling {
+  animation: roll 1.5s ease-out forwards;
 }
-.face-4 span:nth-child(1) { bottom: 20%; left: 20%; }
-.face-4 span:nth-child(2) { bottom: 20%; right: 20%; }
 
-.face-5::before, .face-5::after, .face-5 span:nth-child(1), .face-5 span:nth-child(2), .face-5 span:nth-child(3) {
-  content: "";
-  width: 20%;
-  height: 20%;
-  background-color: #333;
-  border-radius: 50%;
-  position: absolute;
-}
-.face-5::before { top: 20%; left: 20%; }
-.face-5::after { top: 20%; right: 20%; }
-.face-5 span:nth-child(1) { bottom: 20%; left: 20%; }
-.face-5 span:nth-child(2) { bottom: 20%; right: 20%; }
-.face-5 span:nth-child(3) { top: 50%; left: 50%; transform: translate(-50%, -50%); }
-
-.face-6::before, .face-6::after, .face-6 span:nth-child(1), .face-6 span:nth-child(2), .face-6 span:nth-child(3), .face-6 span:nth-child(4) {
-  content: "";
-  width: 20%;
-  height: 20%;
-  background-color: #333;
-  border-radius: 50%;
-  position: absolute;
-}
-.face-6::before { top: 20%; left: 20%; }
-.face-6::after { top: 20%; right: 20%; }
-.face-6 span:nth-child(1) { top: 50%; left: 20%; transform: translateY(-50%); }
-.face-6 span:nth-child(2) { top: 50%; right: 20%; transform: translateY(-50%); }
-.face-6 span:nth-child(3) { bottom: 20%; left: 20%; }
-.face-6 span:nth-child(4) { bottom: 20%; right: 20%; }
-
-/* Анимация броска */
 @keyframes roll {
-  0% { transform: rotateX(0) rotateY(0) rotateZ(0); }
-  25% { transform: rotateX(90deg) rotateY(45deg) rotateZ(45deg); }
-  50% { transform: rotateX(180deg) rotateY(90deg) rotateZ(90deg); }
-  75% { transform: rotateX(270deg) rotateY(135deg) rotateZ(135deg); }
-  100% { transform: rotateX(360deg) rotateY(180deg) rotateZ(180deg); }
-}
-
-.rolling {
-  animation: roll 1s linear infinite;
+  0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+  100% { transform: rotateX(720deg) rotateY(360deg) rotateZ(360deg); }
 } 

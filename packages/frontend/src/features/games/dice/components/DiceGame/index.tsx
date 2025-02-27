@@ -181,8 +181,12 @@ export function DiceGame({ betAmount, onGameEnd }: DiceGameProps) {
       ) : (
         <button 
           className="roll-button" 
-          onClick={rollDice} 
+          onClick={(e) => {
+            e.stopPropagation();
+            rollDice();
+          }} 
           disabled={isRolling || showResult}
+          style={{ position: 'relative', zIndex: 100 }}
         >
           {t('pages.games.dice.roll')}
         </button>
