@@ -22,7 +22,15 @@ export default function GamePage() {
     
     const fetchGameData = async () => {
       try {
-        const response = await fetch(`/api/games/${id}`);
+        setLoading(true);
+        // Используем полный URL для предотвращения проблем с маршрутизацией
+        const response = await fetch(`https://test.timecommunity.xyz/api/games/${id}`);
+        
+        if (!response.ok) {
+          console.error('Ошибка при загрузке игры:', response.status, response.statusText);
+          throw new Error(`Ошибка загрузки: ${response.status}`);
+        }
+        
         const data = await response.json();
         
         if (data.success) {

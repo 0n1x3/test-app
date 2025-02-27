@@ -105,4 +105,21 @@ export class GameController {
       throw error;
     }
   }
+
+  @Get(':id')
+  async getGameById(@Param('id') id: string) {
+    try {
+      console.log(`Получен запрос на получение игры с ID: ${id}`);
+      const game = await this.gameService.getGameById(id);
+      
+      if (!game) {
+        throw new NotFoundException('Игра не найдена');
+      }
+      
+      return { success: true, game };
+    } catch (error) {
+      console.error('Ошибка при получении игры:', error);
+      throw error;
+    }
+  }
 } 
