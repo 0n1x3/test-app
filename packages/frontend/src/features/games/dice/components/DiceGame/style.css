@@ -3,10 +3,10 @@
   flex-direction: column;
   width: 100%;
   max-width: 100%;
-  min-height: calc(100vh - 180px);
+  min-height: calc(100vh - 200px);
   position: relative;
   z-index: 2;
-  padding: 4px;
+  padding: 4px 4px 70px 4px;
 }
 
 /* Верхняя часть - счет и информация о раунде */
@@ -91,8 +91,8 @@
   margin-bottom: 8px;
   position: relative;
   z-index: 5;
-  gap: 20px;
-  padding: 10px 0;
+  gap: 16px;
+  padding: 5px 0;
 }
 
 .player-dice-container, .bot-dice-container {
@@ -132,8 +132,9 @@
   justify-content: center;
   align-items: center;
   margin-top: 8px;
+  margin-bottom: 70px;
   position: relative;
-  z-index: 10;
+  z-index: 20;
 }
 
 .roll-button {
@@ -192,8 +193,7 @@
 /* Адаптивность для мобильных устройств */
 @media (max-width: 480px) {
   .dice-game {
-    padding: 4px;
-    min-height: calc(100vh - 160px);
+    padding-bottom: 80px;
   }
   
   .game-header {
@@ -215,7 +215,7 @@
   }
   
   .controls-area {
-    min-height: 50px;
+    margin-bottom: 60px;
   }
   
   .roll-button {
