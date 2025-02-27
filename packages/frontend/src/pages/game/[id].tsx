@@ -25,11 +25,8 @@ export default function GamePage() {
         setLoading(true);
         console.log("Получение данных игры с ID:", id);
         
-        // Получаем данные пользователя из Telegram WebApp
+        // Получаем Telegram WebApp - он должен быть доступен к этому моменту
         const tg = window.Telegram?.WebApp;
-        if (!tg) {
-          throw new Error('Telegram WebApp не найден');
-        }
         
         // Используем полный URL для предотвращения проблем с маршрутизацией
         const response = await fetch(`https://test.timecommunity.xyz/api/games/${id}`);
@@ -45,33 +42,39 @@ export default function GamePage() {
         if (data.success) {
           setGameData(data.game);
           
-          // Проверяем, присоединен ли пользователь к игре
-          const userTelegramId = tg.initDataUnsafe?.user?.id;
-          const isPlayerInGame = data.game.players.some(
-            (player: any) => player.telegramId === userTelegramId
-          );
-          
           // Если пользователь еще не в игре, отправляем запрос на присоединение
-          if (!isPlayerInGame && data.game.status === 'waiting') {
-            console.log('Отправка запроса на присоединение к игре:', id);
-            const joinResponse = await fetch(`https://test.timecommunity.xyz/api/games/join`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                gameId: id,
-                initData: tg.initData
-              })
-            });
+          if (tg && data.game.status === 'waiting') {
+            const userTelegramId = tg.initDataUnsafe?.user?.id;
+            const isPlayerInGame = data.game.players.some(
+              (player: any) => player.telegramId === userTelegramId
+            );
             
-            if (!joinResponse.ok) {
-              console.error('Ошибка при присоединении к игре:', joinResponse.status);
-              throw new Error('Не удалось присоединиться к игре');
+            if (!isPlayerInGame) {
+              console.log('Отправка запроса на присоединение к игре:', id);
+              try {
+                const joinResponse = await fetch(`https://test.timecommunity.xyz/api/games/join`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    gameId: id,
+                    initData: tg.initData
+                  })
+                });
+                
+                if (!joinResponse.ok) {
+                  console.error('Ошибка при присоединении к игре:', joinResponse.status);
+                  console.warn('Продолжение без присоединения к игре');
+                } else {
+                  const joinData = await joinResponse.json();
+                  console.log('Успешное присоединение к игре:', joinData);
+                }
+              } catch (joinErr) {
+                console.error('Ошибка при выполнении запроса на присоединение:', joinErr);
+                console.warn('Продолжение без присоединения к игре');
+              }
             }
-            
-            const joinData = await joinResponse.json();
-            console.log('Успешное присоединение к игре:', joinData);
           }
         } else {
           setError('Игра не найдена');
@@ -138,7 +141,7 @@ export default function GamePage() {
     <SafeArea>
       <ErrorBoundary>
         <div className="isolated-game-container">
-          {typeof id === 'string' && (
+          {typeof id === 'string' && gameData && (
             <MultiplayerDiceGame
               key={`game-${id}`}
               gameId={id}

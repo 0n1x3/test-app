@@ -8,6 +8,32 @@ import { Dice } from '../Dice';
 import { toast } from 'react-hot-toast';
 import './style.css';
 
+// Интерфейсы для Telegram WebApp
+interface TelegramUser {
+  id: number;
+  first_name: string;
+  last_name?: string;
+  username?: string;
+  language_code?: string;
+  is_premium?: boolean;
+  photo_url?: string;
+}
+
+interface TelegramWebAppInitData {
+  query_id?: string;
+  user?: TelegramUser;
+  auth_date?: number;
+  hash?: string;
+  start_param?: string;
+}
+
+// Расширяем глобальный интерфейс Window только для telegramWebAppLoaded
+declare global {
+  interface Window {
+    telegramWebAppLoaded?: boolean;
+  }
+}
+
 interface MultiplayerDiceGameProps {
   gameId: string;
   betAmount: number;
@@ -27,6 +53,8 @@ export function MultiplayerDiceGame({
   const [gameResult, setGameResult] = useState<'win' | 'lose' | 'draw' | null>(null);
   const [round, setRound] = useState(1);
   const [players, setPlayers] = useState<any[]>([]);
+  const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'error'>('connecting');
+  const [socketError, setSocketError] = useState<string | null>(null);
 
   // Состояния кубиков
   const [playerDice, setPlayerDice] = useState<number>(1);
@@ -38,6 +66,24 @@ export function MultiplayerDiceGame({
   
   // Ссылка на WebSocket соединение
   const socketRef = useRef<Socket | null>(null);
+  
+  // Получение ID пользователя из Telegram WebApp
+  const getUserId = (): number | undefined => {
+    try {
+      // Безопасное получение ID с проверками на undefined
+      const telegramApp = window.Telegram?.WebApp;
+      
+      if (telegramApp?.initDataUnsafe?.user?.id) {
+        return telegramApp.initDataUnsafe.user.id;
+      }
+      
+      console.warn('Не удалось получить Telegram ID пользователя');
+      return undefined;
+    } catch (error) {
+      console.error('Ошибка при получении ID пользователя:', error);
+      return undefined;
+    }
+  };
   
   // Подключение к WebSocket при монтировании компонента
   useEffect(() => {
@@ -53,6 +99,8 @@ export function MultiplayerDiceGame({
     
     socket.on('connect', () => {
       console.log('Socket connected');
+      setConnectionStatus('connected');
+      
       // После подключения присоединяемся к игровой комнате
       socket.emit('joinGameRoom', { gameId });
     });
@@ -72,27 +120,33 @@ export function MultiplayerDiceGame({
       if (data.players && data.players.length > 0) {
         setPlayers(data.players);
         
-        // Находим данные текущего пользователя и оппонента
-        const tgId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+        // Определяем текущего пользователя и оппонента
+        const userId = getUserId();
+        console.log('Current user ID from Telegram:', userId);
         
-        if (tgId) {
-          const currentPlayer = data.players.find((p: any) => p.telegramId === tgId);
-          const opponent = data.players.find((p: any) => p.telegramId !== tgId);
+        // Проверяем наличие userId
+        if (userId) {
+          const currentPlayer = data.players.find((p: any) => p.telegramId === userId);
+          const opponent = data.players.find((p: any) => p.telegramId !== userId);
           
           if (currentPlayer) {
+            console.log('Current player data found:', currentPlayer);
             setPlayerData(currentPlayer);
           }
           
           if (opponent) {
+            console.log('Opponent data found:', opponent);
             setOpponentData(opponent);
           }
-          
-          // Если оба игрока присоединились, игра готова к старту
-          if (data.players.length === 2 && data.status !== 'playing') {
-            console.log('Both players joined, ready to start the game');
-            // Инициируем старт игры
-            socket.emit('startDiceGame', { gameId });
-          }
+        } else {
+          console.warn('Невозможно определить игрока, ID пользователя не найден');
+        }
+        
+        // Если оба игрока присоединились, игра готова к старту
+        if (data.players.length === 2 && data.status !== 'playing') {
+          console.log('Both players joined, ready to start the game');
+          // Инициируем старт игры
+          socket.emit('startDiceGame', { gameId });
         }
       }
       
@@ -101,13 +155,13 @@ export function MultiplayerDiceGame({
         console.log('Game is now in playing state');
         setGameState('playing');
         
-        // Определяем, чей ход первый
-        if (data.currentPlayer) {
-          const isCurrentPlayerTurn = playerData && playerData.id === data.currentPlayer;
-          setIsMyTurn(isCurrentPlayerTurn);
+        // Если currentPlayer не определен, первый ход делает создатель игры
+        const userId = getUserId();
+        if (userId) {
+          setIsMyTurn(data.players[0]?.telegramId === userId);
         } else {
-          // Если currentPlayer не определен, первый ход делает создатель игры
-          setIsMyTurn(data.players[0]?.telegramId === telegramId);
+          // Если не удалось получить ID пользователя, предполагаем, что ход не наш
+          setIsMyTurn(false);
         }
       }
     });
@@ -165,25 +219,28 @@ export function MultiplayerDiceGame({
       console.log('Game started event received:', data);
       setGameState('playing');
       
-      // Определяем, чей ход первый
-      if (data.currentPlayer) {
-        const isCurrentPlayerTurn = playerData && playerData.id === data.currentPlayer;
-        setIsMyTurn(isCurrentPlayerTurn);
+      // Если currentPlayer не определен, первый ход делает создатель игры
+      const userId = getUserId();
+      if (userId) {
+        setIsMyTurn(data.players[0]?.telegramId === userId);
       } else {
-        // Если currentPlayer не определен, первый ход делает создатель игры
-        const tgId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
-        setIsMyTurn(data.players[0]?.telegramId === tgId);
+        // Если не удалось получить ID пользователя, предполагаем, что ход не наш
+        setIsMyTurn(false);
       }
     });
 
     // Обработка ошибок
     socket.on('error', (error) => {
       console.error('Socket error:', error);
+      setSocketError(error.message || 'Произошла ошибка соединения');
+      setConnectionStatus('error');
       toast.error(`Ошибка: ${error.message || 'Что-то пошло не так'}`);
     });
 
     socket.on('disconnect', () => {
       console.log('Socket disconnected');
+      setConnectionStatus('error');
+      setSocketError('Соединение с сервером прервано');
     });
 
     // Отключаем сокет при размонтировании компонента
@@ -193,7 +250,7 @@ export function MultiplayerDiceGame({
         socket.disconnect();
       }
     };
-  }, [gameId, telegramId]);
+  }, [gameId]);
 
   // Обновляем данные, когда меняется playerData
   useEffect(() => {
@@ -212,18 +269,21 @@ export function MultiplayerDiceGame({
     
     // Эмулируем бросок кубика
     setTimeout(() => {
-      const tgId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+      const userId = getUserId();
       
-      if (socketRef.current && tgId && playerData) {
+      if (socketRef.current && userId && playerData) {
         // Отправляем ход на сервер
         socketRef.current.emit('diceMove', { 
           gameId, 
           value: Math.floor(Math.random() * 6) + 1,
-          userId: tgId
+          userId
         });
+      } else {
+        console.error('Не удалось отправить ход: отсутствуют данные пользователя или подключение');
+        toast.error('Не удалось выполнить ход. Проверьте подключение.');
+        setIsRolling(false);
       }
       
-      setIsRolling(false);
       setIsMyTurn(false);
     }, 1500);
   };
@@ -260,6 +320,41 @@ export function MultiplayerDiceGame({
       document.body.removeChild(textArea);
     }
   };
+
+  // Если есть проблемы с соединением
+  if (connectionStatus === 'error') {
+    return (
+      <div className="multiplayer-dice-game">
+        <div className="game-info">
+          <h1>Ошибка соединения</h1>
+        </div>
+        <div className="error-container">
+          <p>{socketError || 'Не удалось подключиться к серверу'}</p>
+          <button 
+            className="reload-button"
+            onClick={() => window.location.reload()}
+          >
+            Перезагрузить
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Если соединение устанавливается
+  if (connectionStatus === 'connecting') {
+    return (
+      <div className="multiplayer-dice-game">
+        <div className="game-info">
+          <h1>Подключение к игре</h1>
+        </div>
+        <div className="connecting-container">
+          <div className="loading-spinner"></div>
+          <p>Устанавливается соединение с сервером...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Если игра в режиме ожидания
   if (gameState === 'waiting') {
@@ -373,7 +468,7 @@ export function MultiplayerDiceGame({
   if (gameState === 'finished') {
     return (
       <div className="multiplayer-dice-game">
-        <div className="game-result {gameResult}">
+        <div className={`game-result ${gameResult}`}>
           <h2>
             {gameResult === 'win' && 'Вы победили!'}
             {gameResult === 'lose' && 'Вы проиграли!'}

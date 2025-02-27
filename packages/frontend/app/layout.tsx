@@ -1,7 +1,7 @@
 'use client';
 
 import Script from 'next/script'
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Inter, Roboto_Mono } from 'next/font/google';
 import { usePathname, useRouter } from 'next/navigation';
 import '@/styles/globals.css';
@@ -21,6 +21,13 @@ const robotoMono = Roboto_Mono({
   variable: '--font-mono',
 });
 
+// Глобальная переменная для отслеживания статуса загрузки Telegram WebApp
+declare global {
+  interface Window {
+    telegramWebAppLoaded?: boolean;
+  }
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -29,6 +36,7 @@ export default function RootLayout({
   const pathname = usePathname();
   const { fetchUserData } = useUserStore();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!document.getElementById('portal-root')) {
@@ -37,46 +45,88 @@ export default function RootLayout({
       document.body.appendChild(portalRoot);
     }
     
-    const tg = window.Telegram?.WebApp;
-    if (tg) {
-      setupViewport();
-      
-      document.addEventListener('touchstart', (e) => {
-        if (e.touches.length > 1) {
-          e.preventDefault();
-        }
-      }, { passive: false });
-
-      // Обработка параметров запуска
-      const startParam = tg.initDataUnsafe && 'start_param' in tg.initDataUnsafe 
-        ? (tg.initDataUnsafe as any).start_param 
-        : undefined;
-      console.log('Start param:', startParam);
-      
-      if (startParam && startParam.startsWith('game_')) {
-        // Получаем ID игры и перенаправляем на страницу игры в режиме лобби
-        const gameId = startParam.substring(5);
-        console.log('Redirecting to game:', gameId);
+    // Проверяем доступность Telegram WebApp
+    const initTelegramWebApp = () => {
+      const tg = window.Telegram?.WebApp;
+      if (tg) {
+        console.log('Telegram WebApp загружен и инициализирован');
+        window.telegramWebAppLoaded = true;
+        setupViewport();
         
-        // Если пользователь уже на странице игры, просто открываем игру
-        if (pathname && pathname.includes('/games/dice')) {
-          // В этом случае нужно внедрить функционал открытия игры через событие
-          // Можно использовать localStorage или глобальное состояние
-          localStorage.setItem('pendingGameJoin', gameId);
-          window.location.reload(); // Перезагружаем страницу для применения изменений
-        } else {
-          // Иначе перенаправляем на страницу игры
-          router.push(`/games/dice`);
-          // Сохраняем ID игры для дальнейшей обработки
-          localStorage.setItem('pendingGameJoin', gameId);
+        document.addEventListener('touchstart', (e) => {
+          if (e.touches.length > 1) {
+            e.preventDefault();
+          }
+        }, { passive: false });
+
+        // Обработка параметров запуска
+        const startParam = tg.initDataUnsafe && 'start_param' in tg.initDataUnsafe 
+          ? (tg.initDataUnsafe as any).start_param 
+          : undefined;
+        console.log('Start param:', startParam);
+        
+        if (startParam && startParam.startsWith('game_')) {
+          // Получаем ID игры и перенаправляем на страницу игры в режиме лобби
+          const gameId = startParam.substring(5);
+          console.log('Redirecting to game:', gameId);
+          
+          // Если пользователь уже на странице игры, просто открываем игру
+          if (pathname && pathname.includes('/games/dice')) {
+            // В этом случае нужно внедрить функционал открытия игры через событие
+            // Можно использовать localStorage или глобальное состояние
+            localStorage.setItem('pendingGameJoin', gameId);
+            window.location.reload(); // Перезагружаем страницу для применения изменений
+          } else {
+            // Иначе перенаправляем на страницу игры
+            router.push(`/game/${gameId}`);
+            // Сохраняем ID игры для дальнейшей обработки
+            localStorage.setItem('pendingGameJoin', gameId);
+          }
         }
+        setIsLoading(false);
+      } else {
+        // Если Telegram WebApp еще не загружен, пытаемся снова через короткий интервал
+        console.log('Ожидание загрузки Telegram WebApp...');
+        setTimeout(initTelegramWebApp, 100);
       }
-    }
+    };
+    
+    // Запускаем проверку доступности Telegram WebApp
+    initTelegramWebApp();
   }, []);
 
   useEffect(() => {
-    fetchUserData();
-  }, []);
+    if (!isLoading) {
+      fetchUserData();
+    }
+  }, [isLoading, fetchUserData]);
+
+  // Показываем загрузочный экран, пока инициализируется Telegram WebApp
+  if (isLoading) {
+    return (
+      <html lang="en" data-platform="mobile" data-fullscreen="true" className={`${inter.className} ${robotoMono.variable}`}>
+        <head>
+          <meta 
+            name="viewport" 
+            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" 
+          />
+          <Script
+            src="https://telegram.org/js/telegram-web-app.js"
+            strategy="beforeInteractive"
+            onLoad={() => {
+              console.log('Telegram WebApp скрипт загружен');
+            }}
+          />
+        </head>
+        <body>
+          <div className="telegram-loading">
+            <div className="loading-spinner"></div>
+            <p>Загрузка Telegram WebApp...</p>
+          </div>
+        </body>
+      </html>
+    );
+  }
 
   return (
     <html lang="en" data-platform="mobile" data-fullscreen="true" className={`${inter.className} ${robotoMono.variable}`}>
@@ -88,6 +138,9 @@ export default function RootLayout({
         <Script
           src="https://telegram.org/js/telegram-web-app.js"
           strategy="beforeInteractive"
+          onLoad={() => {
+            console.log('Telegram WebApp скрипт загружен');
+          }}
         />
       </head>
       <body data-route={pathname}>
