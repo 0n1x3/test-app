@@ -59,7 +59,7 @@ export default function RootLayout({
         console.log('Redirecting to game:', gameId);
         
         // Если пользователь уже на странице игры, просто открываем игру
-        if (pathname.includes('/games/dice')) {
+        if (pathname && pathname.includes('/games/dice')) {
           // В этом случае нужно внедрить функционал открытия игры через событие
           // Можно использовать localStorage или глобальное состояние
           localStorage.setItem('pendingGameJoin', gameId);
