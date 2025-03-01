@@ -69,271 +69,148 @@ export function MultiplayerDiceGame({
   const socketRef = useRef<Socket | null>(null);
   const connectionAttemptRef = useRef(0);
   
-  // Получение ID пользователя из Telegram WebApp
+  /**
+   * Получает ID пользователя из Telegram WebApp
+   * Добавлена расширенная обработка ошибок и логирование
+   */
   const getUserId = (): number | undefined => {
     try {
-      // Безопасное получение ID с проверками на undefined
-      const telegramApp = window.Telegram?.WebApp;
-      
-      if (telegramApp?.initDataUnsafe?.user?.id) {
-        return telegramApp.initDataUnsafe.user.id;
+      // Проверяем загрузку Telegram WebApp
+      if (window.telegramWebAppLoaded !== true) {
+        console.warn('Telegram WebApp еще не загружен');
+        return undefined;
       }
       
-      console.warn('Не удалось получить Telegram ID пользователя');
-      return undefined;
+      // Проверяем наличие необходимых объектов и данных
+      if (!window.Telegram || !window.Telegram.WebApp) {
+        console.warn('Telegram WebApp не найден, хотя отмечен как загруженный');
+        return undefined;
+      }
+      
+      // Проверка initDataUnsafe
+      const webApp = window.Telegram.WebApp;
+      if (!webApp.initDataUnsafe) {
+        console.warn('Отсутствуют initDataUnsafe в Telegram WebApp');
+        return undefined;
+      }
+      
+      // Проверка данных пользователя
+      const userData = webApp.initDataUnsafe.user;
+      if (!userData) {
+        console.warn('Пользовательские данные отсутствуют в Telegram WebApp');
+        return undefined;
+      }
+      
+      // Проверка ID пользователя
+      if (!userData.id) {
+        console.warn('ID пользователя отсутствует в данных Telegram');
+        return undefined;
+      }
+      
+      // Успешное получение ID
+      console.log('Успешно получен ID пользователя Telegram:', userData.id);
+      return userData.id;
     } catch (error) {
-      console.error('Ошибка при получении ID пользователя:', error);
+      console.error('Ошибка при получении ID пользователя:', error instanceof Error ? error.message : 'Неизвестная ошибка');
       return undefined;
     }
   };
 
-  // Безопасное создание WebSocket соединения
+  /**
+   * Настраивает WebSocket соединение
+   * Адаптировано для работы с исправленным API-путем в Nginx
+   */
   const setupSocketConnection = useCallback(() => {
     try {
-      // Увеличиваем счетчик попыток
-      connectionAttemptRef.current += 1;
-      console.log(`Попытка подключения #${connectionAttemptRef.current}`);
-      
-      // Если уже есть соединение, закрываем его
       if (socketRef.current) {
         console.log('Закрытие существующего соединения перед повторным подключением');
-        socketRef.current.disconnect();
+        socketRef.current.close();
       }
 
-      // Создаем новое соединение с дополнительными параметрами
-      socketRef.current = io('https://test.timecommunity.xyz', {
-        transports: ['websocket'],
-        path: '/api/socket.io/',
-        query: { 
-          gameId: gameId,
-          userId: getUserId(),
-          timestamp: Date.now()  // Предотвращает кэширование
-        },
-        reconnection: true,
-        reconnectionAttempts: 5,
-        reconnectionDelay: 1000,
-        timeout: 10000
-      });
+      const userId = getUserId();
+      console.log('Полученный userId для WebSocket:', userId);
       
-      console.log('Socket connection initialized with options', {
+      // Ограничиваем количество попыток подключения
+      const MAX_ATTEMPTS = 5;
+      if (connectionAttemptRef.current >= MAX_ATTEMPTS) {
+        console.log(`Достигнут лимит попыток подключения (${MAX_ATTEMPTS}). Пауза 10 секунд.`);
+        setConnectionStatus('error');
+        setSocketError(`Превышен лимит попыток подключения. Пожалуйста, проверьте подключение к интернету или обновите страницу.`);
+        
+        // После паузы сбрасываем счетчик и пробуем снова
+        setTimeout(() => {
+          connectionAttemptRef.current = 0;
+          setupSocketConnection();
+        }, 10000);
+        return;
+      }
+
+      connectionAttemptRef.current += 1;
+      console.log(`Попытка подключения #${connectionAttemptRef.current}`);
+
+      // Параметры для подключения
+      const options = {
         gameId,
-        userId: getUserId(),
+        userId: userId || 'guest', // Если userId не определен, используем 'guest'
         attempt: connectionAttemptRef.current
+      };
+
+      console.log('Socket connection initialized with options', options);
+
+      // Важно: используем корректный URL, соответствующий конфигурации Nginx
+      // Используем HTTP и позволяем io() автоматически перейти на WSS при необходимости
+      const socketUrl = `https://test.timecommunity.xyz`;
+      console.log('Connecting to socket URL:', socketUrl);
+      
+      const newSocket = io(socketUrl, {
+        path: '/api/socket.io/',
+        query: {
+          gameId,
+          userId: userId || 'guest',
+          timestamp: Date.now() // Добавляем метку времени, чтобы избежать кэширования
+        },
+        transports: ['websocket'],
+        reconnection: true,
+        reconnectionAttempts: 3,
+        reconnectionDelay: 1000,
+        timeout: 5000,
+        forceNew: true // Важно для предотвращения повторного использования существующего соединения
       });
-      
-      const socket = socketRef.current;
-      
-      // Основные обработчики событий
-      socket.on('connect', () => {
-        console.log('Socket connected successfully, socket id:', socket.id);
+
+      // Обработка событий
+      newSocket.on('connect', () => {
+        console.log('Socket connected successfully!');
         setConnectionStatus('connected');
         setSocketError(null);
         
-        // Явно присоединяемся к игровой комнате и запрашиваем данные
-        console.log('Sending joinGameRoom event for gameId:', gameId);
-        socket.emit('joinGameRoom', { gameId });
-        
-        // Через короткое время запрашиваем данные игры
-        setTimeout(() => {
-          console.log('Requesting game data for gameId:', gameId);
-          socket.emit('getGame', { gameId });
-        }, 500);
-      });
-      
-      // Подтверждение присоединения к комнате
-      socket.on('joinedGameRoom', (data) => {
-        console.log('Joined game room confirmation received:', data);
-        
-        // Запрашиваем данные игры еще раз для гарантии
-        socket.emit('getGame', { gameId });
+        // Присоединяемся к комнате игры
+        console.log('Joining game room:', gameId);
+        newSocket.emit('joinGameRoom', { gameId });
       });
 
-      // Получаем информацию об игре
-      socket.on('gameData', (data) => {
-        console.log('Received game data:', data);
-        
-        if (!data) {
-          console.error('Game data is empty');
-          return;
-        }
-        
-        // Обновляем статус игры
-        if (data.status) {
-          console.log('Setting game state to:', data.status);
-          setGameState(data.status);
-        }
-        
-        // Обновляем список игроков
-        if (data.players && Array.isArray(data.players)) {
-          console.log('Setting players:', data.players);
-          setPlayers(data.players);
-          
-          // Определяем текущего пользователя и оппонента
-          const userId = getUserId();
-          console.log('Current user ID from Telegram:', userId);
-          
-          // Проверяем наличие userId
-          if (userId) {
-            const currentPlayer = data.players.find((p: any) => p.telegramId === userId);
-            const opponent = data.players.find((p: any) => p.telegramId !== userId);
-            
-            if (currentPlayer) {
-              console.log('Current player data found:', currentPlayer);
-              setPlayerData(currentPlayer);
-            } else {
-              console.warn('Current player not found in data. Available players:', 
-                data.players.map((p: any) => ({ id: p.id, telegramId: p.telegramId, username: p.username })));
-            }
-            
-            if (opponent) {
-              console.log('Opponent data found:', opponent);
-              setOpponentData(opponent);
-            } else if (data.players.length === 1) {
-              console.log('No opponent yet, waiting for second player to join');
-            } else {
-              console.warn('Could not identify opponent');
-            }
-          } else {
-            console.warn('Невозможно определить игрока, ID пользователя не найден');
-          }
-          
-          // Если оба игрока присоединились, игра готова к старту
-          if (data.players.length === 2 && data.status !== 'playing') {
-            console.log('Both players joined, ready to start the game');
-            // Инициируем старт игры
-            socket.emit('startDiceGame', { gameId });
-          }
-        } else {
-          console.warn('Game data does not contain players array');
-        }
-      });
-
-      // Обновление данных игры
-      socket.on('gameStateUpdate', (data) => {
-        console.log('Game state update received:', data);
-        
-        if (data.status) {
-          setGameState(data.status);
-        }
-        
-        // Определяем, чей сейчас ход
-        if (data.currentPlayer && playerData) {
-          const isCurrentPlayerTurn = playerData.id === data.currentPlayer;
-          console.log(`Current player turn: ${isCurrentPlayerTurn ? 'YES' : 'NO'}`);
-          setIsMyTurn(isCurrentPlayerTurn);
-        }
-        
-        // Обновляем данные кубиков, если они есть
-        if (data.lastMove) {
-          const { playerId, value } = data.lastMove;
-          
-          if (playerData && playerId === playerData.id) {
-            console.log('Setting player dice value:', value);
-            setPlayerDice(value);
-            setIsRolling(false);
-          } else {
-            console.log('Setting opponent dice value:', value);
-            setOpponentDice(value);
-          }
-        }
-        
-        // Обновляем раунд
-        if (data.currentRound) {
-          console.log('Setting round:', data.currentRound);
-          setRound(data.currentRound);
-        }
-        
-        // Проверяем, завершена ли игра
-        if (data.status === 'finished' && data.result) {
-          console.log('Game finished with result:', data.result);
-          setGameState('finished');
-          setGameResult(data.result);
-          
-          setTimeout(() => {
-            console.log('Calling onGameEnd with result:', data.result);
-            onGameEnd(data.result);
-          }, 2000);
-        }
-      });
-
-      // Обрабатываем событие присоединения игрока
-      socket.on('playerJoined', (data) => {
-        console.log('Player joined event received:', data);
-        
-        // Запрашиваем обновленные данные игры
-        socket.emit('getGame', { gameId });
-        
-        // Показываем уведомление
-        if (data.player?.username) {
-          toast.success(`Игрок ${data.player.username} присоединился к игре!`);
-        } else {
-          toast.success('Второй игрок присоединился к игре!');
-        }
-      });
-
-      // Обработка события начала игры
-      socket.on('gameStarted', (data) => {
-        console.log('Game started event received:', data);
-        setGameState('playing');
-        
-        // Определяем, чей первый ход
-        if (data.currentPlayer && playerData) {
-          setIsMyTurn(data.currentPlayer === playerData.id);
-        } else {
-          // Если не можем определить по ID, используем позицию в массиве игроков
-          const userId = getUserId();
-          if (userId && data.players && data.players.length > 0) {
-            const playerIndex = data.players.findIndex((p: any) => p.telegramId === userId);
-            setIsMyTurn(playerIndex === 0); // Первый игрок ходит первым
-          } else {
-            // Если не удалось определить, предполагаем что ход не наш
-            setIsMyTurn(false);
-          }
-        }
-      });
-
-      // Обработка ошибок
-      socket.on('connect_error', (error) => {
+      newSocket.on('connect_error', (error) => {
         console.error('Socket connection error:', error);
-        setSocketError(`Ошибка подключения: ${error.message}`);
         setConnectionStatus('error');
+        setSocketError(`Ошибка подключения: ${error.message}. Попытка: ${connectionAttemptRef.current}/${MAX_ATTEMPTS}`);
         
-        // Пытаемся подключиться еще раз
-        setReconnectAttempts(prev => prev + 1);
-        if (reconnectAttempts < 3) {
-          toast.error('Ошибка подключения, пробуем снова...');
-          setTimeout(setupSocketConnection, 3000);
-        } else {
-          toast.error('Не удалось подключиться к серверу после нескольких попыток');
-        }
+        // Пробуем подключиться снова через увеличивающийся интервал
+        setTimeout(() => {
+          if (socketRef.current) {
+            setupSocketConnection();
+          }
+        }, 1000 * Math.min(connectionAttemptRef.current, 5)); // Увеличиваем задержку, но не более 5 секунд
       });
 
-      socket.on('error', (error) => {
-        console.error('Socket error:', error);
-        setSocketError(error.message || 'Произошла ошибка соединения');
-        setConnectionStatus('error');
-        toast.error(`Ошибка: ${error.message || 'Что-то пошло не так'}`);
-      });
-
-      socket.on('disconnect', () => {
-        console.log('Socket disconnected');
-        setConnectionStatus('error');
-        setSocketError('Соединение с сервером прервано');
-        
-        // Пытаемся переподключиться автоматически
-        if (reconnectAttempts < 3) {
-          setTimeout(setupSocketConnection, 3000);
-          setReconnectAttempts(prev => prev + 1);
-        }
-      });
-      
+      // Сохраняем сокет
+      socketRef.current = newSocket;
+      setConnectionStatus('connecting');
     } catch (error) {
       console.error('Error setting up socket connection:', error);
       setConnectionStatus('error');
       setSocketError(`Ошибка при настройке соединения: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
       toast.error('Не удалось установить соединение с сервером');
     }
-  }, [gameId, reconnectAttempts]);
+  }, [gameId, connectionAttemptRef.current, socketRef.current]);
 
   // Подключаемся к WebSocket при монтировании компонента
   useEffect(() => {
@@ -456,7 +333,7 @@ export function MultiplayerDiceGame({
           <button 
             className="reload-button"
             onClick={() => {
-              setReconnectAttempts(0);
+              connectionAttemptRef.current = 0;
               setupSocketConnection();
             }}
           >

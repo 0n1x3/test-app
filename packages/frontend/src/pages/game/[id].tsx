@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { SafeArea } from '@/components/_layout/SafeArea';
 import { MultiplayerDiceGame } from '@/features/games/dice/components/MultiplayerDiceGame';
@@ -8,6 +8,7 @@ import { ErrorBoundary } from '@/components/_shared/ErrorBoundary';
 import { useUserStore } from '@/store/useUserStore';
 import { toast } from 'react-hot-toast';
 import './style.css';
+import io from 'socket.io-client';
 
 export default function GamePage() {
   const router = useRouter();
