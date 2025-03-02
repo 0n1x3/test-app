@@ -8,26 +8,7 @@ import { Dice } from '../Dice';
 import { toast } from 'react-hot-toast';
 import './style.css';
 
-// Интерфейсы для Telegram WebApp
-interface TelegramUser {
-  id: number;
-  first_name: string;
-  last_name?: string;
-  username?: string;
-  language_code?: string;
-  is_premium?: boolean;
-  photo_url?: string;
-}
-
-interface TelegramWebAppInitData {
-  query_id?: string;
-  user?: TelegramUser;
-  auth_date?: number;
-  hash?: string;
-  start_param?: string;
-}
-
-// Расширяем глобальный интерфейс Window только для telegramWebAppLoaded
+// Добавляем только telegramWebAppLoaded к глобальному интерфейсу Window
 declare global {
   interface Window {
     telegramWebAppLoaded?: boolean;
@@ -56,6 +37,7 @@ export function MultiplayerDiceGame({
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'error'>('connecting');
   const [socketError, setSocketError] = useState<string | null>(null);
   const [reconnectAttempts, setReconnectAttempts] = useState(0);
+  const [userId, setUserId] = useState<string | null>(null);
 
   // Состояния кубиков
   const [playerDice, setPlayerDice] = useState<number>(1);
@@ -69,53 +51,69 @@ export function MultiplayerDiceGame({
   const socketRef = useRef<Socket | null>(null);
   const connectionAttemptRef = useRef(0);
   
-  /**
-   * Получает ID пользователя из Telegram WebApp
-   * Добавлена расширенная обработка ошибок и логирование
-   */
-  const getUserId = (): number | undefined => {
+  // Функция для получения ID пользователя
+  const getUserId = useCallback((): number | undefined => {
     try {
-      // Проверяем загрузку Telegram WebApp
-      if (window.telegramWebAppLoaded !== true) {
-        console.warn('Telegram WebApp еще не загружен');
-        return undefined;
+      // Сначала проверяем, есть ли у нас уже сохраненный userId
+      if (userId) {
+        console.log('Используем сохраненный userId:', userId);
+        return parseInt(userId);
       }
       
-      // Проверяем наличие необходимых объектов и данных
-      if (!window.Telegram || !window.Telegram.WebApp) {
-        console.warn('Telegram WebApp не найден, хотя отмечен как загруженный');
-        return undefined;
+      // Если нет, пытаемся получить из Telegram WebApp
+      if (window.Telegram?.WebApp?.initDataUnsafe?.user?.id) {
+        const id = window.Telegram.WebApp.initDataUnsafe.user.id;
+        console.log('Получен userId из Telegram WebApp:', id);
+        setUserId(id.toString());
+        return id;
       }
       
-      // Проверка initDataUnsafe
-      const webApp = window.Telegram.WebApp;
-      if (!webApp.initDataUnsafe) {
-        console.warn('Отсутствуют initDataUnsafe в Telegram WebApp');
-        return undefined;
+      // Если есть telegramId из хранилища
+      if (telegramId) {
+        console.log('Используем telegramId из хранилища:', telegramId);
+        setUserId(telegramId.toString());
+        return telegramId;
       }
       
-      // Проверка данных пользователя
-      const userData = webApp.initDataUnsafe.user;
-      if (!userData) {
-        console.warn('Пользовательские данные отсутствуют в Telegram WebApp');
-        return undefined;
-      }
-      
-      // Проверка ID пользователя
-      if (!userData.id) {
-        console.warn('ID пользователя отсутствует в данных Telegram');
-        return undefined;
-      }
-      
-      // Успешное получение ID
-      console.log('Успешно получен ID пользователя Telegram:', userData.id);
-      return userData.id;
+      console.log('Не удалось получить userId');
+      return undefined;
     } catch (error) {
-      console.error('Ошибка при получении ID пользователя:', error instanceof Error ? error.message : 'Неизвестная ошибка');
+      console.error('Ошибка при получении userId:', error);
       return undefined;
     }
-  };
-
+  }, [userId, telegramId]);
+  
+  // Добавляем обработку загрузки Telegram WebApp
+  useEffect(() => {
+    // Проверяем, загружен ли Telegram WebApp
+    const checkTelegramWebApp = () => {
+      if (window.Telegram?.WebApp) {
+        console.log('Telegram WebApp загружен');
+        window.telegramWebAppLoaded = true;
+        
+        // Получаем userId из Telegram WebApp
+        if (window.Telegram.WebApp.initDataUnsafe?.user?.id) {
+          setUserId(window.Telegram.WebApp.initDataUnsafe.user.id.toString());
+        }
+        
+        // Если мы уже пытались подключиться, но не смогли из-за отсутствия Telegram WebApp,
+        // попробуем подключиться снова
+        if (connectionAttemptRef.current > 0 && !socketRef.current) {
+          console.log('Повторная попытка подключения после загрузки Telegram WebApp');
+          setupSocketConnection();
+        }
+      } else {
+        console.log('Telegram WebApp еще не загружен');
+      }
+    };
+    
+    // Проверяем сразу и устанавливаем интервал для повторных проверок
+    checkTelegramWebApp();
+    const interval = setInterval(checkTelegramWebApp, 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
+  
   /**
    * Настраивает WebSocket соединение
    * Адаптировано для работы с исправленным API-путем в Nginx
@@ -366,33 +364,55 @@ export function MultiplayerDiceGame({
         <div className="game-info">
           <h1>Игра в кости</h1>
           <div className="bet-info">
-            <Icon icon="material-symbols:diamond-rounded" />
-            <span>{betAmount}</span>
+            <Icon icon="mdi:coins" />
+            {betAmount}
           </div>
         </div>
         
-        <div className="waiting-container">
-          <h2>Ожидание соперника</h2>
-          <p>Поделитесь ссылкой с другом или дождитесь пока кто-то присоединится</p>
-          
-          <button 
-            className="copy-invite-button"
-            onClick={copyInviteLink}
-          >
-            <Icon icon="mdi:content-copy" />
-            Скопировать ссылку
-          </button>
-          
-          {/* Отображаем информацию о подключенных игроках */}
-          <div className="connected-players">
-            <h3>Подключенные игроки ({players.length}/2):</h3>
-            {players.map((player, index) => (
-              <div key={index} className="player-item">
-                {player.username || `Игрок ${index + 1}`}
+        {connectionStatus !== 'connected' ? (
+          <div className="connecting-container">
+            <div className="loading-spinner"></div>
+            <p>Подключение к игре...</p>
+            {socketError && (
+              <div className="error-container">
+                <p>{socketError}</p>
+                <button className="reload-button" onClick={setupSocketConnection}>
+                  Повторить подключение
+                </button>
               </div>
-            ))}
+            )}
           </div>
-        </div>
+        ) : (
+          <div className="waiting-container">
+            <h2>Ожидание соперника</h2>
+            <p>Поделитесь ссылкой с другом или дождитесь пока кто-то присоединится</p>
+            
+            <button className="copy-invite-button" onClick={copyInviteLink}>
+              <Icon icon="mdi:content-copy" />
+              Скопировать ссылку
+            </button>
+            
+            <div className="connected-players">
+              <h3>Подключенные игроки ({players.length}/2):</h3>
+              {players.length > 0 ? (
+                players.map((player, index) => {
+                  const isCurrentUser = player.telegramId && userId && 
+                    player.telegramId.toString() === userId.toString();
+                  return (
+                    <div key={index} className="player-item">
+                      {player.username || `Игрок ${index + 1}`}
+                      {isCurrentUser && " (вы)"}
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="player-item">
+                  Ожидание подключения игроков...
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     );
   }
