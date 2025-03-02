@@ -166,14 +166,27 @@ export class GameService {
     .lean()
     .exec();
     
-    console.log('Active games with createdBy field:', games.map(game => ({
+    // Преобразуем результаты, чтобы убедиться, что createdBy доступно
+    const formattedGames = games.map(game => {
+      // Убедимся, что createdBy существует и является строкой
+      if (!game.createdBy) {
+        console.log(`Game ${game._id} has no createdBy field`);
+      }
+      
+      return {
+        ...game,
+        createdBy: game.createdBy || null // Гарантируем, что поле существует
+      };
+    });
+    
+    console.log('Active games with createdBy field:', formattedGames.map(game => ({
       id: game._id,
       name: game.name,
       createdBy: game.createdBy,
       players: game.players.length
     })));
     
-    return games;
+    return formattedGames;
   }
 
   // Получение игры по ID

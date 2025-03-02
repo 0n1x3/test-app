@@ -101,7 +101,7 @@ export class GameController {
       console.log('Active games in controller:', games.map(game => ({
         id: game._id,
         name: game.name,
-        createdBy: (game as any).createdBy,
+        createdBy: game.createdBy,
         players: game.players.length
       })));
       return { success: true, games };

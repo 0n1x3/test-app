@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Transaction, TransactionType, GameType } from '../schemas/transaction.schema';
+import { Transaction } from '../schemas/transaction.schema';
+import { GameType, TransactionType } from '../schemas/transaction.schema';
 import { UserEntity, UserDocument } from '../schemas/user.schema';
 
 @Injectable()
@@ -83,15 +84,18 @@ export class TransactionsService {
         throw new Error(`User with telegramId ${userId} not found`);
       }
       
+      // Определяем тип игры из причины выплаты
+      const gameType = reason.split('_')[0] as GameType; // 'dice_win' -> 'dice'
+      
       // Создаем транзакцию выплаты
       const transaction = new this.transactionModel({
-        user: user._id,
+        userId: userId,
         amount: amount,
-        type: 'win',
-        status: 'completed',
+        type: TransactionType.WIN,
+        game: gameType,
+        processed: true,
         metadata: {
-          reason,
-          gameType: reason.split('_')[0] // 'dice_win' -> 'dice'
+          reason
         }
       });
       
@@ -122,10 +126,11 @@ export class TransactionsService {
       
       // Создаем транзакцию возврата
       const transaction = new this.transactionModel({
-        user: user._id,
+        userId: userId,
         amount: amount,
-        type: 'refund',
-        status: 'completed',
+        type: TransactionType.REWARD,
+        game: gameType,
+        processed: true,
         metadata: {
           reason: 'game_deleted',
           gameType
