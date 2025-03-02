@@ -8,12 +8,7 @@ import { Dice } from '../Dice';
 import { toast } from 'react-hot-toast';
 import './style.css';
 
-// Добавляем только telegramWebAppLoaded к глобальному интерфейсу Window
-declare global {
-  interface Window {
-    telegramWebAppLoaded?: boolean;
-  }
-}
+// Удаляем объявление глобального интерфейса, так как оно определено в global.d.ts
 
 interface MultiplayerDiceGameProps {
   gameId: string;

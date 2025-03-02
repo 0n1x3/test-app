@@ -5,5 +5,6 @@ declare global {
   interface Window {
     React: typeof React;
     ReactDOM: typeof ReactDOM;
+    telegramWebAppLoaded?: boolean;
   }
 } 
