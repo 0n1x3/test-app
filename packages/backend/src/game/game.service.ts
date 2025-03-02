@@ -25,7 +25,15 @@ export class GameService {
 
   async createGame(type: GameType, creator: UserDocument, betAmount: number) {
     try {
-      console.log('Creating game with:', { type, creator: creator.toObject(), betAmount });
+      console.log('Creating game with:', { 
+        type, 
+        creator: { 
+          id: creator._id, 
+          telegramId: creator.telegramId,
+          username: creator.username 
+        }, 
+        betAmount 
+      });
       
       await this.transactionsService.createBet(creator.telegramId, betAmount, type);
       
@@ -34,11 +42,17 @@ export class GameService {
         name: `${creator.username}'s game`,
         players: [creator._id],
         betAmount,
-        status: 'waiting'
+        status: 'waiting',
+        createdBy: creator.telegramId.toString() // Используем telegramId как createdBy
       });
       
       const savedGame = await game.save();
-      console.log('Saved game:', savedGame);
+      console.log('Saved game with createdBy:', { 
+        id: savedGame._id, 
+        name: savedGame.name, 
+        createdBy: savedGame.createdBy,
+        creatorTelegramId: creator.telegramId
+      });
       return savedGame;
     } catch (error) {
       console.error('Error in createGame:', error);
@@ -144,13 +158,22 @@ export class GameService {
   }
 
   async getActiveGames(gameType: GameType) {
-    return this.gameModel.find({ 
+    const games = await this.gameModel.find({ 
       type: gameType,
       status: 'waiting'
     })
     .populate('players')
     .lean()
     .exec();
+    
+    console.log('Active games with createdBy field:', games.map(game => ({
+      id: game._id,
+      name: game.name,
+      createdBy: game.createdBy,
+      players: game.players.length
+    })));
+    
+    return games;
   }
 
   // Получение игры по ID
@@ -378,6 +401,14 @@ export class GameService {
         throw new Error('Game not found');
       }
       
+      console.log('Game found:', {
+        id: game._id,
+        name: game.name,
+        createdBy: game.createdBy,
+        userId: userId,
+        players: game.players
+      });
+      
       // Находим пользователя
       const user = await this.userModel.findOne({ telegramId: userId }).exec();
       
@@ -386,10 +417,26 @@ export class GameService {
         throw new Error('User not found');
       }
       
+      console.log('User found:', {
+        id: user._id,
+        telegramId: user.telegramId,
+        username: user.username
+      });
+      
       // Проверяем, является ли пользователь создателем игры
-      // Создатель игры - это первый игрок в массиве players
-      const isCreator = game.players.length > 0 && 
-                        game.players[0].toString() === user._id.toString();
+      // Сначала проверяем по полю createdBy
+      let isCreator = false;
+      
+      if (game.createdBy) {
+        isCreator = game.createdBy === userId.toString();
+        console.log(`Проверка по createdBy: ${game.createdBy} === ${userId.toString()} = ${isCreator}`);
+      }
+      
+      // Если нет поля createdBy или проверка не прошла, проверяем по первому игроку
+      if (!isCreator && game.players.length > 0) {
+        isCreator = game.players[0].toString() === user._id.toString();
+        console.log(`Проверка по первому игроку: ${game.players[0].toString()} === ${user._id.toString()} = ${isCreator}`);
+      }
       
       if (!isCreator) {
         console.log(`Пользователь ${userId} не является создателем игры ${gameId}`);

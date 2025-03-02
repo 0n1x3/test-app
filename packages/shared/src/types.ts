@@ -42,6 +42,7 @@ export interface Game {
   inviteLink?: string;
   currentPlayer?: string;
   currentRound?: number;
+  createdBy?: string;
   rounds?: Array<{
     player1: number;
     player2: number;

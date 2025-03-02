@@ -62,7 +62,12 @@ export function LobbyInterface({
         throw new Error('Failed to fetch games');
       }
       const data = await response.json();
-      console.log('Fetched games:', data);
+      console.log('Fetched games with createdBy:', data.games?.map((game: Game) => ({
+        id: game._id,
+        name: game.name,
+        createdBy: game.createdBy,
+        userId: userId
+      })));
       setGames(data.games || []);
     } catch (error) {
       console.error('Error fetching games:', error);
@@ -231,7 +236,29 @@ export function LobbyInterface({
 
   // Проверяем, является ли текущий пользователь создателем игры
   const isCreator = (game: Game): boolean => {
-    return Boolean(userId && game.createdBy === userId);
+    console.log('Checking isCreator:', { 
+      userId, 
+      gameCreatedBy: game.createdBy, 
+      isCreator: Boolean(userId && game.createdBy === userId)
+    });
+    
+    // Проверяем, совпадает ли userId с createdBy
+    if (userId && game.createdBy === userId) {
+      return true;
+    }
+    
+    // Если createdBy не определен или не совпадает, проверяем, является ли пользователь первым игроком
+    if (userId && game.players && game.players.length > 0) {
+      const firstPlayer = game.players[0];
+      if (firstPlayer && (
+        (typeof firstPlayer === 'string' && firstPlayer === userId) ||
+        (typeof firstPlayer === 'object' && firstPlayer.telegramId && firstPlayer.telegramId.toString() === userId)
+      )) {
+        return true;
+      }
+    }
+    
+    return false;
   };
 
   return (
@@ -243,19 +270,28 @@ export function LobbyInterface({
             <p>Загрузка игр...</p>
           </div>
         ) : games.length > 0 ? (
-          games.map((game) => (
-            <GameCard
-              key={game._id || `game-${Math.random()}`}
-              game={game}
-              onJoin={() => {
-                if (game._id) {
-                  onJoin(game._id);
-                }
-              }}
-              onDelete={isCreator(game) && game._id ? () => handleDeleteGame(game._id as string) : undefined}
-              isCreator={isCreator(game)}
-            />
-          ))
+          games.map((game) => {
+            const creator = isCreator(game);
+            console.log('Game card props:', { 
+              gameId: game._id, 
+              isCreator: creator, 
+              hasDeleteHandler: creator && game._id ? true : false 
+            });
+            
+            return (
+              <GameCard
+                key={game._id || `game-${Math.random()}`}
+                game={game}
+                onJoin={() => {
+                  if (game._id) {
+                    onJoin(game._id);
+                  }
+                }}
+                onDelete={creator && game._id ? () => handleDeleteGame(game._id as string) : undefined}
+                isCreator={creator}
+              />
+            );
+          })
         ) : (
           <div className="no-games-message">
             <p>Нет активных игр</p>

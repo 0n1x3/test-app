@@ -57,6 +57,9 @@ export class Game extends Document {
     result: 'win' | 'lose' | 'draw';
   }>;
 
+  @Prop({ type: String })
+  createdBy: string;
+
   @Prop({ 
     type: String,
     required: true,

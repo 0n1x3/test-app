@@ -98,7 +98,12 @@ export class GameController {
   async getActiveGames(@Query('type') type: GameType) {
     try {
       const games = await this.gameService.getActiveGames(type);
-      console.log('Active games:', games); // Для отладки
+      console.log('Active games in controller:', games.map(game => ({
+        id: game._id,
+        name: game.name,
+        createdBy: (game as any).createdBy,
+        players: game.players.length
+      })));
       return { success: true, games };
     } catch (error) {
       console.error('Error getting active games:', error);

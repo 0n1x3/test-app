@@ -24,6 +24,13 @@ const formatGameName = (name: string, id: string | undefined) => {
 };
 
 export function GameCard({ game, onJoin, onDelete, isCreator }: GameCardProps) {
+  console.log('GameCard props:', { 
+    gameId: game._id, 
+    gameName: game.name, 
+    isCreator, 
+    hasDeleteHandler: !!onDelete 
+  });
+  
   return (
     <div className="game-card">
       <div className="game-info">
