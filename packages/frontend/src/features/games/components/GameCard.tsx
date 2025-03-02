@@ -7,18 +7,27 @@ interface Game {
   name: string;
   betAmount: number;
   players: any[];
+  createdBy?: string;
 }
 
 interface GameCardProps {
   game: Game;
   onJoin: () => void;
+  onDelete?: () => void;
+  isCreator?: boolean;
 }
 
-export function GameCard({ game, onJoin }: GameCardProps) {
+const formatGameName = (name: string, id: string | undefined) => {
+  if (!id) return name;
+  const shortId = id.slice(-4);
+  return `${name} #${shortId}`;
+};
+
+export function GameCard({ game, onJoin, onDelete, isCreator }: GameCardProps) {
   return (
     <div className="game-card">
       <div className="game-info">
-        <div className="game-name">{game.name}</div>
+        <div className="game-name">{formatGameName(game.name, game._id)}</div>
         <div className="game-bet">
           <Icon icon="material-symbols:diamond-rounded" />
           <span>{game.betAmount}</span>
@@ -33,6 +42,11 @@ export function GameCard({ game, onJoin }: GameCardProps) {
         </div>
         
         <div className="game-actions">
+          {isCreator && onDelete && (
+            <button className="copy-button" onClick={onDelete} title="Удалить игру">
+              <Icon icon="mdi:delete" />
+            </button>
+          )}
           <button className="join-button" onClick={onJoin}>
             <Icon icon="mdi:login" />
           </button>

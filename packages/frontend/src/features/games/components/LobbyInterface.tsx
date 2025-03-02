@@ -15,6 +15,7 @@ interface Game {
   betAmount: number;
   status: 'waiting' | 'playing' | 'finished';
   inviteLink?: string;
+  createdBy?: string; // ID создателя игры
 }
 
 interface LobbyInterfaceProps {
@@ -37,12 +38,19 @@ export function LobbyInterface({
   const { t } = useTranslation();
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState<string | null>(null);
   const tg = window.Telegram?.WebApp;
 
   useEffect(() => {
     fetchGames();
     // Устанавливаем интервал для обновления списка игр
     const interval = setInterval(fetchGames, 10000);
+    
+    // Получаем ID пользователя из Telegram WebApp
+    if (tg?.initDataUnsafe?.user?.id) {
+      setUserId(String(tg.initDataUnsafe.user.id));
+    }
+    
     return () => clearInterval(interval);
   }, [gameType]);
 
@@ -98,6 +106,48 @@ export function LobbyInterface({
       tg?.showPopup({
         title: t('common.error'),
         message: t('game.createError'),
+        buttons: [{ type: 'ok' }]
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteGame = async (gameId: string) => {
+    try {
+      if (!tg?.initData) return;
+      setLoading(true);
+
+      const response = await fetch(`https://test.timecommunity.xyz/api/games/${gameId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          initData: tg.initData
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete game');
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        // Удаляем игру из локального состояния
+        setGames(prevGames => prevGames.filter(game => game._id !== gameId));
+        
+        tg?.showPopup({
+          title: t('common.success'),
+          message: t('game.deleted', { defaultValue: 'Игра успешно удалена' }),
+          buttons: [{ type: 'ok' }]
+        });
+      }
+    } catch (error) {
+      console.error('Error deleting game:', error);
+      tg?.showPopup({
+        title: t('common.error'),
+        message: t('game.deleteError', { defaultValue: 'Ошибка при удалении игры' }),
         buttons: [{ type: 'ok' }]
       });
     } finally {
@@ -179,6 +229,11 @@ export function LobbyInterface({
     }
   };
 
+  // Проверяем, является ли текущий пользователь создателем игры
+  const isCreator = (game: Game): boolean => {
+    return Boolean(userId && game.createdBy === userId);
+  };
+
   return (
     <div className="lobby-interface">
       <div className="active-games-list">
@@ -197,6 +252,8 @@ export function LobbyInterface({
                   onJoin(game._id);
                 }
               }}
+              onDelete={isCreator(game) && game._id ? () => handleDeleteGame(game._id as string) : undefined}
+              isCreator={isCreator(game)}
             />
           ))
         ) : (

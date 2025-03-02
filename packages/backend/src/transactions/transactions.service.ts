@@ -107,4 +107,41 @@ export class TransactionsService {
       throw error;
     }
   }
+
+  // Метод для возврата ставки при удалении игры
+  async refundBet(userId: number, amount: number, gameType: GameType): Promise<any> {
+    try {
+      console.log(`Возврат ставки: ${amount} пользователю ${userId} для игры типа: ${gameType}`);
+      
+      // Находим пользователя
+      const user = await this.userModel.findOne({ telegramId: userId });
+      
+      if (!user) {
+        throw new Error(`User with telegramId ${userId} not found`);
+      }
+      
+      // Создаем транзакцию возврата
+      const transaction = new this.transactionModel({
+        user: user._id,
+        amount: amount,
+        type: 'refund',
+        status: 'completed',
+        metadata: {
+          reason: 'game_deleted',
+          gameType
+        }
+      });
+      
+      await transaction.save();
+      
+      // Обновляем баланс пользователя
+      user.balance += amount;
+      await user.save();
+      
+      return transaction;
+    } catch (error) {
+      console.error('Error refunding bet:', error);
+      throw error;
+    }
+  }
 } 

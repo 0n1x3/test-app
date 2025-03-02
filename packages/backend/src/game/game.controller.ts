@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Query, Headers, Param, NotFoundException } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query, Headers, Param, NotFoundException, Delete } from '@nestjs/common';
 import { GameService } from './game.service';
 import { GameType } from '@test-app/shared';
 import { UsersService } from '../users/users.service';
@@ -164,6 +164,39 @@ export class GameController {
       return { success: true, game: startedGame };
     } catch (error) {
       console.error('Ошибка при старте игры:', error);
+      throw error;
+    }
+  }
+
+  @Delete(':id')
+  async deleteGame(
+    @Param('id') id: string,
+    @Body() data: { initData: string }
+  ) {
+    try {
+      console.log(`Получен запрос на удаление игры с ID: ${id}`);
+      
+      // Парсим данные пользователя из initData
+      const params = new URLSearchParams(data.initData);
+      const userStr = params.get('user');
+      
+      if (!userStr) {
+        throw new Error('No user data found');
+      }
+      
+      const userData = JSON.parse(decodeURIComponent(userStr));
+      const user = await this.usersService.findByTelegramId(userData.id);
+      
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      
+      // Удаляем игру
+      const result = await this.gameService.deleteGame(id, userData.id);
+      
+      return { success: result };
+    } catch (error) {
+      console.error('Ошибка при удалении игры:', error);
       throw error;
     }
   }

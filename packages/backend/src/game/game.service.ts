@@ -356,20 +356,71 @@ export class GameService {
   // Добавляем метод getGameById в GameService
   async getGameById(gameId: string) {
     try {
-      console.log('Getting game by ID:', gameId);
-      // Используем модель Game для поиска игры по ID
-      const game = await this.gameModel.findById(gameId);
-      
-      if (!game) {
-        console.log('Game not found:', gameId);
-        return null;
-      }
-      
-      console.log('Game found:', game);
-      return game;
+      return await this.gameModel.findById(gameId)
+        .populate('players')
+        .exec();
     } catch (error) {
       console.error('Error getting game by ID:', error);
       return null;
+    }
+  }
+
+  // Метод для удаления игры
+  async deleteGame(gameId: string, userId: number): Promise<boolean> {
+    try {
+      console.log(`Попытка удаления игры с ID: ${gameId} пользователем: ${userId}`);
+      
+      // Находим игру
+      const game = await this.gameModel.findById(gameId).exec();
+      
+      if (!game) {
+        console.log(`Игра с ID ${gameId} не найдена`);
+        throw new Error('Game not found');
+      }
+      
+      // Находим пользователя
+      const user = await this.userModel.findOne({ telegramId: userId }).exec();
+      
+      if (!user) {
+        console.log(`Пользователь с ID ${userId} не найден`);
+        throw new Error('User not found');
+      }
+      
+      // Проверяем, является ли пользователь создателем игры
+      // Создатель игры - это первый игрок в массиве players
+      const isCreator = game.players.length > 0 && 
+                        game.players[0].toString() === user._id.toString();
+      
+      if (!isCreator) {
+        console.log(`Пользователь ${userId} не является создателем игры ${gameId}`);
+        throw new Error('User is not the creator of this game');
+      }
+      
+      // Проверяем статус игры - можно удалять только игры в статусе 'waiting'
+      if (game.status !== 'waiting') {
+        console.log(`Невозможно удалить игру ${gameId} в статусе ${game.status}`);
+        throw new Error(`Cannot delete game in status ${game.status}`);
+      }
+      
+      // Удаляем игру
+      await this.gameModel.findByIdAndDelete(gameId).exec();
+      console.log(`Игра ${gameId} успешно удалена`);
+      
+      // Возвращаем ставку создателю
+      if (game.betAmount > 0) {
+        await this.transactionsService.refundBet(user.telegramId, game.betAmount, game.type);
+        console.log(`Ставка ${game.betAmount} возвращена пользователю ${userId}`);
+      }
+      
+      // Если есть WebSocket сервер, отправляем уведомление об удалении игры
+      if (this.server) {
+        this.server.emit('gameDeleted', { gameId });
+      }
+      
+      return true;
+    } catch (error) {
+      console.error(`Ошибка при удалении игры ${gameId}:`, error);
+      throw error;
     }
   }
 
