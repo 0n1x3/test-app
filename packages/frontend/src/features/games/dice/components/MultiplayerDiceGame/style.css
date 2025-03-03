@@ -1,9 +1,12 @@
 .multiplayer-dice-game {
-  position: relative;
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%;
+  max-width: 100%;
+  min-height: calc(100vh - 200px);
+  position: relative;
+  z-index: 2;
+  padding: 4px 4px 70px 4px;
   color: #fff;
   overflow: hidden;
 }
@@ -203,34 +206,43 @@
   font-weight: 700;
 }
 
-.roll-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px 24px;
-  background: #0098EA;
-  color: white;
-  border: none;
-  border-radius: 16px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  margin-top: 24px;
+.controls-area {
   width: 100%;
-  max-width: 320px;
-  height: 56px;
-  box-shadow: 0 4px 12px rgba(0, 152, 234, 0.3);
+  min-height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 8px;
+  margin-bottom: 70px;
+  position: relative;
+  z-index: 20;
 }
 
-.roll-button:active {
-  background: #007bbf;
-  transform: scale(0.98);
+.roll-button {
+  background: linear-gradient(90deg, #2196F3 0%, #4CAF50 100%);
+  color: white;
+  border: none;
+  border-radius: 24px;
+  padding: 10px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  z-index: 10;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.roll-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 .roll-button:disabled {
-  background: #444;
+  opacity: 0.7;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .waiting-message {

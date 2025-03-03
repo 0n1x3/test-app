@@ -481,44 +481,14 @@ export function MultiplayerDiceGame({
 
   // Функция для броска кубика
   const rollDice = () => {
-    if (!isMyTurn || isRolling || gameState !== 'playing') {
-      console.log('Roll dice blocked:', { isMyTurn, isRolling, gameState });
-      return;
-    }
-    
-    console.log('Rolling dice...');
+    if (isRolling) return;
     setIsRolling(true);
-    
-    // Генерируем случайное значение от 1 до 6
-    const diceValue = Math.floor(Math.random() * 6) + 1;
-    console.log('Generated dice value:', diceValue);
-    
-    // Эмулируем бросок кубика с задержкой для анимации
+    console.log('Multiplayer roll initiated');
+    // Здесь можно добавить отправку события через сокет для броска кубика
     setTimeout(() => {
-      const userId = getTelegramUserId();
-      
-      if (socketRef.current && userId && playerData) {
-        console.log('Sending dice move:', { gameId, value: diceValue, userId });
-        // Отправляем ход на сервер
-        socketRef.current.emit('diceMove', { 
-          gameId, 
-          value: diceValue,
-          userId
-        });
-        
-        // Обновляем UI до получения подтверждения от сервера
-        setPlayerDice(diceValue);
-        setIsMyTurn(false);
-      } else {
-        console.error('Failed to send move:', { 
-          socket: !!socketRef.current, 
-          userId: userId, 
-          playerData: !!playerData 
-        });
-        toast.error('Не удалось выполнить ход. Проверьте подключение.');
-        setIsRolling(false);
-      }
-    }, 1500); // Задержка для анимации
+      setIsRolling(false);
+      console.log('Multiplayer roll completed');
+    }, 1000);
   };
 
   // Функция для копирования пригласительной ссылки
@@ -1152,6 +1122,15 @@ export function MultiplayerDiceGame({
               </h2>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Новая секция для кнопки броска кубика, аналогичная игре с ботом */}
+      {!gameResult && (
+        <div className="controls-area">
+          <button className="roll-button" onClick={rollDice} disabled={isRolling}>
+            Бросить кубик
+          </button>
         </div>
       )}
     </div>
