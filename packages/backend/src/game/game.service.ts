@@ -104,12 +104,28 @@ export class GameService {
       console.log(`Добавляем игрока ${user.username} в игру ${gameId}`);
       game.players.push(user._id);
       
-      // Если у нас уже 2 игрока, игра может начаться
-      if (game.players.length === 2) {
-        // НЕ меняем статус на playing сразу - это будет сделано через WebSocket
-        console.log(`Игра ${gameId} готова к началу с 2 игроками`);
+      // Сохраняем игру перед потенциальным запуском
+      await game.save();
+      console.log(`Игрок ${user.username} успешно присоединился к игре ${gameId}`);
+      
+      // Если у нас уже 2 игрока, автоматически запускаем игру в кости
+      if (game.players.length === 2 && game.type === 'dice') {
+        console.log(`Игра ${gameId} готова к началу с 2 игроками, автоматически запускаем...`);
         
-        // Отправляем событие о готовности игры
+        try {
+          // Асинхронно запускаем игру, но не ждем результата здесь
+          // чтобы не замедлять ответ на запрос присоединения
+          this.startDiceGame(gameId).then(startedGame => {
+            console.log(`Игра ${gameId} успешно запущена автоматически`);
+          }).catch(error => {
+            console.error(`Ошибка при автоматическом запуске игры ${gameId}:`, error);
+          });
+        } catch (startError) {
+          console.error(`Ошибка при подготовке к автоматическому запуску игры ${gameId}:`, startError);
+          // Мы не будем выбрасывать ошибку здесь, так как игрок уже успешно присоединился
+        }
+      } else {
+        // Если игра не запускается автоматически, отправляем событие о готовности игры
         if (this.server) {
           this.server.to(`game_${gameId}`).emit('gameReadyToStart', {
             gameId,
@@ -117,9 +133,6 @@ export class GameService {
           });
         }
       }
-      
-      await game.save();
-      console.log(`Игрок ${user.username} успешно присоединился к игре ${gameId}`);
       
       return game;
     } catch (error) {
