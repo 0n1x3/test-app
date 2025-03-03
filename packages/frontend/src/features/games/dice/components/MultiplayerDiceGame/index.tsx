@@ -779,11 +779,11 @@ export function MultiplayerDiceGame({
           <ConnectionStatusIndicator status={connectionStatus} />
           
           {/* Информация о ставке */}
-          <div className="game-info">
+          <div className="game-header">
             <h2>Игра в кости</h2>
-            <div className="bet-amount">
-              <Icon icon="mdi:diamond" />
-              <span>{betAmount}</span>
+            <div className="bet-info">
+              <Icon icon="solar:dollar-minimalistic-linear" />
+              <span className="bet-info__amount">{betAmount}</span>
             </div>
           </div>
           
