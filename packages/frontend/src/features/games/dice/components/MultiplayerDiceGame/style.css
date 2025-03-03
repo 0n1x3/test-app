@@ -171,6 +171,26 @@
   text-align: center;
   padding: 16px;
   margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 200px;
+  justify-content: center;
+  width: 100%;
+}
+
+.waiting-message h2 {
+  margin-bottom: 12px;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--tg-theme-text-color);
+}
+
+.waiting-message p {
+  margin-bottom: 16px;
+  font-size: 16px;
+  color: var(--tg-theme-text-color);
+  opacity: 0.8;
 }
 
 .invite-button {
@@ -181,16 +201,71 @@
   background-color: var(--tg-theme-button-color);
   color: var(--tg-theme-button-text-color);
   border: none;
-  border-radius: 8px;
-  padding: 10px 16px;
-  font-size: 14px;
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: 500;
   cursor: pointer;
-  margin-top: 12px;
+  margin-top: 16px;
   transition: opacity 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .invite-button:active {
   opacity: 0.8;
+  transform: scale(0.98);
+}
+
+.invite-button svg {
+  font-size: 20px;
+}
+
+.connected-players {
+  margin-top: 32px;
+  width: 100%;
+  max-width: 300px;
+  background-color: rgba(var(--tg-theme-secondary-bg-color), 0.5);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.connected-players h3 {
+  font-size: 16px;
+  margin-bottom: 12px;
+  opacity: 0.8;
+  text-align: center;
+}
+
+.waiting-status {
+  margin-top: 12px;
+  font-size: 14px;
+  color: var(--tg-theme-hint-color);
+  text-align: center;
+  font-style: italic;
+}
+
+.loading-dots {
+  display: inline-block;
+}
+
+.loading-dots:after {
+  content: '.';
+  animation: dots 1.5s steps(5, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% {
+    content: '.';
+  }
+  40% {
+    content: '..';
+  }
+  60% {
+    content: '...';
+  }
+  80%, 100% {
+    content: '';
+  }
 }
 
 .game-result {
@@ -240,5 +315,49 @@
   
   .roll-button {
     margin-top: 30px;
+  }
+}
+
+.player-item {
+  padding: 10px 14px;
+  background-color: rgba(var(--tg-theme-bg-color), 0.5);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  color: var(--tg-theme-text-color);
+}
+
+.player-item:last-child {
+  margin-bottom: 0;
+}
+
+/* Добавляем медиа-запрос для различных размеров экрана */
+@media (max-height: 600px) {
+  .waiting-message {
+    min-height: 150px;
+    padding: 12px;
+  }
+  
+  .waiting-message h2 {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+  
+  .waiting-message p {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  
+  .connected-players {
+    margin-top: 20px;
+    padding: 12px;
+  }
+}
+
+@media (min-width: 400px) {
+  .invite-button {
+    min-width: 200px;
   }
 }

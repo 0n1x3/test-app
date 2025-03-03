@@ -13,10 +13,17 @@ import { getTelegramData } from '@/utils/telegramWebApp';
 import './style.css';
 import io from 'socket.io-client';
 
+// Определим интерфейс для данных игры
+interface GameData {
+  betAmount: number;
+  status?: 'waiting' | 'playing' | 'finished';
+  players?: any[];
+}
+
 export default function GamePage() {
   const router = useRouter();
   const { id } = router.query;
-  const [gameData, setGameData] = useState<{ betAmount: number } | null>(null);
+  const [gameData, setGameData] = useState<GameData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [joinStatus, setJoinStatus] = useState<'pending' | 'joined' | 'failed' | null>(null);
@@ -293,7 +300,7 @@ export default function GamePage() {
   return (
     <SafeArea>
       <PageContainer className="game-page-container">
-        <PageHeader title="Кубик" />
+        <PageHeader title={gameData.status === 'waiting' ? 'Игра в кости' : 'Кубик'} />
         <ErrorBoundary>
           <MultiplayerDiceGame 
             gameId={id as string} 

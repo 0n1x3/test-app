@@ -407,8 +407,8 @@ export function MultiplayerDiceGame({
                   );
                 })
               ) : (
-                <div className="player-item">
-                  Ожидание подключения игроков...
+                <div className="waiting-status">
+                  Ожидание подключения игроков<span className="loading-dots"></span>
                 </div>
               )}
             </div>
@@ -649,11 +649,28 @@ export function MultiplayerDiceGame({
           {/* Ожидание присоединения второго игрока */}
           {gameState === 'waiting' && (
             <div className="waiting-message">
-              <p>Ожидание второго игрока...</p>
+              <h2>Ожидание соперника</h2>
+              <p>Поделитесь ссылкой с другом или дождитесь пока кто-то присоединится</p>
+              
               <button className="invite-button" onClick={copyInviteLink}>
-                <Icon icon="mdi:share" />
-                Пригласить друга
+                <Icon icon="mdi:content-copy" />
+                Скопировать ссылку
               </button>
+              
+              <div className="connected-players">
+                <h3>Подключенные игроки ({players.length}/2):</h3>
+                {players.length > 0 ? (
+                  players.map((player, index) => (
+                    <div key={index} className="player-item">
+                      {player.username || `Игрок ${index + 1}`}
+                    </div>
+                  ))
+                ) : (
+                  <div className="waiting-status">
+                    Ожидание подключения игроков<span className="loading-dots"></span>
+                  </div>
+                )}
+              </div>
             </div>
           )}
           
