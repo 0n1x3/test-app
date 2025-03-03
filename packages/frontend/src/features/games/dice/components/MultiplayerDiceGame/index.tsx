@@ -782,7 +782,7 @@ export function MultiplayerDiceGame({
           <div className="game-header">
             <h2>Игра в кости</h2>
             <div className="bet-info">
-              <Icon icon="solar:dollar-minimalistic-linear" />
+              <Icon icon="material-symbols:diamond-rounded" className="bet-info__icon" />
               <span className="bet-info__amount">{betAmount}</span>
             </div>
           </div>
