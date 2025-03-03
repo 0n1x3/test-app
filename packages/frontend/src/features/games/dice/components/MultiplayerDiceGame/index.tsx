@@ -556,11 +556,127 @@ export function MultiplayerDiceGame({
     );
   }
 
+  // Обновляем возвращаемый JSX для лучшей интеграции с макетом
+  return (
+    <div className="multiplayer-dice-game">
+      {/* Отображение статуса подключения */}
+      {connectionStatus !== 'connected' && (
+        <div className="connection-status">
+          <div className={`status-indicator ${connectionStatus}`}>
+            {connectionStatus === 'connecting' && 'Подключение...'}
+            {connectionStatus === 'error' && (socketError || 'Ошибка подключения')}
+          </div>
+        </div>
+      )}
+      
+      {/* Отображение игрового поля, если данные игры получены */}
+      {playerData && (
+        <div className="game-container">
+          <div className="game-info">
+            <h2>Раунд {round}/3</h2>
+            <div className="bet-amount">
+              <Icon icon="solar:diamond-bold" />
+              <span>{betAmount}</span>
+            </div>
+          </div>
+          
+          <div className="players-container">
+            <div className="player-side">
+              <div className="dice-container">
+                <Dice value={playerDice} rolling={isRolling && isMyTurn} />
+              </div>
+              
+              <div className="player-info">
+                <div className="player-avatar">
+                  {playerData?.avatarUrl ? (
+                    <img src={playerData.avatarUrl} alt="avatar" />
+                  ) : (
+                    <Icon icon="mdi:account" />
+                  )}
+                </div>
+                <div className="player-name">
+                  {playerData?.username || 'Вы'}
+                </div>
+                <div className="player-score">
+                  {playerData?.score || 0}
+                </div>
+              </div>
+            </div>
+            
+            <div className="vs-badge">VS</div>
+            
+            <div className="player-side opponent">
+              <div className="dice-container">
+                <Dice value={opponentDice} rolling={isRolling && !isMyTurn} />
+              </div>
+              
+              <div className="player-info">
+                <div className="player-avatar">
+                  {opponentData?.avatarUrl ? (
+                    <img src={opponentData.avatarUrl} alt="avatar" />
+                  ) : (
+                    <Icon icon="material-symbols:skull-outline" style={{ color: '#ff4757' }} />
+                  )}
+                </div>
+                <div className="player-name">
+                  {opponentData?.username || 'Соперник'}
+                </div>
+                <div className="player-score">
+                  {opponentData?.score || 0}
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Кнопка для броска кубика */}
+          {gameState === 'playing' && isMyTurn && !isRolling && (
+            <button 
+              className="roll-button" 
+              onClick={rollDice}
+              disabled={isRolling || !isMyTurn}
+            >
+              Бросить кубик
+            </button>
+          )}
+          
+          {/* Ожидание хода соперника */}
+          {gameState === 'playing' && !isMyTurn && !isRolling && (
+            <div className="waiting-message">
+              <p>Ожидание хода соперника...</p>
+            </div>
+          )}
+          
+          {/* Ожидание присоединения второго игрока */}
+          {gameState === 'waiting' && (
+            <div className="waiting-message">
+              <p>Ожидание второго игрока...</p>
+              <button className="invite-button" onClick={copyInviteLink}>
+                <Icon icon="mdi:share" />
+                Пригласить друга
+              </button>
+            </div>
+          )}
+          
+          {/* Результат игры */}
+          {gameResult && (
+            <div className={`game-result ${gameResult}`}>
+              <h2>
+                {gameResult === 'win' && 'Вы победили!'}
+                {gameResult === 'lose' && 'Вы проиграли!'}
+                {gameResult === 'draw' && 'Ничья!'}
+              </h2>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+  
   // Запасной вариант, хотя сюда мы не должны попадать
   return (
     <div className="multiplayer-dice-game">
       <div className="game-info">
-        <h1>Загрузка игры...</h1>
+        <h2>Загрузка игры...</h2>
       </div>
     </div>
   );

@@ -3,6 +3,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { SafeArea } from '@/components/_layout/SafeArea';
+import { PageHeader } from '@/components/_layout/PageHeader';
+import { PageContainer } from '@/components/_layout/PageContainer';
 import { MultiplayerDiceGame } from '@/features/games/dice/components/MultiplayerDiceGame';
 import { ErrorBoundary } from '@/components/_shared/ErrorBoundary';
 import { useUserStore } from '@/store/useUserStore';
@@ -240,10 +242,12 @@ export default function GamePage() {
   if (loading) {
     return (
       <SafeArea>
-        <div className="game-page-loading">
-          <div className="loading-spinner"></div>
-          <p>Загрузка игры...</p>
-        </div>
+        <PageContainer>
+          <div className="game-page-loading">
+            <div className="loading-spinner"></div>
+            <p>Загрузка игры...</p>
+          </div>
+        </PageContainer>
       </SafeArea>
     );
   }
@@ -252,15 +256,17 @@ export default function GamePage() {
   if (error || !gameData) {
     return (
       <SafeArea>
-        <div className="game-error">
-          <h3>{error || 'Ошибка при загрузке игры'}</h3>
-          <button 
-            className="back-button"
-            onClick={() => router.push('/games/dice')}
-          >
-            Вернуться к играм
-          </button>
-        </div>
+        <PageContainer>
+          <div className="game-error">
+            <h3>{error || 'Ошибка при загрузке игры'}</h3>
+            <button 
+              className="back-button"
+              onClick={() => router.push('/games/dice')}
+            >
+              Вернуться
+            </button>
+          </div>
+        </PageContainer>
       </SafeArea>
     );
   }
@@ -286,18 +292,16 @@ export default function GamePage() {
   // Если всё в порядке, отображаем игру
   return (
     <SafeArea>
-      <ErrorBoundary>
-        <div className="isolated-game-container">
-          {typeof id === 'string' && gameData && (
-            <MultiplayerDiceGame
-              key={`game-${id}`}
-              gameId={id}
-              betAmount={gameData.betAmount}
-              onGameEnd={handleGameEnd}
-            />
-          )}
-        </div>
-      </ErrorBoundary>
+      <PageContainer className="game-page-container">
+        <PageHeader title="Кубик" />
+        <ErrorBoundary>
+          <MultiplayerDiceGame 
+            gameId={id as string} 
+            betAmount={gameData.betAmount}
+            onGameEnd={handleGameEnd}
+          />
+        </ErrorBoundary>
+      </PageContainer>
     </SafeArea>
   );
 } 
