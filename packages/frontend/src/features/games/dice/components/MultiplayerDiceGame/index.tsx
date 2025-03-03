@@ -181,7 +181,13 @@ export function MultiplayerDiceGame({
         reconnectionDelay: 1000,
         reconnectionDelayMax: 5000,
         timeout: 15000, // Увеличиваем таймаут до 15 секунд
-        query: socketOptions,
+        query: {
+          ...socketOptions,
+          auth: JSON.stringify({
+            userId: effectiveUserId,
+            gameId
+          })
+        },
         auth: {
           userId: effectiveUserId,
           gameId
@@ -227,6 +233,17 @@ export function MultiplayerDiceGame({
           console.log(`Обновление списка игроков (${data.players.length}):`, data.players);
           setPlayers(data.players);
         }
+      });
+
+      // Добавляем обработчик ошибок данных
+      newSocket.on('error', (error) => {
+        console.error('Ошибка сокета:', error);
+        setSocketError(`Ошибка сокета: ${error.message || 'Неизвестная ошибка'}`);
+      });
+
+      // Добавляем обработчик для получения всех событий (отладка)
+      newSocket.onAny((event, ...args) => {
+        console.log(`Получено событие '${event}':`, args);
       });
 
       // Явно запрашиваем обновление игры через секунду после подключения
@@ -394,11 +411,36 @@ export function MultiplayerDiceGame({
     }
   };
 
+  // После получения userId, обновляем сокет
+  useEffect(() => {
+    if (userId && !socketRef.current) {
+      console.log('userId получен, инициализируем соединение:', userId);
+      setupSocketConnection(userId);
+    }
+  }, [userId, setupSocketConnection]);
+
   // Добавляем эффект для запроса обновления списка игроков после подключения
   useEffect(() => {
     if (connectionStatus === 'connected' && socketRef.current) {
       console.log('Соединение установлено, запрашиваем список игроков');
+      
+      // Сначала пробуем запросить игроков
       socketRef.current.emit('getGamePlayers', { gameId });
+      
+      // Затем пробуем присоединиться, если ещё не присоединились
+      socketRef.current.emit('joinGameRoom', { gameId });
+      
+      // Через секунду проверяем, есть ли игроки
+      setTimeout(() => {
+        console.log('Проверка списка игроков через 1 секунду:', players);
+        if (players.length === 0 && socketRef.current) {
+          console.log('Игроки не получены, повторно запрашиваем');
+          socketRef.current.emit('getGamePlayers', { gameId });
+          
+          // Также запрашиваем обновление игры на сервере
+          socketRef.current.emit('updateGame', { gameId });
+        }
+      }, 1000);
       
       // Устанавливаем интервал для периодического обновления списка игроков
       const interval = setInterval(() => {
@@ -410,7 +452,7 @@ export function MultiplayerDiceGame({
       
       return () => clearInterval(interval);
     }
-  }, [connectionStatus, gameId]);
+  }, [connectionStatus, gameId, players]);
 
   // Если есть проблемы с соединением
   if (connectionStatus === 'error') {
@@ -487,22 +529,24 @@ export function MultiplayerDiceGame({
               </button>
             </div>
             
-            <div className="connected-players">
-              <h3>Подключенные игроки ({players.length}/2):</h3>
-              {players.length > 0 ? (
-                players.map((player, index) => {
-                  const isCurrentUser = player.telegramId && userId && 
-                    player.telegramId.toString() === userId.toString();
-                  return (
-                    <div key={index} className="player-item">
-                      {player.username || `Игрок ${index + 1}`}
-                      {isCurrentUser && " (вы)"}
-                    </div>
-                  );
-                })
+            <div className="player-count">
+              <p>Подключенные игроки ({players.length}/2):</p>
+              {players.length === 0 ? (
+                <p className="no-players">Ожидание подключения игроков...</p>
               ) : (
-                <div className="waiting-status">
-                  Ожидание подключения игроков<span className="loading-dots"></span>
+                <div className="players-list">
+                  {players.map((player, index) => (
+                    <div key={index} className="player-item">
+                      <div className="player-avatar">
+                        {player.avatarUrl ? (
+                          <img src={player.avatarUrl} alt={player.username || 'Игрок'} />
+                        ) : (
+                          <span className="avatar-placeholder">👤</span>
+                        )}
+                      </div>
+                      <span className="player-name">{player.username || `Игрок ${index + 1}`}</span>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -753,17 +797,24 @@ export function MultiplayerDiceGame({
                 </button>
               </div>
               
-              <div className="connected-players">
-                <h3>Подключенные игроки ({players.length}/2):</h3>
-                {players.length > 0 ? (
-                  players.map((player, index) => (
-                    <div key={index} className="player-item">
-                      {player.username || `Игрок ${index + 1}`}
-                    </div>
-                  ))
+              <div className="player-count">
+                <p>Подключенные игроки ({players.length}/2):</p>
+                {players.length === 0 ? (
+                  <p className="no-players">Ожидание подключения игроков...</p>
                 ) : (
-                  <div className="waiting-status">
-                    Ожидание подключения игроков<span className="loading-dots"></span>
+                  <div className="players-list">
+                    {players.map((player, index) => (
+                      <div key={index} className="player-item">
+                        <div className="player-avatar">
+                          {player.avatarUrl ? (
+                            <img src={player.avatarUrl} alt={player.username || 'Игрок'} />
+                          ) : (
+                            <span className="avatar-placeholder">👤</span>
+                          )}
+                        </div>
+                        <span className="player-name">{player.username || `Игрок ${index + 1}`}</span>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
