@@ -7,6 +7,7 @@ import { MultiplayerDiceGame } from '@/features/games/dice/components/Multiplaye
 import { ErrorBoundary } from '@/components/_shared/ErrorBoundary';
 import { useUserStore } from '@/store/useUserStore';
 import { toast } from 'react-hot-toast';
+import { getTelegramData } from '@/utils/telegramWebApp';
 import './style.css';
 import io from 'socket.io-client';
 
@@ -21,23 +22,10 @@ export default function GamePage() {
   const updateUserBalance = useUserStore(state => state.updateBalance);
 
   // Функция для получения данных Telegram WebApp
-  const getTelegramData = () => {
+  const getTelegramUserData = () => {
     try {
-      const tg = window.Telegram?.WebApp;
-      if (!tg?.initDataUnsafe?.user?.id || !tg?.initData) {
-        console.error('Невозможно получить данные Telegram WebApp', {
-          tg: !!tg,
-          initDataUnsafe: tg?.initDataUnsafe ? 'present' : 'missing',
-          user: tg?.initDataUnsafe?.user ? 'present' : 'missing',
-          initData: tg?.initData ? 'present' : 'missing'
-        });
-        throw new Error('Данные Telegram WebApp недоступны');
-      }
-      
-      return {
-        userId: tg.initDataUnsafe.user.id,
-        initData: tg.initData
-      };
+      // Используем нашу утилиту для получения данных
+      return getTelegramData();
     } catch (error) {
       console.error('Ошибка при получении данных Telegram:', error);
       throw new Error(error instanceof Error ? error.message : 'Неизвестная ошибка при получении данных Telegram');
@@ -94,7 +82,15 @@ export default function GamePage() {
       setJoinStatus('pending');
       
       // Получаем данные Telegram
-      const { userId, initData } = getTelegramData();
+      let telegramData;
+      try {
+        telegramData = getTelegramUserData();
+      } catch (error) {
+        console.error('Не удалось получить данные Telegram для присоединения к игре:', error);
+        toast.error('Не удалось получить данные пользователя. Попробуйте перезапустить приложение.');
+        setJoinStatus('failed');
+        return false;
+      }
       
       const response = await fetch('https://test.timecommunity.xyz/api/games/join', {
         method: 'POST',
@@ -103,7 +99,7 @@ export default function GamePage() {
         },
         body: JSON.stringify({
           gameId,
-          initData
+          initData: telegramData.initData
         })
       });
       
@@ -168,8 +164,17 @@ export default function GamePage() {
         // Если игра ожидает второго игрока, пытаемся присоединиться
         if (game.status === 'waiting') {
           try {
-            // Проверяем, является ли пользователь уже участником игры
-            const telegramData = getTelegramData();
+            // Пытаемся получить данные Telegram
+            let telegramData;
+            try {
+              telegramData = getTelegramUserData();
+            } catch (telegramError) {
+              console.error('Ошибка при получении данных Telegram:', telegramError);
+              // Даже если не удалось получить данные, продолжаем с показом игры
+              // но не присоединяемся к ней
+              return;
+            }
+            
             const userTelegramId = telegramData.userId;
             
             // Проверяем, есть ли пользователь среди игроков
@@ -195,6 +200,7 @@ export default function GamePage() {
       }
     };
     
+    // Запускаем загрузку игры без проверки на WebApp
     loadGameAndJoin();
   }, [id]);
 

@@ -47,47 +47,78 @@ export default function RootLayout({
     
     // Проверяем доступность Telegram WebApp
     const initTelegramWebApp = () => {
-      const tg = window.Telegram?.WebApp;
-      if (tg) {
-        console.log('Telegram WebApp загружен и инициализирован');
-        window.telegramWebAppLoaded = true;
-        setupViewport();
-        
-        document.addEventListener('touchstart', (e) => {
-          if (e.touches.length > 1) {
-            e.preventDefault();
-          }
-        }, { passive: false });
-
-        // Обработка параметров запуска
-        const startParam = tg.initDataUnsafe && 'start_param' in tg.initDataUnsafe 
-          ? (tg.initDataUnsafe as any).start_param 
-          : undefined;
-        console.log('Start param:', startParam);
-        
-        if (startParam && startParam.startsWith('game_')) {
-          // Получаем ID игры и перенаправляем на страницу игры в режиме лобби
-          const gameId = startParam.substring(5);
-          console.log('Redirecting to game:', gameId);
+      try {
+        const tg = window.Telegram?.WebApp;
+        if (tg) {
+          console.log('Telegram WebApp загружен и инициализирован');
+          window.telegramWebAppLoaded = true;
           
-          // Если пользователь уже на странице игры, просто открываем игру
-          if (pathname && pathname.includes('/games/dice')) {
-            // В этом случае нужно внедрить функционал открытия игры через событие
-            // Можно использовать localStorage или глобальное состояние
-            localStorage.setItem('pendingGameJoin', gameId);
-            window.location.reload(); // Перезагружаем страницу для применения изменений
-          } else {
-            // Иначе перенаправляем на страницу игры
-            router.push(`/game/${gameId}`);
-            // Сохраняем ID игры для дальнейшей обработки
-            localStorage.setItem('pendingGameJoin', gameId);
+          // Вызываем метод ready() для сообщения клиенту Telegram, что приложение готово
+          if (typeof tg.ready === 'function') {
+            tg.ready();
+            console.log('Вызван метод WebApp.ready()');
           }
+          
+          // Сохраняем данные пользователя в localStorage для доступа на других страницах
+          if (tg.initDataUnsafe?.user) {
+            localStorage.setItem('telegramWebAppUser', JSON.stringify(tg.initDataUnsafe.user));
+            localStorage.setItem('telegramWebAppInitData', tg.initData || '');
+            console.log('Данные Telegram WebApp сохранены в localStorage');
+          }
+          
+          setupViewport();
+          
+          document.addEventListener('touchstart', (e) => {
+            if (e.touches.length > 1) {
+              e.preventDefault();
+            }
+          }, { passive: false });
+
+          // Обработка параметров запуска
+          const startParam = tg.initDataUnsafe && 'start_param' in tg.initDataUnsafe 
+            ? (tg.initDataUnsafe as any).start_param 
+            : undefined;
+          console.log('Start param:', startParam);
+          
+          if (startParam && startParam.startsWith('game_')) {
+            // Получаем ID игры и перенаправляем на страницу игры в режиме лобби
+            const gameId = startParam.substring(5);
+            console.log('Redirecting to game:', gameId);
+            
+            // Если пользователь уже на странице игры, просто открываем игру
+            if (pathname && pathname.includes('/games/dice')) {
+              // В этом случае нужно внедрить функционал открытия игры через событие
+              // Можно использовать localStorage или глобальное состояние
+              localStorage.setItem('pendingGameJoin', gameId);
+              window.location.reload(); // Перезагружаем страницу для применения изменений
+            } else {
+              // Иначе перенаправляем на страницу игры
+              router.push(`/game/${gameId}`);
+              // Сохраняем ID игры для дальнейшей обработки
+              localStorage.setItem('pendingGameJoin', gameId);
+            }
+          }
+          setIsLoading(false);
+        } else {
+          // В Telegram WebApp должен быть всегда доступен
+          console.log('Ожидание загрузки Telegram WebApp...');
+          setTimeout(initTelegramWebApp, 100);
         }
-        setIsLoading(false);
-      } else {
-        // Если Telegram WebApp еще не загружен, пытаемся снова через короткий интервал
-        console.log('Ожидание загрузки Telegram WebApp...');
-        setTimeout(initTelegramWebApp, 100);
+      } catch (error) {
+        console.error('Ошибка при инициализации Telegram WebApp:', error);
+        // Проверяем, есть ли у нас сохраненные данные пользователя
+        const cachedUser = localStorage.getItem('telegramWebAppUser');
+        if (cachedUser) {
+          console.log('Используем кешированные данные Telegram WebApp');
+          window.telegramWebAppLoaded = true;
+          setIsLoading(false);
+        } else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+          console.log('Работа в режиме разработки без Telegram WebApp');
+          window.telegramWebAppLoaded = true; // Симулируем загрузку
+          setIsLoading(false);
+        } else {
+          setTimeout(initTelegramWebApp, 500);
+        }
       }
     };
     
@@ -115,6 +146,17 @@ export default function RootLayout({
             strategy="beforeInteractive"
             onLoad={() => {
               console.log('Telegram WebApp скрипт загружен');
+              // Инициализируем WebApp сразу после загрузки скрипта
+              if (typeof window !== 'undefined') {
+                window.telegramWebAppLoaded = false; // Сбрасываем флаг при загрузке скрипта
+                setTimeout(() => {
+                  // Даем немного времени для инициализации объекта WebApp
+                  if (window.Telegram?.WebApp) {
+                    window.telegramWebAppLoaded = true;
+                    console.log('Telegram WebApp доступен после загрузки скрипта');
+                  }
+                }, 100);
+              }
             }}
           />
         </head>
@@ -140,6 +182,17 @@ export default function RootLayout({
           strategy="beforeInteractive"
           onLoad={() => {
             console.log('Telegram WebApp скрипт загружен');
+            // Инициализируем WebApp сразу после загрузки скрипта
+            if (typeof window !== 'undefined') {
+              window.telegramWebAppLoaded = false; // Сбрасываем флаг при загрузке скрипта
+              setTimeout(() => {
+                // Даем немного времени для инициализации объекта WebApp
+                if (window.Telegram?.WebApp) {
+                  window.telegramWebAppLoaded = true;
+                  console.log('Telegram WebApp доступен после загрузки скрипта');
+                }
+              }, 100);
+            }
           }}
         />
       </head>

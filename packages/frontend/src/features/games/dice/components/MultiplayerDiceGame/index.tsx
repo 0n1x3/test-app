@@ -6,6 +6,7 @@ import { Icon } from '@iconify/react';
 import { useUserStore } from '@/store/useUserStore';
 import { Dice } from '../Dice';
 import { toast } from 'react-hot-toast';
+import { getUserId, getOrCreateGuestId } from '@/utils/telegramWebApp';
 import './style.css';
 
 // Удаляем объявление глобального интерфейса, так как оно определено в global.d.ts
@@ -47,7 +48,7 @@ export function MultiplayerDiceGame({
   const connectionAttemptRef = useRef(0);
   
   // Функция для получения ID пользователя
-  const getUserId = useCallback((): number | undefined => {
+  const getTelegramUserId = useCallback((): number | undefined => {
     try {
       // Сначала проверяем, есть ли у нас уже сохраненный userId
       if (userId) {
@@ -55,12 +56,17 @@ export function MultiplayerDiceGame({
         return parseInt(userId);
       }
       
-      // Если нет, пытаемся получить из Telegram WebApp
-      if (window.Telegram?.WebApp?.initDataUnsafe?.user?.id) {
-        const id = window.Telegram.WebApp.initDataUnsafe.user.id;
-        console.log('Получен userId из Telegram WebApp:', id);
-        setUserId(id.toString());
-        return id;
+      // Получаем userId из наших утилит
+      const id = getUserId();
+      if (id && id.startsWith('guest_')) {
+        // Если это гостевой ID, не устанавливаем его как userId
+        console.log('Получен гостевой ID:', id);
+        return undefined;
+      } else if (id) {
+        // Если это реальный ID, устанавливаем его
+        console.log('Получен userId из telegramWebApp:', id);
+        setUserId(id);
+        return parseInt(id);
       }
       
       // Если есть telegramId из хранилища
@@ -70,7 +76,7 @@ export function MultiplayerDiceGame({
         return telegramId;
       }
       
-      console.log('Не удалось получить userId');
+      console.log('Не удалось получить userId, пользователь будет анонимным');
       return undefined;
     } catch (error) {
       console.error('Ошибка при получении userId:', error);
@@ -78,36 +84,34 @@ export function MultiplayerDiceGame({
     }
   }, [userId, telegramId]);
   
-  // Добавляем обработку загрузки Telegram WebApp
+  // Упрощаем процесс проверки WebApp - он должен быть всегда доступен в Telegram
   useEffect(() => {
-    // Проверяем, загружен ли Telegram WebApp
-    const checkTelegramWebApp = () => {
-      if (window.Telegram?.WebApp) {
-        console.log('Telegram WebApp загружен');
-        window.telegramWebAppLoaded = true;
-        
-        // Получаем userId из Telegram WebApp
-        if (window.Telegram.WebApp.initDataUnsafe?.user?.id) {
-          setUserId(window.Telegram.WebApp.initDataUnsafe.user.id.toString());
-        }
-        
-        // Если мы уже пытались подключиться, но не смогли из-за отсутствия Telegram WebApp,
-        // попробуем подключиться снова
-        if (connectionAttemptRef.current > 0 && !socketRef.current) {
-          console.log('Повторная попытка подключения после загрузки Telegram WebApp');
-          setupSocketConnection();
-        }
-      } else {
-        console.log('Telegram WebApp еще не загружен');
-      }
-    };
+    // Получаем userId при монтировании компонента
+    const id = getTelegramUserId();
+    if (id) {
+      setUserId(id.toString());
+    }
     
-    // Проверяем сразу и устанавливаем интервал для повторных проверок
-    checkTelegramWebApp();
-    const interval = setInterval(checkTelegramWebApp, 1000);
+    // Проверяем данные Telegram раз в секунду на случай, если они появятся позже
+    const interval = setInterval(() => {
+      // Проверяем только если мы ещё не получили userId
+      if (!userId) {
+        const newId = getTelegramUserId();
+        if (newId) {
+          console.log('Получен отложенный userId:', newId);
+          setUserId(newId.toString());
+          
+          // Если у нас уже есть соединение, переподключаемся с новым ID
+          if (socketRef.current) {
+            console.log('Переподключение с новым userId');
+            setupSocketConnection();
+          }
+        }
+      }
+    }, 1000);
     
     return () => clearInterval(interval);
-  }, []);
+  }, [userId]);
   
   /**
    * Настраивает WebSocket соединение
@@ -120,8 +124,10 @@ export function MultiplayerDiceGame({
         socketRef.current.close();
       }
 
-      const userId = getUserId();
-      console.log('Полученный userId для WebSocket:', userId);
+      const userId = getTelegramUserId();
+      // Получаем уникальный идентификатор пользователя или создаем гостевой
+      const userIdForSocket = userId ? userId.toString() : getOrCreateGuestId();
+      console.log('Подключение к WebSocket с ID:', userIdForSocket);
       
       // Ограничиваем количество попыток подключения
       const MAX_ATTEMPTS = 5;
@@ -144,7 +150,7 @@ export function MultiplayerDiceGame({
       // Параметры для подключения
       const options = {
         gameId,
-        userId: userId || 'guest', // Если userId не определен, используем 'guest'
+        userId: userIdForSocket,
         attempt: connectionAttemptRef.current
       };
 
@@ -159,7 +165,7 @@ export function MultiplayerDiceGame({
         path: '/api/socket.io/',
         query: {
           gameId,
-          userId: userId || 'guest',
+          userId: userIdForSocket,
           timestamp: Date.now() // Добавляем метку времени, чтобы избежать кэширования
         },
         transports: ['websocket'],
@@ -254,7 +260,7 @@ export function MultiplayerDiceGame({
     
     // Эмулируем бросок кубика с задержкой для анимации
     setTimeout(() => {
-      const userId = getUserId();
+      const userId = getTelegramUserId();
       
       if (socketRef.current && userId && playerData) {
         console.log('Sending dice move:', { gameId, value: diceValue, userId });
