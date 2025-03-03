@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useContext } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { Icon } from '@iconify/react';
 import { useUserStore } from '@/store/useUserStore';
@@ -81,6 +81,7 @@ export function MultiplayerDiceGame({
   const [gameResult, setGameResult] = useState<GameResult | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('connecting');
   const [socketError, setSocketError] = useState<string | null>(null);
+  const [gameStarted, setGameStarted] = useState(false);
   
   // Для WebSocket
   const socketRef = useRef<Socket | null>(null);
@@ -810,6 +811,12 @@ export function MultiplayerDiceGame({
           </div>
         </div>
         
+        {/* Отображение информации о ставке */}
+        <div className="bet-info">
+          <Icon icon="material-symbols:diamond-rounded" className="bet-info__icon" />
+          <span className="bet-info__amount">{betAmount}</span>
+        </div>
+        
         {connectionStatus !== 'connected' ? (
           <div className="connecting-container">
             <div className="loading-spinner"></div>
@@ -1015,6 +1022,12 @@ export function MultiplayerDiceGame({
         </div>
       </div>
       
+      {/* Отображение информации о ставке */}
+      <div className="bet-info">
+        <Icon icon="material-symbols:diamond-rounded" className="bet-info__icon" />
+        <span className="bet-info__amount">{betAmount}</span>
+      </div>
+      
       {/* Отображение игрового поля, если данные игры получены */}
       {playerData && (
         <div className="game-container">
@@ -1141,15 +1154,6 @@ export function MultiplayerDiceGame({
           )}
         </div>
       )}
-    </div>
-  );
-  
-  // Запасной вариант, хотя сюда мы не должны попадать
-  return (
-    <div className="multiplayer-dice-game">
-      <div className="game-info">
-        <h2>Загрузка игры...</h2>
-      </div>
     </div>
   );
 } 
