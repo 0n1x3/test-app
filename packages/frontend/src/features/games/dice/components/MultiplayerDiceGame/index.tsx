@@ -62,6 +62,58 @@ const ConnectionStatusIndicator = ({ status }: { status: ConnectionStatus }) => 
   );
 };
 
+// Компонент для отображения информации о ставке
+const BetInfo = ({ amount }: { amount: number }) => (
+  <div className="bet-info">
+    <Icon icon="material-symbols:diamond-rounded" />
+    <span className="bet-info__amount">{amount}</span>
+  </div>
+);
+
+// Компонент для отображения игрового поля
+const GameField = ({ 
+  playerDice, 
+  opponentDice, 
+  isRolling 
+}: { 
+  playerDice: number;
+  opponentDice: number;
+  isRolling: boolean;
+}) => (
+  <div className="game-field">
+    <div className="opponent-dice">
+      <Dice 
+        value={opponentDice} 
+        rolling={isRolling}
+        size="large"
+      />
+    </div>
+    
+    <div className="vs-indicator">VS</div>
+    
+    <div className="player-dice">
+      <Dice 
+        value={playerDice} 
+        rolling={isRolling}
+        size="large"
+      />
+    </div>
+  </div>
+);
+
+// Компонент для отображения результатов
+const GameResult = ({ result }: { result: GameResult }) => {
+  if (!result) return null;
+  
+  return (
+    <div className={`game-result ${result}`}>
+      {result === 'win' && 'Вы выиграли!'}
+      {result === 'lose' && 'Вы проиграли!'}
+      {result === 'draw' && 'Ничья!'}
+    </div>
+  );
+};
+
 export function MultiplayerDiceGame({ 
   gameId, 
   betAmount, 
@@ -778,19 +830,10 @@ export function MultiplayerDiceGame({
           {/* Индикатор статуса подключения */}
           <ConnectionStatusIndicator status={connectionStatus} />
           
-          {/* Информация о ставке */}
+          {/* Информация об игре */}
           <div className="game-header">
             <h2>Игра в кости</h2>
-            <div className="bet-info">
-              <Icon icon="material-symbols:diamond-rounded" className="bet-info__icon" />
-              <span className="bet-info__amount">{betAmount}</span>
-            </div>
-          </div>
-          
-          {/* Отображение информации о ставке */}
-          <div className="bet-info">
-            <Icon icon="material-symbols:diamond-rounded" className="bet-info__icon" />
-            <span className="bet-info__amount">{betAmount}</span>
+            <BetInfo amount={betAmount} />
           </div>
           
           {connectionStatus !== 'connected' ? (
@@ -866,15 +909,12 @@ export function MultiplayerDiceGame({
               
               <div className="round-info">
                 <div className="round-number">Раунд {round}/3</div>
-                <div className="bet-amount">
-                  <Icon icon="material-symbols:diamond-rounded" />
-                  {betAmount}
-                </div>
+                <BetInfo amount={betAmount} />
               </div>
               
-              <div className="bot-side">
-                <div className="bot-score">{opponentScore}</div>
-                <div className="bot-avatar">
+              <div className="opponent-side">
+                <div className="opponent-score">{opponentScore}</div>
+                <div className="opponent-avatar">
                   {opponentData?.avatarUrl ? (
                     <img src={opponentData.avatarUrl} alt={opponentData.username || 'Opponent'} />
                   ) : (
@@ -885,37 +925,15 @@ export function MultiplayerDiceGame({
             </div>
           </div>
 
-          <div className="game-field">
-            <div className="bot-dice-container">
-              <div className="dice-wrapper">
-                <Dice 
-                  value={opponentDice} 
-                  rolling={isRolling}
-                  size="large"
-                />
-              </div>
-            </div>
-            
-            <div className="vs-indicator">VS</div>
-            
-            <div className="player-dice-container">
-              <div className="dice-wrapper">
-                <Dice 
-                  value={playerDice} 
-                  rolling={isRolling}
-                  size="large"
-                />
-              </div>
-            </div>
-          </div>
+          <GameField 
+            playerDice={playerDice}
+            opponentDice={opponentDice}
+            isRolling={isRolling}
+          />
           
           <div className="controls-area">
             {gameResult ? (
-              <div className={`game-result ${gameResult}`}>
-                {gameResult === 'win' && 'Вы выиграли!'}
-                {gameResult === 'lose' && 'Вы проиграли!'}
-                {gameResult === 'draw' && 'Ничья!'}
-              </div>
+              <GameResult result={gameResult} />
             ) : (
               <button 
                 className="roll-button" 
@@ -1020,15 +1038,12 @@ export function MultiplayerDiceGame({
             
             <div className="round-info">
               <div className="round-number">Раунд {round}/3</div>
-              <div className="bet-amount">
-                <Icon icon="material-symbols:diamond-rounded" />
-                {betAmount}
-              </div>
+              <BetInfo amount={betAmount} />
             </div>
             
-            <div className="bot-side">
-              <div className="bot-score">{opponentScore}</div>
-              <div className="bot-avatar">
+            <div className="opponent-side">
+              <div className="opponent-score">{opponentScore}</div>
+              <div className="opponent-avatar">
                 {opponentData?.avatarUrl ? (
                   <img src={opponentData.avatarUrl} alt={opponentData.username || 'Opponent'} />
                 ) : (
@@ -1039,37 +1054,15 @@ export function MultiplayerDiceGame({
           </div>
         </div>
 
-        <div className="game-field">
-          <div className="bot-dice-container">
-            <div className="dice-wrapper">
-              <Dice 
-                value={opponentDice} 
-                rolling={isRolling}
-                size="large"
-              />
-            </div>
-          </div>
-          
-          <div className="vs-indicator">VS</div>
-          
-          <div className="player-dice-container">
-            <div className="dice-wrapper">
-              <Dice 
-                value={playerDice} 
-                rolling={isRolling}
-                size="large"
-              />
-            </div>
-          </div>
-        </div>
+        <GameField 
+          playerDice={playerDice}
+          opponentDice={opponentDice}
+          isRolling={isRolling}
+        />
         
         <div className="controls-area">
           {gameResult ? (
-            <div className={`game-result ${gameResult}`}>
-              {gameResult === 'win' && 'Вы выиграли!'}
-              {gameResult === 'lose' && 'Вы проиграли!'}
-              {gameResult === 'draw' && 'Ничья!'}
-            </div>
+            <GameResult result={gameResult} />
           ) : (
             <button 
               className="roll-button" 

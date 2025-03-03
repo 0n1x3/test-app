@@ -1,23 +1,35 @@
+:root {
+  --game-primary: #2196F3;
+  --game-success: #4CAF50;
+  --game-error: #f44336;
+  --game-warning: #ff9800;
+  --game-background: rgba(255, 255, 255, 0.05);
+  --game-border-radius: 12px;
+  --game-padding: 16px;
+  --game-gap: 12px;
+}
+
 .dice-game {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 4px 4px 70px 4px;
+  padding: var(--game-padding);
+  padding-bottom: calc(env(safe-area-inset-bottom) + 70px);
   height: 100%;
   width: 100%;
   position: relative;
+  gap: var(--game-gap);
 }
 
 .game-header {
   width: 100%;
-  padding: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  margin-bottom: 24px;
+  padding: var(--game-padding);
+  background: var(--game-background);
+  border-radius: var(--game-border-radius);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: var(--game-gap);
 }
 
 .game-header h2 {
@@ -31,55 +43,59 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  width: 100%;
+  padding: var(--game-padding);
+  background: var(--game-background);
+  border-radius: var(--game-border-radius);
 }
 
 .player-side,
-.bot-side {
+.opponent-side {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--game-gap);
 }
 
-.bot-side {
+.opponent-side {
   flex-direction: row-reverse;
 }
 
 .player-avatar,
-.bot-avatar {
+.opponent-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .player-avatar img,
-.bot-avatar img {
+.opponent-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
 .player-score,
-.bot-score {
+.opponent-score {
   font-size: 24px;
   font-weight: bold;
-  color: #fff;
+  color: white;
 }
 
 .round-info {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: calc(var(--game-gap) / 2);
 }
 
 .round-number {
   font-size: 18px;
-  color: #fff;
+  color: white;
 }
 
 .bet-amount {
@@ -95,29 +111,27 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+  gap: var(--game-gap);
   width: 100%;
   flex-grow: 1;
+  padding: var(--game-padding);
 }
 
-.bot-dice-container,
-.player-dice-container {
+.opponent-dice,
+.player-dice {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
-}
-
-.dice-wrapper {
   width: 120px;
   height: 120px;
+  position: relative;
 }
 
 .vs-indicator {
   font-size: 24px;
   font-weight: bold;
-  color: #fff;
-  margin: 10px 0;
+  color: white;
+  margin: var(--game-gap) 0;
 }
 
 .controls-area {
@@ -175,7 +189,7 @@
 
 .connection-status {
   position: fixed;
-  bottom: 20px;
+  bottom: calc(env(safe-area-inset-bottom) + 80px);
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -185,6 +199,20 @@
   border-radius: 20px;
   background: rgba(0, 0, 0, 0.8);
   z-index: 1000;
+  font-size: 14px;
+  color: white;
+}
+
+.connection-status.connecting {
+  background: rgba(255, 152, 0, 0.2);
+}
+
+.connection-status.connected {
+  background: rgba(76, 175, 80, 0.2);
+}
+
+.connection-status.error {
+  background: rgba(244, 67, 54, 0.2);
 }
 
 .connection-indicator-dot {
@@ -194,16 +222,16 @@
 }
 
 .connection-status.connecting .connection-indicator-dot {
-  background-color: #ff9800;
+  background-color: var(--game-warning);
   animation: pulse 1.5s infinite;
 }
 
 .connection-status.connected .connection-indicator-dot {
-  background-color: #4CAF50;
+  background-color: var(--game-success);
 }
 
 .connection-status.error .connection-indicator-dot {
-  background-color: #f44336;
+  background-color: var(--game-error);
 }
 
 @keyframes pulse {
@@ -228,10 +256,11 @@
 
   .game-field {
     flex-direction: row;
-    gap: 40px;
+    gap: calc(var(--game-gap) * 2);
   }
 
-  .dice-wrapper {
+  .opponent-dice,
+  .player-dice {
     width: 150px;
     height: 150px;
   }
@@ -319,23 +348,6 @@
   padding: 8px 12px;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
-}
-
-.player-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.player-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
 .avatar-placeholder {
@@ -437,9 +449,9 @@
   border-radius: 8px;
 }
 
-.bet-info__icon {
+.bet-info svg {
   font-size: 24px;
-  color: #2196F3;
+  color: var(--game-primary);
 }
 
 .bet-info__amount {
