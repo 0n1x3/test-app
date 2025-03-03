@@ -14,8 +14,29 @@ import './style.css';
 interface MultiplayerDiceGameProps {
   gameId: string;
   betAmount: number;
-  onGameEnd: (result: 'win' | 'lose' | 'draw') => void;
+  onGameEnd?: (result: 'win' | 'lose' | 'draw') => void;
 }
+
+// Типы для игровых данных
+type GameState = 'waiting' | 'playing' | 'finished';
+type GameResult = 'win' | 'lose' | 'draw' | null;
+type ConnectionStatus = 'connecting' | 'connected' | 'error';
+
+interface PlayerData {
+  id: string;
+  username?: string;
+  avatarUrl?: string;
+  score?: number;
+}
+
+interface Player {
+  telegramId: string;
+  username?: string;
+  avatarUrl?: string;
+}
+
+// Константы
+const MAX_ATTEMPTS = 5;
 
 export function MultiplayerDiceGame({ 
   gameId, 
@@ -23,31 +44,34 @@ export function MultiplayerDiceGame({
   onGameEnd 
 }: MultiplayerDiceGameProps) {
   // Состояния игры
-  const [gameState, setGameState] = useState<'waiting' | 'playing' | 'finished'>('waiting');
-  const [playerData, setPlayerData] = useState<any>(null);
-  const [opponentData, setOpponentData] = useState<any>(null);
+  const [playerData, setPlayerData] = useState<PlayerData | null>(null);
+  const [opponentData, setOpponentData] = useState<PlayerData | null>(null);
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [gameState, setGameState] = useState<GameState>('waiting');
   const [isMyTurn, setIsMyTurn] = useState(false);
-  const [gameResult, setGameResult] = useState<'win' | 'lose' | 'draw' | null>(null);
-  const [round, setRound] = useState(1);
-  const [players, setPlayers] = useState<any[]>([]);
-  const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'error'>('connecting');
-  const [socketError, setSocketError] = useState<string | null>(null);
-  const [reconnectAttempts, setReconnectAttempts] = useState(0);
-  const [userId, setUserId] = useState<string | null>(null);
-
-  // Состояния кубиков
-  const [playerDice, setPlayerDice] = useState<number>(1);
-  const [opponentDice, setOpponentDice] = useState<number>(1);
   const [isRolling, setIsRolling] = useState(false);
+  const [playerDice, setPlayerDice] = useState(1);
+  const [opponentDice, setOpponentDice] = useState(1);
+  const [round, setRound] = useState(1);
+  const [playerScore, setPlayerScore] = useState(0);
+  const [opponentScore, setOpponentScore] = useState(0);
+  const [gameResult, setGameResult] = useState<GameResult | null>(null);
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('connecting');
+  const [socketError, setSocketError] = useState<string | null>(null);
   
-  // Данные пользователя
-  const telegramId = useUserStore(state => state.telegramId);
-  
-  // Ссылка на WebSocket соединение
+  // Для WebSocket
   const socketRef = useRef<Socket | null>(null);
   const connectionAttemptRef = useRef(0);
-  
-  // Функция для получения ID пользователя
+  const mounted = useRef(true); // Флаг для отслеживания состояния монтирования
+
+  // Для Telegram данных
+  const [userId, setUserId] = useState<string | null>(null);
+  const telegramIdFromStore = useUserStore(state => state.telegramId);
+  const [telegramId, setTelegramId] = useState<number | null>(
+    telegramIdFromStore ? Number(telegramIdFromStore) : null
+  );
+
+  // Получение данных Telegram WebApp
   const getTelegramUserId = useCallback((): number | undefined => {
     try {
       // Сначала проверяем, есть ли у нас уже сохраненный userId
@@ -121,7 +145,7 @@ export function MultiplayerDiceGame({
     try {
       if (socketRef.current) {
         console.log('Закрытие существующего соединения перед повторным подключением');
-        socketRef.current.close();
+        socketRef.current.disconnect();
       }
 
       const userId = getTelegramUserId();
@@ -161,6 +185,13 @@ export function MultiplayerDiceGame({
       const socketUrl = `https://test.timecommunity.xyz`;
       console.log('Connecting to socket URL:', socketUrl);
       
+      // Закрываем старое соединение если оно существует
+      if (socketRef.current) {
+        console.log('Закрытие существующего соединения перед повторным подключением');
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+      
       const newSocket = io(socketUrl, {
         path: '/api/socket.io/',
         query: {
@@ -170,9 +201,9 @@ export function MultiplayerDiceGame({
         },
         transports: ['websocket'],
         reconnection: true,
-        reconnectionAttempts: 3,
+        reconnectionAttempts: 5,
         reconnectionDelay: 1000,
-        timeout: 5000,
+        timeout: 10000, // Увеличиваем таймаут до 10 секунд
         forceNew: true // Важно для предотвращения повторного использования существующего соединения
       });
 
@@ -185,6 +216,9 @@ export function MultiplayerDiceGame({
         // Присоединяемся к комнате игры
         console.log('Joining game room:', gameId);
         newSocket.emit('joinGameRoom', { gameId });
+        
+        // Запрашиваем список игроков при успешном подключении
+        newSocket.emit('getGamePlayers', { gameId });
       });
 
       newSocket.on('connect_error', (error) => {
@@ -193,11 +227,29 @@ export function MultiplayerDiceGame({
         setSocketError(`Ошибка подключения: ${error.message}. Попытка: ${connectionAttemptRef.current}/${MAX_ATTEMPTS}`);
         
         // Пробуем подключиться снова через увеличивающийся интервал
-        setTimeout(() => {
-          if (socketRef.current) {
-            setupSocketConnection();
-          }
-        }, 1000 * Math.min(connectionAttemptRef.current, 5)); // Увеличиваем задержку, но не более 5 секунд
+        if (connectionAttemptRef.current < MAX_ATTEMPTS) {
+          setTimeout(() => {
+            if (mounted.current) {  // Проверяем, что компонент все еще смонтирован
+              setupSocketConnection();
+            }
+          }, 1000 * Math.min(connectionAttemptRef.current, 5)); // Увеличиваем задержку, но не более 5 секунд
+        }
+      });
+
+      // Обработка события обновления списка игроков
+      newSocket.on('gamePlayers', (data) => {
+        console.log('Получен список игроков:', data.players);
+        if (data && data.players) {
+          setPlayers(data.players);
+        }
+      });
+
+      // Добавляем обработчик переподключения
+      newSocket.on('reconnect', (attempt) => {
+        console.log(`Reconnected after ${attempt} attempts`);
+        // После успешного переподключения снова присоединяемся к комнате
+        newSocket.emit('joinGameRoom', { gameId });
+        newSocket.emit('getGamePlayers', { gameId });
       });
 
       // Сохраняем сокет
@@ -575,7 +627,7 @@ export function MultiplayerDiceGame({
           <div className="game-info">
             <h2>Раунд {round}/3</h2>
             <div className="bet-amount">
-              <Icon icon="solar:diamond-bold" />
+              <Icon icon="material-symbols:diamond-rounded" />
               <span>{betAmount}</span>
             </div>
           </div>
@@ -652,9 +704,9 @@ export function MultiplayerDiceGame({
               <h2>Ожидание соперника</h2>
               <p>Поделитесь ссылкой с другом или дождитесь пока кто-то присоединится</p>
               
-              <button className="invite-button" onClick={copyInviteLink}>
+              <button className="copy-link-button" onClick={copyInviteLink}>
                 <Icon icon="mdi:content-copy" />
-                Скопировать ссылку
+                <span>Скопировать ссылку</span>
               </button>
               
               <div className="connected-players">

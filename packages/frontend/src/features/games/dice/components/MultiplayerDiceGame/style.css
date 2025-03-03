@@ -229,6 +229,41 @@
   margin-bottom: 16px;
 }
 
+.copy-link-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: rgba(0, 152, 234, 0.1);
+  border: 1px solid #0098EA;
+  color: #fff;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: 280px;
+  height: 48px;
+  margin-top: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.copy-link-button:hover {
+  background: rgba(0, 152, 234, 0.2);
+}
+
+.copy-link-button:active {
+  transform: scale(0.97);
+}
+
+.copy-link-button svg {
+  font-size: 18px;
+  color: #0098EA;
+}
+
 .invite-button {
   display: flex;
   align-items: center;
