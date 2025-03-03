@@ -8,6 +8,7 @@ import { Dice } from '../Dice';
 import { toast } from 'react-hot-toast';
 import { getUserId, getOrCreateGuestId } from '@/utils/telegramWebApp';
 import './style.css';
+import { PageContainer } from '@/components/_layout/PageContainer';
 
 // Удаляем объявление глобального интерфейса, так как оно определено в global.d.ts
 
@@ -730,354 +731,83 @@ export function MultiplayerDiceGame({
   // Если есть проблемы с соединением
   if (connectionStatus === 'error') {
     return (
-      <div className="multiplayer-dice-game">
-        <div className="game-info">
-          <h1>Ошибка соединения</h1>
+      <PageContainer>
+        <div className="dice-game">
+          <div className="game-info">
+            <h1>Ошибка соединения</h1>
+          </div>
+          <div className="error-container">
+            <p>{socketError || 'Не удалось подключиться к серверу'}</p>
+            <button 
+              className="reload-button"
+              onClick={() => {
+                connectionAttemptRef.current = 0;
+                setupSocketConnection();
+              }}
+            >
+              Переподключиться
+            </button>
+          </div>
         </div>
-        <div className="error-container">
-          <p>{socketError || 'Не удалось подключиться к серверу'}</p>
-          <button 
-            className="reload-button"
-            onClick={() => {
-              connectionAttemptRef.current = 0;
-              setupSocketConnection();
-            }}
-          >
-            Переподключиться
-          </button>
-        </div>
-      </div>
+      </PageContainer>
     );
   }
 
   // Если соединение устанавливается
   if (connectionStatus === 'connecting') {
     return (
-      <div className="multiplayer-dice-game">
-        <div className="game-info">
-          <h1>Подключение к игре</h1>
+      <PageContainer>
+        <div className="dice-game">
+          <div className="game-info">
+            <h1>Подключение к игре</h1>
+          </div>
+          <div className="connecting-container">
+            <div className="loading-spinner"></div>
+            <p>Устанавливается соединение с сервером...</p>
+          </div>
         </div>
-        <div className="connecting-container">
-          <div className="loading-spinner"></div>
-          <p>Устанавливается соединение с сервером...</p>
-        </div>
-      </div>
+      </PageContainer>
     );
   }
 
   // Если игра в режиме ожидания
   if (gameState === 'waiting') {
     return (
-      <div className="multiplayer-dice-game">
-        {/* Индикатор статуса подключения */}
-        <ConnectionStatusIndicator status={connectionStatus} />
-        
-        {/* Информация о ставке */}
-        <div className="game-info">
-          <h2>Игра в кости</h2>
-          <div className="bet-amount">
-            <Icon icon="mdi:diamond" />
-            <span>{betAmount}</span>
-          </div>
-        </div>
-        
-        {/* Отображение информации о ставке */}
-        <div className="bet-info">
-          <Icon icon="material-symbols:diamond-rounded" className="bet-info__icon" />
-          <span className="bet-info__amount">{betAmount}</span>
-        </div>
-        
-        {connectionStatus !== 'connected' ? (
-          <div className="connecting-container">
-            <div className="loading-spinner"></div>
-            <p>Подключение к игре...</p>
-            {socketError && (
-              <div className="error-container">
-                <p>{socketError}</p>
-                <button className="reload-button" onClick={() => setupSocketConnection()}>
-                  Повторить подключение
-                </button>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="waiting-container">
-            <h2>Ожидание соперника</h2>
-            <p>Поделитесь ссылкой с другом или дождитесь пока кто-то присоединится</p>
-            
-            <div className="copy-link-button">
-              <button onClick={copyInviteLink}>
-                <Icon icon="mdi:content-copy" />
-                <span>Скопировать ссылку</span>
-              </button>
-            </div>
-            
-            <div className="player-count">
-              <p>Подключенные игроки ({players.length}/2):</p>
-              {players.length === 0 ? (
-                <p className="no-players">Ожидание подключения игроков...</p>
-              ) : (
-                <div className="players-list">
-                  {players.map((player, index) => (
-                    <div key={index} className="player-item">
-                      <div className="player-avatar">
-                        {player.avatarUrl ? (
-                          <img src={player.avatarUrl} alt={player.username || 'Игрок'} />
-                        ) : (
-                          <span className="avatar-placeholder">👤</span>
-                        )}
-                      </div>
-                      <span className="player-name">{player.username || `Игрок ${index + 1}`}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // Если игра в процессе
-  if (gameState === 'playing') {
-    return (
-      <div className="multiplayer-dice-game">
-        <div className="game-info">
-          <h1>Игра в кости: Раунд {round}</h1>
-          <div className="bet-info">
-            <Icon icon="material-symbols:diamond-rounded" />
-            <span>{betAmount}</span>
-          </div>
-        </div>
-        
-        <div className="game-container">
-          {/* Оппонент */}
-          <div className={`player-container ${!isMyTurn ? 'current-turn' : ''}`}>
-            <div className="player-info">
-              <div className="player-avatar">
-                {opponentData?.avatarUrl ? (
-                  <img src={opponentData.avatarUrl} alt="avatar" />
-                ) : (
-                  <Icon icon="mdi:account" />
-                )}
-              </div>
-              <div className="player-name">
-                {opponentData?.username || 'Соперник'}
-              </div>
-            </div>
-            
-            <div className="dice-container">
-              <Dice value={opponentDice} rolling={!isMyTurn && isRolling} />
-            </div>
-          </div>
+      <PageContainer>
+        <div className="dice-game">
+          {/* Индикатор статуса подключения */}
+          <ConnectionStatusIndicator status={connectionStatus} />
           
-          {/* Разделитель */}
-          <div className="vs-indicator">VS</div>
-          
-          {/* Игрок */}
-          <div className={`player-container ${isMyTurn ? 'current-turn' : ''}`}>
-            <div className="dice-container">
-              <Dice value={playerDice} rolling={isMyTurn && isRolling} />
-            </div>
-            
-            <div className="player-info">
-              <div className="player-avatar">
-                {playerData?.avatarUrl ? (
-                  <img src={playerData.avatarUrl} alt="avatar" />
-                ) : (
-                  <Icon icon="mdi:account" />
-                )}
-              </div>
-              <div className="player-name">
-                {playerData?.username || 'Вы'}
-              </div>
-            </div>
-          </div>
-          
-          <div className="actions">
-            <button 
-              className="roll-button"
-              disabled={!isMyTurn || isRolling}
-              onClick={rollDice}
-            >
-              {isMyTurn ? 'Бросить кубик' : 'Ожидание хода соперника'}
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Если игра закончена
-  if (gameState === 'finished') {
-    return (
-      <div className="multiplayer-dice-game">
-        <div className="game-info">
-          <h1>Игра завершена</h1>
-          <div className="bet-info">
-            <Icon icon="material-symbols:diamond-rounded" />
-            <span>{betAmount}</span>
-          </div>
-        </div>
-        
-        <div className="game-container">
-          {/* Оппонент */}
-          <div className="player-container">
-            <div className="player-info">
-              <div className="player-avatar">
-                {opponentData?.avatarUrl ? (
-                  <img src={opponentData.avatarUrl} alt="avatar" />
-                ) : (
-                  <Icon icon="mdi:account" />
-                )}
-              </div>
-              <div className="player-name">
-                {opponentData?.username || 'Соперник'}
-              </div>
-            </div>
-            
-            <div className="dice-container">
-              <Dice value={opponentDice} />
-            </div>
-          </div>
-          
-          {/* Разделитель */}
-          <div className="vs-indicator">VS</div>
-          
-          {/* Игрок */}
-          <div className="player-container">
-            <div className="dice-container">
-              <Dice value={playerDice} />
-            </div>
-            
-            <div className="player-info">
-              <div className="player-avatar">
-                {playerData?.avatarUrl ? (
-                  <img src={playerData.avatarUrl} alt="avatar" />
-                ) : (
-                  <Icon icon="mdi:account" />
-                )}
-              </div>
-              <div className="player-name">
-                {playerData?.username || 'Вы'}
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div className={`game-result ${gameResult}`}>
-          <h2>
-            {gameResult === 'win' && 'Вы победили!'}
-            {gameResult === 'lose' && 'Вы проиграли!'}
-            {gameResult === 'draw' && 'Ничья!'}
-          </h2>
-        </div>
-      </div>
-    );
-  }
-
-  // Обновляем возвращаемый JSX для лучшей интеграции с макетом
-  return (
-    <div className="multiplayer-dice-game">
-      {/* Индикатор статуса подключения */}
-      <ConnectionStatusIndicator status={connectionStatus} />
-      
-      {/* Информация о ставке */}
-      <div className="game-info">
-        <h2>Игра в кости</h2>
-        <div className="bet-amount">
-          <Icon icon="mdi:diamond" />
-          <span>{betAmount}</span>
-        </div>
-      </div>
-      
-      {/* Отображение информации о ставке */}
-      <div className="bet-info">
-        <Icon icon="material-symbols:diamond-rounded" className="bet-info__icon" />
-        <span className="bet-info__amount">{betAmount}</span>
-      </div>
-      
-      {/* Отображение игрового поля, если данные игры получены */}
-      {playerData && (
-        <div className="game-container">
+          {/* Информация о ставке */}
           <div className="game-info">
-            <h2>Раунд {round}/3</h2>
+            <h2>Игра в кости</h2>
             <div className="bet-amount">
-              <Icon icon="material-symbols:diamond-rounded" />
+              <Icon icon="mdi:diamond" />
               <span>{betAmount}</span>
             </div>
           </div>
           
-          <div className="players-container">
-            <div className="player-side">
-              <div className="dice-container">
-                <Dice value={playerDice} rolling={isRolling && isMyTurn} />
-              </div>
-              
-              <div className="player-info">
-                <div className="player-avatar">
-                  {playerData?.avatarUrl ? (
-                    <img src={playerData.avatarUrl} alt="avatar" />
-                  ) : (
-                    <Icon icon="mdi:account" />
-                  )}
-                </div>
-                <div className="player-name">
-                  {playerData?.username || 'Вы'}
-                </div>
-                <div className="player-score">
-                  {playerData?.score || 0}
-                </div>
-              </div>
-            </div>
-            
-            <div className="vs-badge">VS</div>
-            
-            <div className="player-side opponent">
-              <div className="dice-container">
-                <Dice value={opponentDice} rolling={isRolling && !isMyTurn} />
-              </div>
-              
-              <div className="player-info">
-                <div className="player-avatar">
-                  {opponentData?.avatarUrl ? (
-                    <img src={opponentData.avatarUrl} alt="avatar" />
-                  ) : (
-                    <Icon icon="material-symbols:skull-outline" style={{ color: '#ff4757' }} />
-                  )}
-                </div>
-                <div className="player-name">
-                  {opponentData?.username || 'Соперник'}
-                </div>
-                <div className="player-score">
-                  {opponentData?.score || 0}
-                </div>
-              </div>
-            </div>
+          {/* Отображение информации о ставке */}
+          <div className="bet-info">
+            <Icon icon="material-symbols:diamond-rounded" className="bet-info__icon" />
+            <span className="bet-info__amount">{betAmount}</span>
           </div>
           
-          {/* Кнопка для броска кубика */}
-          {gameState === 'playing' && isMyTurn && !isRolling && (
-            <button 
-              className="roll-button" 
-              onClick={rollDice}
-              disabled={isRolling || !isMyTurn}
-            >
-              Бросить кубик
-            </button>
-          )}
-          
-          {/* Ожидание хода соперника */}
-          {gameState === 'playing' && !isMyTurn && !isRolling && (
-            <div className="waiting-message">
-              <p>Ожидание хода соперника...</p>
+          {connectionStatus !== 'connected' ? (
+            <div className="connecting-container">
+              <div className="loading-spinner"></div>
+              <p>Подключение к игре...</p>
+              {socketError && (
+                <div className="error-container">
+                  <p>{socketError}</p>
+                  <button className="reload-button" onClick={() => setupSocketConnection()}>
+                    Повторить подключение
+                  </button>
+                </div>
+              )}
             </div>
-          )}
-          
-          {/* Ожидание присоединения второго игрока */}
-          {gameState === 'waiting' && (
-            <div className="waiting-message">
+          ) : (
+            <div className="waiting-container">
               <h2>Ожидание соперника</h2>
               <p>Поделитесь ссылкой с другом или дождитесь пока кто-то присоединится</p>
               
@@ -1111,28 +841,311 @@ export function MultiplayerDiceGame({
               </div>
             </div>
           )}
-          
-          {/* Результат игры */}
-          {gameResult && (
-            <div className={`game-result ${gameResult}`}>
-              <h2>
-                {gameResult === 'win' && 'Вы победили!'}
-                {gameResult === 'lose' && 'Вы проиграли!'}
-                {gameResult === 'draw' && 'Ничья!'}
-              </h2>
-            </div>
-          )}
         </div>
-      )}
+      </PageContainer>
+    );
+  }
 
-      {/* Новая секция для кнопки броска кубика, аналогичная игре с ботом */}
-      {!gameResult && (
-        <div className="controls-area">
-          <button className="roll-button" onClick={rollDice} disabled={isRolling}>
-            Бросить кубик
-          </button>
+  // Если игра в процессе
+  if (gameState === 'playing') {
+    return (
+      <PageContainer>
+        <div className="dice-game">
+          <div className="game-info">
+            <h1>Игра в кости: Раунд {round}</h1>
+            <div className="bet-info">
+              <Icon icon="material-symbols:diamond-rounded" />
+              <span>{betAmount}</span>
+            </div>
+          </div>
+          
+          <div className="game-container">
+            {/* Оппонент */}
+            <div className={`player-container ${!isMyTurn ? 'current-turn' : ''}`}>
+              <div className="player-info">
+                <div className="player-avatar">
+                  {opponentData?.avatarUrl ? (
+                    <img src={opponentData.avatarUrl} alt="avatar" />
+                  ) : (
+                    <Icon icon="mdi:account" />
+                  )}
+                </div>
+                <div className="player-name">
+                  {opponentData?.username || 'Соперник'}
+                </div>
+              </div>
+              
+              <div className="dice-container">
+                <Dice value={opponentDice} rolling={!isMyTurn && isRolling} />
+              </div>
+            </div>
+            
+            {/* Разделитель */}
+            <div className="vs-indicator">VS</div>
+            
+            {/* Игрок */}
+            <div className={`player-container ${isMyTurn ? 'current-turn' : ''}`}>
+              <div className="dice-container">
+                <Dice value={playerDice} rolling={isMyTurn && isRolling} />
+              </div>
+              
+              <div className="player-info">
+                <div className="player-avatar">
+                  {playerData?.avatarUrl ? (
+                    <img src={playerData.avatarUrl} alt="avatar" />
+                  ) : (
+                    <Icon icon="mdi:account" />
+                  )}
+                </div>
+                <div className="player-name">
+                  {playerData?.username || 'Вы'}
+                </div>
+              </div>
+            </div>
+            
+            <div className="actions">
+              <button 
+                className="roll-button"
+                disabled={!isMyTurn || isRolling}
+                onClick={rollDice}
+              >
+                {isMyTurn ? 'Бросить кубик' : 'Ожидание хода соперника'}
+              </button>
+            </div>
+          </div>
         </div>
-      )}
-    </div>
+      </PageContainer>
+    );
+  }
+
+  // Если игра закончена
+  if (gameState === 'finished') {
+    return (
+      <PageContainer>
+        <div className="dice-game">
+          <div className="game-info">
+            <h1>Игра завершена</h1>
+            <div className="bet-info">
+              <Icon icon="material-symbols:diamond-rounded" />
+              <span>{betAmount}</span>
+            </div>
+          </div>
+          
+          <div className="game-container">
+            {/* Оппонент */}
+            <div className="player-container">
+              <div className="player-info">
+                <div className="player-avatar">
+                  {opponentData?.avatarUrl ? (
+                    <img src={opponentData.avatarUrl} alt="avatar" />
+                  ) : (
+                    <Icon icon="mdi:account" />
+                  )}
+                </div>
+                <div className="player-name">
+                  {opponentData?.username || 'Соперник'}
+                </div>
+              </div>
+              
+              <div className="dice-container">
+                <Dice value={opponentDice} />
+              </div>
+            </div>
+            
+            {/* Разделитель */}
+            <div className="vs-indicator">VS</div>
+            
+            {/* Игрок */}
+            <div className="player-container">
+              <div className="dice-container">
+                <Dice value={playerDice} />
+              </div>
+              
+              <div className="player-info">
+                <div className="player-avatar">
+                  {playerData?.avatarUrl ? (
+                    <img src={playerData.avatarUrl} alt="avatar" />
+                  ) : (
+                    <Icon icon="mdi:account" />
+                  )}
+                </div>
+                <div className="player-name">
+                  {playerData?.username || 'Вы'}
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className={`game-result ${gameResult}`}>
+            <h2>
+              {gameResult === 'win' && 'Вы победили!'}
+              {gameResult === 'lose' && 'Вы проиграли!'}
+              {gameResult === 'draw' && 'Ничья!'}
+            </h2>
+          </div>
+        </div>
+      </PageContainer>
+    );
+  }
+
+  // Обновляем возвращаемый JSX для лучшей интеграции с макетом
+  return (
+    <PageContainer>
+      <div className="dice-game">
+        {/* Индикатор статуса подключения */}
+        <ConnectionStatusIndicator status={connectionStatus} />
+        
+        {/* Информация о ставке */}
+        <div className="game-info">
+          <h2>Игра в кости</h2>
+          <div className="bet-amount">
+            <Icon icon="mdi:diamond" />
+            <span>{betAmount}</span>
+          </div>
+        </div>
+        
+        {/* Отображение информации о ставке */}
+        <div className="bet-info">
+          <Icon icon="material-symbols:diamond-rounded" className="bet-info__icon" />
+          <span className="bet-info__amount">{betAmount}</span>
+        </div>
+        
+        {/* Отображение игрового поля, если данные игры получены */}
+        {playerData && (
+          <div className="game-container">
+            <div className="game-info">
+              <h2>Раунд {round}/3</h2>
+              <div className="bet-amount">
+                <Icon icon="material-symbols:diamond-rounded" />
+                <span>{betAmount}</span>
+              </div>
+            </div>
+            
+            <div className="players-container">
+              <div className="player-side">
+                <div className="dice-container">
+                  <Dice value={playerDice} rolling={isRolling && isMyTurn} />
+                </div>
+                
+                <div className="player-info">
+                  <div className="player-avatar">
+                    {playerData?.avatarUrl ? (
+                      <img src={playerData.avatarUrl} alt="avatar" />
+                    ) : (
+                      <Icon icon="mdi:account" />
+                    )}
+                  </div>
+                  <div className="player-name">
+                    {playerData?.username || 'Вы'}
+                  </div>
+                  <div className="player-score">
+                    {playerData?.score || 0}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="vs-badge">VS</div>
+              
+              <div className="player-side opponent">
+                <div className="dice-container">
+                  <Dice value={opponentDice} rolling={isRolling && !isMyTurn} />
+                </div>
+                
+                <div className="player-info">
+                  <div className="player-avatar">
+                    {opponentData?.avatarUrl ? (
+                      <img src={opponentData.avatarUrl} alt="avatar" />
+                    ) : (
+                      <Icon icon="material-symbols:skull-outline" style={{ color: '#ff4757' }} />
+                    )}
+                  </div>
+                  <div className="player-name">
+                    {opponentData?.username || 'Соперник'}
+                  </div>
+                  <div className="player-score">
+                    {opponentData?.score || 0}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Кнопка для броска кубика */}
+            {gameState === 'playing' && isMyTurn && !isRolling && (
+              <button 
+                className="roll-button" 
+                onClick={rollDice}
+                disabled={isRolling || !isMyTurn}
+              >
+                Бросить кубик
+              </button>
+            )}
+            
+            {/* Ожидание хода соперника */}
+            {gameState === 'playing' && !isMyTurn && !isRolling && (
+              <div className="waiting-message">
+                <p>Ожидание хода соперника...</p>
+              </div>
+            )}
+            
+            {/* Ожидание присоединения второго игрока */}
+            {gameState === 'waiting' && (
+              <div className="waiting-message">
+                <h2>Ожидание соперника</h2>
+                <p>Поделитесь ссылкой с другом или дождитесь пока кто-то присоединится</p>
+                
+                <div className="copy-link-button">
+                  <button onClick={copyInviteLink}>
+                    <Icon icon="mdi:content-copy" />
+                    <span>Скопировать ссылку</span>
+                  </button>
+                </div>
+                
+                <div className="player-count">
+                  <p>Подключенные игроки ({players.length}/2):</p>
+                  {players.length === 0 ? (
+                    <p className="no-players">Ожидание подключения игроков...</p>
+                  ) : (
+                    <div className="players-list">
+                      {players.map((player, index) => (
+                        <div key={index} className="player-item">
+                          <div className="player-avatar">
+                            {player.avatarUrl ? (
+                              <img src={player.avatarUrl} alt={player.username || 'Игрок'} />
+                            ) : (
+                              <span className="avatar-placeholder">👤</span>
+                            )}
+                          </div>
+                          <span className="player-name">{player.username || `Игрок ${index + 1}`}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            
+            {/* Результат игры */}
+            {gameResult && (
+              <div className={`game-result ${gameResult}`}>
+                <h2>
+                  {gameResult === 'win' && 'Вы победили!'}
+                  {gameResult === 'lose' && 'Вы проиграли!'}
+                  {gameResult === 'draw' && 'Ничья!'}
+                </h2>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Новая секция для кнопки броска кубика, аналогичная игре с ботом */}
+        {!gameResult && (
+          <div className="controls-area">
+            <button className="roll-button" onClick={rollDice} disabled={isRolling}>
+              Бросить кубик
+            </button>
+          </div>
+        )}
+      </div>
+    </PageContainer>
   );
 } 
