@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { useRouter } from 'next/router';
+import { useParams, useRouter } from 'next/navigation';
 import { SafeArea } from '@/components/_layout/SafeArea';
 import { PageHeader } from '@/components/_layout/PageHeader';
 import { PageContainer } from '@/components/_layout/PageContainer';
@@ -22,8 +22,11 @@ interface GameData {
 }
 
 export default function GamePage() {
+  // Получаем параметры из маршрута через хук App Router
+  const params = useParams();
+  const gameId = params.id as string;
+  
   const router = useRouter();
-  const { id } = router.query;
   const [gameData, setGameData] = useState<GameData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -43,12 +46,12 @@ export default function GamePage() {
   };
 
   // Функция для получения данных игры
-  const fetchGameData = async (gameId: string) => {
+  const fetchGameData = async (id: string) => {
     try {
-      console.log('Запрос данных игры:', gameId);
+      console.log('Запрос данных игры:', id);
       setLoading(true);
       
-      const response = await fetch(`https://test.timecommunity.xyz/api/games/${gameId}`, {
+      const response = await fetch(`https://test.timecommunity.xyz/api/games/${id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -86,9 +89,9 @@ export default function GamePage() {
   };
 
   // Функция для присоединения к игре
-  const joinGame = async (gameId: string) => {
+  const joinGame = async (id: string) => {
     try {
-      console.log('Попытка присоединиться к игре:', gameId);
+      console.log('Попытка присоединиться к игре:', id);
       setJoinStatus('pending');
       
       // Получаем данные Telegram
@@ -108,7 +111,7 @@ export default function GamePage() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          gameId,
+          gameId: id,
           initData: telegramData.initData
         })
       });
@@ -149,18 +152,10 @@ export default function GamePage() {
 
   // Основной эффект для загрузки данных и присоединения к игре
   useEffect(() => {
-    if (!id) return;
+    if (!gameId) return;
     
     const loadGameAndJoin = async () => {
       try {
-        // Перестраховка: проверяем, что id - строка
-        const gameId = typeof id === 'string' ? id : Array.isArray(id) ? id[0] : null;
-        
-        if (!gameId) {
-          setError('Неверный идентификатор игры');
-          return;
-        }
-        
         // Загружаем данные игры
         const game = await fetchGameData(gameId);
         
@@ -210,9 +205,9 @@ export default function GamePage() {
       }
     };
     
-    // Запускаем загрузку игры без проверки на WebApp
+    // Запускаем загрузку игры
     loadGameAndJoin();
-  }, [id]);
+  }, [gameId]);
 
   // Обработка завершения игры
   const handleGameEnd = (result: 'win' | 'lose' | 'draw') => {
@@ -307,7 +302,7 @@ export default function GamePage() {
         <div className="game-page-wrapper">
           <ErrorBoundary>
             <MultiplayerDiceGame
-              gameId={id as string}
+              gameId={gameId}
               betAmount={gameData.betAmount}
               onGameEnd={handleGameEnd}
             />
