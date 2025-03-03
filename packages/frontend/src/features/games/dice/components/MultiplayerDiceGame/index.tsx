@@ -38,6 +38,29 @@ interface Player {
 // Константы
 const MAX_ATTEMPTS = 5;
 
+// Компонент для отображения статуса подключения
+const ConnectionStatusIndicator = ({ status }: { status: ConnectionStatus }) => {
+  let statusText = '';
+  
+  // Преобразуем status к строковому типу для устранения ошибок TypeScript
+  const statusString = status as string;
+  
+  if (statusString === 'connecting') {
+    statusText = 'Подключение...';
+  } else if (statusString === 'connected') {
+    statusText = 'Подключено';
+  } else if (statusString === 'error') {
+    statusText = 'Ошибка соединения';
+  }
+  
+  return (
+    <div className={`connection-status ${status}`}>
+      <div className="connection-indicator-dot"></div>
+      <span>{statusText}</span>
+    </div>
+  );
+};
+
 export function MultiplayerDiceGame({ 
   gameId, 
   betAmount, 
@@ -328,6 +351,53 @@ export function MultiplayerDiceGame({
         if (data?.players && Array.isArray(data.players)) {
           console.log('Обновление списка игроков из события gameUpdated:', data.players);
           setPlayers(data.players);
+        }
+      });
+
+      // Добавляем обработчик события начала игры
+      newSocket.on('diceGameStarted', (data) => {
+        console.log('Получено событие начала игры:', data);
+        setGameState('playing');
+        
+        // Определяем, кто ходит первым
+        if (data.firstPlayer !== undefined) {
+          const currentUserTgId = parseInt(userId || '0', 10);
+          
+          // Если firstPlayer - это индекс игрока (0 или 1)
+          if (typeof data.firstPlayer === 'number') {
+            const playersList = data.players || players;
+            if (playersList && playersList.length > data.firstPlayer) {
+              const firstPlayerTgId = playersList[data.firstPlayer].telegramId;
+              setIsMyTurn(firstPlayerTgId.toString() === currentUserTgId.toString());
+            }
+          } 
+          // Если firstPlayer - это telegramId игрока
+          else if (typeof data.firstPlayer === 'string') {
+            setIsMyTurn(data.firstPlayer === currentUserTgId.toString());
+          }
+          
+          console.log(`Игра началась! Мой ход: ${isMyTurn}`);
+          toast.success('Игра началась!');
+        }
+      });
+
+      // Добавляем обработчик статуса подключения
+      newSocket.on('connectionStatus', (data) => {
+        console.log('Получено обновление статуса подключения:', data);
+        
+        // Обновляем статус подключения
+        if (data.connectedClients > 0) {
+          setConnectionStatus('connected');
+        } else {
+          setConnectionStatus('error');
+        }
+        
+        // Если игроков меньше 2, показываем сообщение
+        if (data.connectedClients < 2 && gameState === 'playing') {
+          toast.error('Соперник отключился от игры');
+        } else if (data.connectedClients === 2 && gameState === 'waiting') {
+          // Если оба игрока подключены и игра в режиме ожидания, пробуем запустить игру
+          newSocket.emit('startDiceGame', { gameId });
         }
       });
 
@@ -728,11 +798,15 @@ export function MultiplayerDiceGame({
   if (gameState === 'waiting') {
     return (
       <div className="multiplayer-dice-game">
+        {/* Индикатор статуса подключения */}
+        <ConnectionStatusIndicator status={connectionStatus} />
+        
+        {/* Информация о ставке */}
         <div className="game-info">
-          <h1>Игра в кости</h1>
-          <div className="bet-info">
-            <Icon icon="mdi:coins" />
-            {betAmount}
+          <h2>Игра в кости</h2>
+          <div className="bet-amount">
+            <Icon icon="mdi:diamond" />
+            <span>{betAmount}</span>
           </div>
         </div>
         
@@ -929,15 +1003,17 @@ export function MultiplayerDiceGame({
   // Обновляем возвращаемый JSX для лучшей интеграции с макетом
   return (
     <div className="multiplayer-dice-game">
-      {/* Отображение статуса подключения */}
-      {connectionStatus !== 'connected' && (
-        <div className="connection-status">
-          <div className={`status-indicator ${connectionStatus}`}>
-            {connectionStatus === 'connecting' && 'Подключение...'}
-            {connectionStatus === 'error' && (socketError || 'Ошибка подключения')}
-          </div>
+      {/* Индикатор статуса подключения */}
+      <ConnectionStatusIndicator status={connectionStatus} />
+      
+      {/* Информация о ставке */}
+      <div className="game-info">
+        <h2>Игра в кости</h2>
+        <div className="bet-amount">
+          <Icon icon="mdi:diamond" />
+          <span>{betAmount}</span>
         </div>
-      )}
+      </div>
       
       {/* Отображение игрового поля, если данные игры получены */}
       {playerData && (

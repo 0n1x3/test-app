@@ -21,10 +21,14 @@ export class GameGateway {
   @WebSocketServer()
   server!: Server;
 
+  // Карта для отслеживания активных подключений по gameId
+  private activeConnections: Map<string, Set<string>> = new Map();
+
   constructor(private gameService: GameService) {}
 
   afterInit() {
     this.gameService.setServer(this.server);
+    console.log('WebSocket Gateway initialized');
   }
 
   @SubscribeMessage('createGame')
@@ -166,9 +170,22 @@ export class GameGateway {
         }
       }
       
-      // Присоединяемся к новой комнате
-      client.join(`game_${gameId}`);
-      console.log(`Клиент ${client.id} успешно присоединился к комнате game_${gameId}`);
+      // Присоединяемся к комнате игры
+      const roomName = `game_${gameId}`;
+      client.join(roomName);
+      console.log(`Клиент ${client.id} успешно присоединился к комнате ${roomName}`);
+      
+      // Сохраняем gameId в данных клиента
+      client.data.gameId = gameId;
+      
+      // Обновляем список активных подключений
+      if (!this.activeConnections.has(gameId)) {
+        this.activeConnections.set(gameId, new Set());
+      }
+      this.activeConnections.get(gameId)?.add(client.id);
+      
+      // Отправляем обновление о статусе подключения
+      this.updateConnectionStatus(gameId);
       
       return { success: true };
     } catch (error) {
@@ -177,29 +194,64 @@ export class GameGateway {
     }
   }
 
+  // Обработчик подключения клиента
   handleConnection(client: Socket) {
-    try {
-      console.log(`Новое WebSocket соединение: ${client.id}`);
-      const token = client.handshake.auth.token;
-      
-      // Пока просто сохраняем базовые данные для работы
-      if (!token) {
-        client.data = { user: { id: client.id, username: `guest_${client.id.slice(0, 5)}` } };
-        console.log(`Анонимный пользователь: ${client.id}`);
-        return;
+    console.log(`Новое WebSocket соединение: ${client.id}`);
+    
+    // Получаем данные пользователя из запроса
+    const telegramId = client.handshake.query.telegramId;
+    const userId = client.handshake.query.userId;
+    const gameId = client.handshake.query.gameId as string;
+    
+    // Сохраняем данные пользователя в объекте сокета
+    client.data = {
+      user: {
+        id: telegramId || userId,
+        username: client.handshake.query.username || 'unknown'
+      },
+      gameId
+    };
+    
+    console.log(`Аутентифицированный пользователь: ${client.data.user?.id}`);
+    
+    // Если есть gameId, добавляем клиента в список активных подключений для этой игры
+    if (gameId) {
+      if (!this.activeConnections.has(gameId)) {
+        this.activeConnections.set(gameId, new Set());
       }
+      this.activeConnections.get(gameId)?.add(client.id);
       
-      try {
-        const user = verifyToken(token);
-        client.data.user = user;
-        console.log(`Аутентифицированный пользователь: ${user.username || user.id}`);
-      } catch (e) {
-        console.warn(`Ошибка верификации токена: ${e.message}`);
-        client.data = { user: { id: client.id, username: `guest_${client.id.slice(0, 5)}` } };
-      }
-    } catch (e) {
-      console.error('Ошибка при обработке подключения WebSocket:', e);
-      client.disconnect(true);
+      // Отправляем обновление о статусе подключения всем клиентам в этой игре
+      this.updateConnectionStatus(gameId);
     }
+  }
+
+  // Обработчик отключения клиента
+  handleDisconnect(client: Socket) {
+    console.log(`WebSocket соединение закрыто: ${client.id}`);
+    
+    // Получаем gameId из данных клиента
+    const gameId = client.data?.gameId;
+    
+    // Если есть gameId, удаляем клиента из списка активных подключений
+    if (gameId && this.activeConnections.has(gameId)) {
+      this.activeConnections.get(gameId)?.delete(client.id);
+      
+      // Отправляем обновление о статусе подключения всем оставшимся клиентам
+      this.updateConnectionStatus(gameId);
+    }
+  }
+
+  // Метод для отправки обновления о статусе подключения
+  private updateConnectionStatus(gameId: string) {
+    const connectedClients = this.activeConnections.get(gameId)?.size || 0;
+    
+    console.log(`Обновление статуса подключения для игры ${gameId}: ${connectedClients} активных клиентов`);
+    
+    this.server.to(`game_${gameId}`).emit('connectionStatus', {
+      gameId,
+      connectedClients,
+      timestamp: Date.now()
+    });
   }
 } 
