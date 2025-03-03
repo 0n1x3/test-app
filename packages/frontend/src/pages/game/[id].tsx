@@ -10,6 +10,7 @@ import { ErrorBoundary } from '@/components/_shared/ErrorBoundary';
 import { useUserStore } from '@/store/useUserStore';
 import { toast } from 'react-hot-toast';
 import { getTelegramData } from '@/utils/telegramWebApp';
+import { BottomNav } from '@/components/_layout/BottomNav';
 import './style.css';
 import io from 'socket.io-client';
 
@@ -250,64 +251,70 @@ export default function GamePage() {
     return (
       <SafeArea>
         <PageContainer>
-          <div className="game-page-loading">
+          <div className="loading-screen">
             <div className="loading-spinner"></div>
             <p>Загрузка игры...</p>
           </div>
+          <BottomNav />
         </PageContainer>
       </SafeArea>
     );
   }
 
-  // Если произошла ошибка
-  if (error || !gameData) {
+  // Если есть ошибка
+  if (error) {
     return (
       <SafeArea>
         <PageContainer>
-          <div className="game-error">
-            <h3>{error || 'Ошибка при загрузке игры'}</h3>
-            <button 
-              className="back-button"
-              onClick={() => router.push('/games/dice')}
-            >
+          <div className="error-screen">
+            <h2>Ошибка</h2>
+            <p>{error}</p>
+            <button onClick={() => router.push('/games/dice')} className="back-button">
               Вернуться
             </button>
           </div>
+          <BottomNav />
         </PageContainer>
       </SafeArea>
     );
   }
 
-  // Если не удалось присоединиться к игре
-  if (joinStatus === 'failed') {
+  // Если нет данных игры
+  if (!gameData) {
     return (
       <SafeArea>
-        <div className="game-error">
-          <h3>Не удалось присоединиться к игре</h3>
-          <p>Возможно, игра уже началась или вы не можете в ней участвовать.</p>
-          <button 
-            className="back-button"
-            onClick={() => router.push('/games/dice')}
-          >
-            Вернуться к играм
-          </button>
-        </div>
+        <PageContainer>
+          <div className="loading-screen">
+            <p>Игра не найдена</p>
+            <button onClick={() => router.push('/games/dice')} className="back-button">
+              Вернуться
+            </button>
+          </div>
+          <BottomNav />
+        </PageContainer>
       </SafeArea>
     );
   }
 
-  // Если всё в порядке, отображаем игру
+  // Рендер игры
   return (
     <SafeArea>
-      <PageContainer className="game-page-container">
-        <PageHeader title={gameData.status === 'waiting' ? 'Игра в кости' : 'Кубик'} />
-        <ErrorBoundary>
-          <MultiplayerDiceGame 
-            gameId={id as string} 
-            betAmount={gameData.betAmount}
-            onGameEnd={handleGameEnd}
-          />
-        </ErrorBoundary>
+      <PageContainer>
+        <PageHeader 
+          title={gameData.status === 'waiting' ? "Игра в кости" : "Кубик"} 
+        />
+        
+        <div className="game-page-wrapper">
+          <ErrorBoundary>
+            <MultiplayerDiceGame
+              gameId={id as string}
+              betAmount={gameData.betAmount}
+              onGameEnd={handleGameEnd}
+            />
+          </ErrorBoundary>
+        </div>
+        
+        <BottomNav />
       </PageContainer>
     </SafeArea>
   );

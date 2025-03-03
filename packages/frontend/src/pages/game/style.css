@@ -1,28 +1,33 @@
-.game-page-container {
-  height: 100%;
+.game-page-wrapper {
+  flex: 1;
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
+  width: 100%;
+  padding: 0 16px;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 80px); /* Учитываем нижнюю навигацию */
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
-.game-page-loading,
-.game-error {
+.loading-screen,
+.error-screen {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  padding: 20px;
   text-align: center;
+  height: 60vh;
+  padding: 24px;
 }
 
 .loading-spinner {
-  display: inline-block;
-  width: 50px;
-  height: 50px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-left-color: #0098EA;
   border-radius: 50%;
-  border-top-color: var(--tg-theme-button-color);
-  animation: spin 1s ease-in-out infinite;
+  animation: spin 1s linear infinite;
   margin-bottom: 16px;
 }
 
@@ -32,20 +37,38 @@
   }
 }
 
-.back-button {
-  margin-top: 20px;
-  padding: 12px 24px;
-  background-color: var(--tg-theme-button-color);
-  color: var(--tg-theme-button-text-color);
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: opacity 0.2s;
+.error-screen h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #fff;
 }
 
-.back-button:hover {
-  opacity: 0.9;
+.error-screen p {
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 24px;
+  max-width: 400px;
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  background: #0098EA;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+
+.back-button:active {
+  transform: scale(0.98);
+  background: #007bbf;
 }
 
 /* Стили для адаптивной высоты на разных устройствах */
