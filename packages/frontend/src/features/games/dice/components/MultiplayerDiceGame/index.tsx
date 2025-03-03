@@ -141,9 +141,12 @@ export function MultiplayerDiceGame({
    * Настраивает WebSocket соединение
    * Адаптировано для работы с исправленным API-путем в Nginx
    */
-  const setupSocketConnection = useCallback(() => {
+  const setupSocketConnection = useCallback((userIdParam?: string) => {
+    // Используем либо переданный параметр, либо состояние userId
+    const effectiveUserId = userIdParam || userId;
+    
     try {
-      console.log(`Попытка подключения #${connectionAttemptRef.current} с userId:`, userId);
+      console.log(`Попытка подключения #${connectionAttemptRef.current} с userId:`, effectiveUserId);
       
       // Закрываем предыдущее соединение, если оно есть
       if (socketRef.current) {
@@ -152,7 +155,7 @@ export function MultiplayerDiceGame({
       }
 
       // Проверяем, есть ли userId
-      if (!userId) {
+      if (!effectiveUserId) {
         console.log('Невозможно установить соединение без userId');
         setConnectionStatus('error');
         setSocketError('Не удалось получить идентификатор пользователя');
@@ -161,7 +164,7 @@ export function MultiplayerDiceGame({
 
       const socketOptions = {
         gameId,
-        userId: userId.toString(), 
+        userId: effectiveUserId, 
         attempt: connectionAttemptRef.current,
         timestamp: Date.now() // Добавим метку времени для избежания кэширования
       };
@@ -180,7 +183,7 @@ export function MultiplayerDiceGame({
         timeout: 15000, // Увеличиваем таймаут до 15 секунд
         query: socketOptions,
         auth: {
-          userId: userId.toString(),
+          userId: effectiveUserId,
           gameId
         }
       });
@@ -190,9 +193,11 @@ export function MultiplayerDiceGame({
         console.log('Socket connected successfully!');
         setConnectionStatus('connected');
         setSocketError(null);
+        
         // После успешного подключения отправляем запрос на присоединение к комнате и получение списка игроков
         console.log('Joining game room:', gameId);
         newSocket.emit('joinGameRoom', { gameId });
+        console.log('Requesting game players list');
         newSocket.emit('getGamePlayers', { gameId });
       });
 
@@ -206,12 +211,34 @@ export function MultiplayerDiceGame({
 
       // Обрабатываем получение списка игроков
       newSocket.on('gamePlayers', (data) => {
-        console.log('Получен список игроков:', data.players);
-        if (Array.isArray(data.players)) {
+        console.log('Получен список игроков от сервера:', data);
+        if (data && Array.isArray(data.players)) {
+          console.log(`Установка списка игроков (${data.players.length}):`, data.players);
           setPlayers(data.players);
         } else {
           console.error('Неверный формат данных игроков:', data);
         }
+      });
+
+      // Добавляем обработчик обновления игры
+      newSocket.on('gameUpdated', (data) => {
+        console.log('Игра обновлена:', data);
+        if (data && data.players) {
+          console.log(`Обновление списка игроков (${data.players.length}):`, data.players);
+          setPlayers(data.players);
+        }
+      });
+
+      // Явно запрашиваем обновление игры через секунду после подключения
+      newSocket.on('connect', () => {
+        setTimeout(() => {
+          if (newSocket.connected) {
+            console.log('Запрашиваем обновление игры');
+            newSocket.emit('updateGame', { gameId });
+            // Повторно запрашиваем список игроков
+            newSocket.emit('getGamePlayers', { gameId });
+          }
+        }, 1000);
       });
 
       // Сохраняем сокет
@@ -233,9 +260,9 @@ export function MultiplayerDiceGame({
     const currentUserId = getTelegramUserId();
     if (currentUserId) {
       console.log('userId сразу получен из WebApp:', currentUserId);
+      // Важно: устанавливаем состояние и передаём userId напрямую в функцию подключения
       setUserId(currentUserId.toString());
-      // Устанавливаем соединение только после получения userId
-      setupSocketConnection();
+      setupSocketConnection(currentUserId.toString());
     } else {
       console.log('userId не получен при первой загрузке, ожидаем...');
       // Если userId не получен, ждем 1 секунду и пробуем снова
@@ -244,13 +271,13 @@ export function MultiplayerDiceGame({
         if (delayedUserId) {
           console.log('userId получен с задержкой:', delayedUserId);
           setUserId(delayedUserId.toString());
-          setupSocketConnection();
+          setupSocketConnection(delayedUserId.toString());
         } else {
           console.log('userId не получен даже после задержки, используем пользователя-гостя');
           // Если всё ещё не удалось получить userId, создаем гостевой ID
           const guestId = getOrCreateGuestId();
           setUserId(guestId);
-          setupSocketConnection();
+          setupSocketConnection(guestId);
         }
       }, 1000);
       
@@ -367,6 +394,24 @@ export function MultiplayerDiceGame({
     }
   };
 
+  // Добавляем эффект для запроса обновления списка игроков после подключения
+  useEffect(() => {
+    if (connectionStatus === 'connected' && socketRef.current) {
+      console.log('Соединение установлено, запрашиваем список игроков');
+      socketRef.current.emit('getGamePlayers', { gameId });
+      
+      // Устанавливаем интервал для периодического обновления списка игроков
+      const interval = setInterval(() => {
+        if (socketRef.current && socketRef.current.connected) {
+          console.log('Периодическое обновление списка игроков');
+          socketRef.current.emit('getGamePlayers', { gameId });
+        }
+      }, 5000); // Запрашиваем обновление каждые 5 секунд
+      
+      return () => clearInterval(interval);
+    }
+  }, [connectionStatus, gameId]);
+
   // Если есть проблемы с соединением
   if (connectionStatus === 'error') {
     return (
@@ -424,7 +469,7 @@ export function MultiplayerDiceGame({
             {socketError && (
               <div className="error-container">
                 <p>{socketError}</p>
-                <button className="reload-button" onClick={setupSocketConnection}>
+                <button className="reload-button" onClick={() => setupSocketConnection()}>
                   Повторить подключение
                 </button>
               </div>
