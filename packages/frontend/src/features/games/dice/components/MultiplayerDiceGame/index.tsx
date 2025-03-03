@@ -143,68 +143,37 @@ export function MultiplayerDiceGame({
    */
   const setupSocketConnection = useCallback(() => {
     try {
-      if (socketRef.current) {
-        console.log('Закрытие существующего соединения перед повторным подключением');
-        socketRef.current.disconnect();
-      }
-
-      const userId = getTelegramUserId();
-      // Получаем уникальный идентификатор пользователя или создаем гостевой
-      const userIdForSocket = userId ? userId.toString() : getOrCreateGuestId();
-      console.log('Подключение к WebSocket с ID:', userIdForSocket);
-      
-      // Ограничиваем количество попыток подключения
-      const MAX_ATTEMPTS = 5;
-      if (connectionAttemptRef.current >= MAX_ATTEMPTS) {
-        console.log(`Достигнут лимит попыток подключения (${MAX_ATTEMPTS}). Пауза 10 секунд.`);
-        setConnectionStatus('error');
-        setSocketError(`Превышен лимит попыток подключения. Пожалуйста, проверьте подключение к интернету или обновите страницу.`);
-        
-        // После паузы сбрасываем счетчик и пробуем снова
-        setTimeout(() => {
-          connectionAttemptRef.current = 0;
-          setupSocketConnection();
-        }, 10000);
-        return;
-      }
-
-      connectionAttemptRef.current += 1;
       console.log(`Попытка подключения #${connectionAttemptRef.current}`);
-
-      // Параметры для подключения
-      const options = {
-        gameId,
-        userId: userIdForSocket,
-        attempt: connectionAttemptRef.current
-      };
-
-      console.log('Socket connection initialized with options', options);
-
-      // Важно: используем корректный URL, соответствующий конфигурации Nginx
-      // Используем HTTP и позволяем io() автоматически перейти на WSS при необходимости
-      const socketUrl = `https://test.timecommunity.xyz`;
-      console.log('Connecting to socket URL:', socketUrl);
-      
-      // Закрываем старое соединение если оно существует
+      // Закрываем предыдущее соединение, если оно есть
       if (socketRef.current) {
         console.log('Закрытие существующего соединения перед повторным подключением');
         socketRef.current.disconnect();
-        socketRef.current = null;
       }
+
+      const socketOptions = {
+        gameId,
+        userId: userId?.toString() || '', 
+        attempt: connectionAttemptRef.current,
+        timestamp: Date.now() // Добавим метку времени для избежания кэширования
+      };
+      console.log('Socket connection initialized with options', socketOptions);
+
+      console.log('Connecting to socket URL:', process.env.NEXT_PUBLIC_API_URL || 'https://test.timecommunity.xyz');
       
-      const newSocket = io(socketUrl, {
-        path: '/api/socket.io/',
-        query: {
-          gameId,
-          userId: userIdForSocket,
-          timestamp: Date.now() // Добавляем метку времени, чтобы избежать кэширования
-        },
+      // Настройка нового сокета
+      const newSocket = io(process.env.NEXT_PUBLIC_API_URL || 'https://test.timecommunity.xyz', {
+        path: '/api/socket.io',
         transports: ['websocket'],
         reconnection: true,
-        reconnectionAttempts: 5,
+        reconnectionAttempts: 10,
         reconnectionDelay: 1000,
-        timeout: 10000, // Увеличиваем таймаут до 10 секунд
-        forceNew: true // Важно для предотвращения повторного использования существующего соединения
+        reconnectionDelayMax: 5000,
+        timeout: 15000, // Увеличиваем таймаут до 15 секунд
+        query: socketOptions,
+        auth: {
+          userId: userId?.toString() || '',
+          gameId
+        }
       });
 
       // Обработка событий
@@ -440,10 +409,12 @@ export function MultiplayerDiceGame({
             <h2>Ожидание соперника</h2>
             <p>Поделитесь ссылкой с другом или дождитесь пока кто-то присоединится</p>
             
-            <button className="copy-invite-button" onClick={copyInviteLink}>
-              <Icon icon="mdi:content-copy" />
-              Скопировать ссылку
-            </button>
+            <div className="copy-link-button">
+              <button onClick={copyInviteLink}>
+                <Icon icon="mdi:content-copy" />
+                <span>Скопировать ссылку</span>
+              </button>
+            </div>
             
             <div className="connected-players">
               <h3>Подключенные игроки ({players.length}/2):</h3>
@@ -704,10 +675,12 @@ export function MultiplayerDiceGame({
               <h2>Ожидание соперника</h2>
               <p>Поделитесь ссылкой с другом или дождитесь пока кто-то присоединится</p>
               
-              <button className="copy-link-button" onClick={copyInviteLink}>
-                <Icon icon="mdi:content-copy" />
-                <span>Скопировать ссылку</span>
-              </button>
+              <div className="copy-link-button">
+                <button onClick={copyInviteLink}>
+                  <Icon icon="mdi:content-copy" />
+                  <span>Скопировать ссылку</span>
+                </button>
+              </div>
               
               <div className="connected-players">
                 <h3>Подключенные игроки ({players.length}/2):</h3>

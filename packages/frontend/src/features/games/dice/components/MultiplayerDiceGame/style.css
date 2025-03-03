@@ -230,12 +230,18 @@
 }
 
 .copy-link-button {
+  width: 100%;
+  max-width: 280px;
+  margin: 16px auto;
+}
+
+.copy-link-button button {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
   padding: 12px 20px;
-  background: rgba(0, 152, 234, 0.1);
+  background: rgba(0, 152, 234, 0.15);
   border: 1px solid #0098EA;
   color: #fff;
   border-radius: 12px;
@@ -244,19 +250,19 @@
   cursor: pointer;
   transition: all 0.3s ease;
   width: 100%;
-  max-width: 280px;
   height: 48px;
-  margin-top: 8px;
-  position: relative;
-  overflow: hidden;
+  text-align: center;
 }
 
-.copy-link-button:hover {
-  background: rgba(0, 152, 234, 0.2);
+.copy-link-button button:hover {
+  background: rgba(0, 152, 234, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 152, 234, 0.2);
 }
 
-.copy-link-button:active {
-  transform: scale(0.97);
+.copy-link-button button:active {
+  transform: translateY(0);
+  background: rgba(0, 152, 234, 0.3);
 }
 
 .copy-link-button svg {

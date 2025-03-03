@@ -159,8 +159,10 @@ export default function GamePage() {
     // Функция для загрузки данных и присоединения к игре
     const loadGameAndJoin = async () => {
       try {
+        // Добавляем случайный параметр для избежания кэширования
+        const timestamp = Date.now();
         // Загружаем данные игры
-        const gameData = await fetchGameData(gameId);
+        const gameData = await fetchGameData(`${gameId}?_=${timestamp}`);
         
         if (!gameData) {
           // Если данные не получены, выходим
