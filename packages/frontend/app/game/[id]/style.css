@@ -22,68 +22,114 @@
 }
 
 .loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid rgba(255, 255, 255, 0.1);
-  border-left-color: #0098EA;
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(0, 152, 234, 0.2);
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  border-top-color: #0098EA;
+  animation: spin 1s ease-in-out infinite;
   margin-bottom: 16px;
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
 
 .error-screen h2 {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 600;
+  color: white;
   margin-bottom: 12px;
-  color: #fff;
 }
 
 .error-screen p {
-  color: rgba(255, 255, 255, 0.7);
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
   margin-bottom: 24px;
-  max-width: 400px;
 }
 
 .back-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 24px;
-  background: #0098EA;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
-  border: none;
+  padding: 12px 24px;
   border-radius: 12px;
   font-size: 16px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
-  margin-top: 8px;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .back-button:active {
+  background: rgba(255, 255, 255, 0.15);
   transform: scale(0.98);
-  background: #007bbf;
 }
 
-/* Стили для адаптивной высоты на разных устройствах */
 @media (max-height: 700px) {
   .game-page-container {
-    padding-top: 0;
+    padding-top: 12px;
+    padding-bottom: 70px;
   }
 }
 
 .isolated-game-container {
-  position: relative;
-  isolation: isolate;
-  display: flex;
-  flex-direction: column;
   width: 100%;
-  height: 100vh;
-  overflow: hidden;
+  height: 100%;
+  position: relative;
+  min-height: 400px;
+}
+
+/* Стили для специальной кнопки копирования ссылки */
+.copy-button-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 16px 0;
+}
+
+/* Анимация для индикатора подключения */
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+.connection-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(0, 152, 234, 0.1);
+  border-radius: 12px;
+  font-size: 12px;
+  margin-top: 8px;
+  animation: pulse 2s infinite;
+}
+
+.connection-indicator.connected {
+  background: rgba(0, 200, 83, 0.1);
+}
+
+.connection-indicator.error {
+  background: rgba(255, 69, 58, 0.1);
+}
+
+.connection-indicator-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #0098EA;
+}
+
+.connection-indicator.connected .connection-indicator-dot {
+  background: #00c853;
+}
+
+.connection-indicator.error .connection-indicator-dot {
+  background: #ff4538;
 } 

@@ -11,6 +11,7 @@ import { useUserStore } from '@/store/useUserStore';
 import { toast } from 'react-hot-toast';
 import { getTelegramData } from '@/utils/telegramWebApp';
 import { BottomNav } from '@/components/_layout/BottomNav';
+import { useTranslation } from '@/providers/i18n';
 import './style.css';
 import io from 'socket.io-client';
 
@@ -19,12 +20,14 @@ interface GameData {
   betAmount: number;
   status?: 'waiting' | 'playing' | 'finished';
   players?: any[];
+  isPlayerInGame: boolean;
 }
 
 export default function GamePage() {
   // Получаем параметры из маршрута через хук App Router
   const params = useParams();
   const gameId = params.id as string;
+  const { t } = useTranslation();
   
   const router = useRouter();
   const [gameData, setGameData] = useState<GameData | null>(null);
@@ -55,7 +58,8 @@ export default function GamePage() {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        cache: 'no-store' // Отключаем кеширование
       });
       
       if (!response.ok) {
@@ -150,54 +154,30 @@ export default function GamePage() {
     }
   };
 
-  // Основной эффект для загрузки данных и присоединения к игре
+  // Эффект для загрузки данных игры при монтировании
   useEffect(() => {
-    if (!gameId) return;
-    
+    // Функция для загрузки данных и присоединения к игре
     const loadGameAndJoin = async () => {
       try {
         // Загружаем данные игры
-        const game = await fetchGameData(gameId);
+        const gameData = await fetchGameData(gameId);
         
-        if (!game) {
-          console.error('Не удалось загрузить данные игры');
+        if (!gameData) {
+          // Если данные не получены, выходим
           return;
         }
         
-        setGameData(game);
+        // Сохраняем данные игры
+        setGameData(gameData);
         
-        // Если игра ожидает второго игрока, пытаемся присоединиться
-        if (game.status === 'waiting') {
-          try {
-            // Пытаемся получить данные Telegram
-            let telegramData;
-            try {
-              telegramData = getTelegramUserData();
-            } catch (telegramError) {
-              console.error('Ошибка при получении данных Telegram:', telegramError);
-              // Даже если не удалось получить данные, продолжаем с показом игры
-              // но не присоединяемся к ней
-              return;
-            }
-            
-            const userTelegramId = telegramData.userId;
-            
-            // Проверяем, есть ли пользователь среди игроков
-            const isPlayerInGame = game.players.some(
-              (player: any) => player.telegramId === userTelegramId
-            );
-            
-            if (!isPlayerInGame) {
-              console.log('Пользователь не в игре, присоединяемся...');
-              await joinGame(gameId);
-            } else {
-              console.log('Пользователь уже в игре');
-              setJoinStatus('joined');
-            }
-          } catch (joinError) {
-            console.error('Ошибка при присоединении к игре:', joinError);
-            // Продолжаем без присоединения
-          }
+        // Проверяем, нужно ли присоединяться к игре
+        if (!gameData.isPlayerInGame) {
+          console.log('Пользователь не в игре, присоединяемся...');
+          // Присоединяемся к игре
+          await joinGame(gameId);
+        } else {
+          console.log('Пользователь уже в игре, устанавливаем статус joined');
+          setJoinStatus('joined');
         }
       } catch (error) {
         console.error('Ошибка при загрузке игры:', error);
@@ -241,76 +221,50 @@ export default function GamePage() {
     }
   };
 
-  // Если идет загрузка
-  if (loading) {
-    return (
-      <SafeArea>
-        <PageContainer>
-          <div className="loading-screen">
-            <div className="loading-spinner"></div>
-            <p>Загрузка игры...</p>
-          </div>
-          <BottomNav />
-        </PageContainer>
-      </SafeArea>
-    );
-  }
-
-  // Если есть ошибка
-  if (error) {
-    return (
-      <SafeArea>
-        <PageContainer>
-          <div className="error-screen">
-            <h2>Ошибка</h2>
-            <p>{error}</p>
-            <button onClick={() => router.push('/games/dice')} className="back-button">
-              Вернуться
-            </button>
-          </div>
-          <BottomNav />
-        </PageContainer>
-      </SafeArea>
-    );
-  }
-
-  // Если нет данных игры
-  if (!gameData) {
-    return (
-      <SafeArea>
-        <PageContainer>
-          <div className="loading-screen">
-            <p>Игра не найдена</p>
-            <button onClick={() => router.push('/games/dice')} className="back-button">
-              Вернуться
-            </button>
-          </div>
-          <BottomNav />
-        </PageContainer>
-      </SafeArea>
-    );
-  }
-
-  // Рендер игры
   return (
-    <SafeArea>
-      <PageContainer>
-        <PageHeader 
-          title={gameData.status === 'waiting' ? "Игра в кости" : "Кубик"} 
-        />
-        
-        <div className="game-page-wrapper">
-          <ErrorBoundary>
-            <MultiplayerDiceGame
-              gameId={gameId}
-              betAmount={gameData.betAmount}
-              onGameEnd={handleGameEnd}
-            />
-          </ErrorBoundary>
-        </div>
-        
-        <BottomNav />
-      </PageContainer>
-    </SafeArea>
+    <ErrorBoundary>
+      <SafeArea>
+        <PageContainer>
+          <PageHeader title={gameData?.status === 'waiting' ? 'Игра в кости' : 'Кубик'} />
+          
+          <div className="game-page-wrapper">
+            {/* Экран загрузки */}
+            {loading && !error && (
+              <div className="loading-screen">
+                <div className="loading-spinner"></div>
+                <p>Загрузка игры...</p>
+              </div>
+            )}
+            
+            {/* Экран ошибки */}
+            {error && (
+              <div className="error-screen">
+                <h2>Ошибка загрузки</h2>
+                <p>{error}</p>
+                <button 
+                  className="back-button"
+                  onClick={() => router.push('/games/dice')}
+                >
+                  Вернуться к списку игр
+                </button>
+              </div>
+            )}
+            
+            {/* Игровой компонент */}
+            {!loading && !error && gameData && joinStatus === 'joined' && (
+              <div className="isolated-game-container">
+                <MultiplayerDiceGame 
+                  gameId={gameId}
+                  betAmount={gameData.betAmount}
+                  onGameEnd={handleGameEnd}
+                />
+              </div>
+            )}
+          </div>
+          
+          <BottomNav />
+        </PageContainer>
+      </SafeArea>
+    </ErrorBoundary>
   );
 } 
