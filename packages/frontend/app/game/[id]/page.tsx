@@ -52,43 +52,32 @@ export default function GamePage() {
   const fetchGameData = async (id: string) => {
     try {
       console.log('Запрос данных игры:', id);
-      setLoading(true);
+      // Добавляем метку времени для избежания кэширования
+      const timestamp = Date.now();
+      const fullId = id.includes('?') ? `${id}&_=${timestamp}` : `${id}?_=${timestamp}`;
       
-      const response = await fetch(`https://test.timecommunity.xyz/api/games/${id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://test.timecommunity.xyz'}/api/games/${fullId}`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json'
-        },
-        cache: 'no-store' // Отключаем кеширование
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
       });
       
       if (!response.ok) {
-        console.error('Ошибка при загрузке данных игры:', response.status, response.statusText);
-        
-        // Если игра не найдена
-        if (response.status === 404) {
-          setError('Игра не найдена');
-          return null;
-        }
-        
-        throw new Error(`Ошибка загрузки: ${response.status}`);
+        throw new Error(`Ошибка HTTP ${response.status}`);
       }
       
       const data = await response.json();
       console.log('Полученные данные игры:', data);
-      
-      if (data.success && data.game) {
-        return data.game;
-      } else {
-        setError('Не удалось получить данные игры');
-        return null;
-      }
+      return data;
     } catch (error) {
       console.error('Ошибка при загрузке данных игры:', error);
-      setError(`Ошибка при загрузке данных игры: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
+      toast.error(`Ошибка при загрузке данных игры: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
+      setError(`Не удалось загрузить данные игры: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
       return null;
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -162,7 +151,7 @@ export default function GamePage() {
         // Добавляем случайный параметр для избежания кэширования
         const timestamp = Date.now();
         // Загружаем данные игры
-        const gameData = await fetchGameData(`${gameId}?_=${timestamp}`);
+        const gameData = await fetchGameData(gameId);
         
         if (!gameData) {
           // Если данные не получены, выходим
@@ -182,12 +171,16 @@ export default function GamePage() {
           setJoinStatus('joined');
         }
       } catch (error) {
-        console.error('Ошибка при загрузке игры:', error);
+        console.error('Ошибка при загрузке данных и присоединении к игре:', error);
+        setJoinStatus('failed');
         setError(`Произошла ошибка: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
+        toast.error(`Ошибка при загрузке: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
+      } finally {
+        setLoading(false);
       }
     };
     
-    // Запускаем загрузку игры
+    // Запускаем загрузку данных
     loadGameAndJoin();
   }, [gameId]);
 

@@ -143,16 +143,25 @@ export function MultiplayerDiceGame({
    */
   const setupSocketConnection = useCallback(() => {
     try {
-      console.log(`Попытка подключения #${connectionAttemptRef.current}`);
+      console.log(`Попытка подключения #${connectionAttemptRef.current} с userId:`, userId);
+      
       // Закрываем предыдущее соединение, если оно есть
       if (socketRef.current) {
         console.log('Закрытие существующего соединения перед повторным подключением');
         socketRef.current.disconnect();
       }
 
+      // Проверяем, есть ли userId
+      if (!userId) {
+        console.log('Невозможно установить соединение без userId');
+        setConnectionStatus('error');
+        setSocketError('Не удалось получить идентификатор пользователя');
+        return;
+      }
+
       const socketOptions = {
         gameId,
-        userId: userId?.toString() || '', 
+        userId: userId.toString(), 
         attempt: connectionAttemptRef.current,
         timestamp: Date.now() // Добавим метку времени для избежания кэширования
       };
@@ -171,54 +180,38 @@ export function MultiplayerDiceGame({
         timeout: 15000, // Увеличиваем таймаут до 15 секунд
         query: socketOptions,
         auth: {
-          userId: userId?.toString() || '',
+          userId: userId.toString(),
           gameId
         }
       });
 
-      // Обработка событий
+      // Обработчики событий соединения
       newSocket.on('connect', () => {
         console.log('Socket connected successfully!');
         setConnectionStatus('connected');
         setSocketError(null);
-        
-        // Присоединяемся к комнате игры
+        // После успешного подключения отправляем запрос на присоединение к комнате и получение списка игроков
         console.log('Joining game room:', gameId);
         newSocket.emit('joinGameRoom', { gameId });
-        
-        // Запрашиваем список игроков при успешном подключении
         newSocket.emit('getGamePlayers', { gameId });
       });
 
       newSocket.on('connect_error', (error) => {
         console.error('Socket connection error:', error);
         setConnectionStatus('error');
-        setSocketError(`Ошибка подключения: ${error.message}. Попытка: ${connectionAttemptRef.current}/${MAX_ATTEMPTS}`);
-        
-        // Пробуем подключиться снова через увеличивающийся интервал
-        if (connectionAttemptRef.current < MAX_ATTEMPTS) {
-          setTimeout(() => {
-            if (mounted.current) {  // Проверяем, что компонент все еще смонтирован
-              setupSocketConnection();
-            }
-          }, 1000 * Math.min(connectionAttemptRef.current, 5)); // Увеличиваем задержку, но не более 5 секунд
-        }
+        setSocketError(`Ошибка подключения: ${error.message}`);
+        toast.error('Ошибка подключения к серверу');
+        connectionAttemptRef.current += 1;
       });
 
-      // Обработка события обновления списка игроков
+      // Обрабатываем получение списка игроков
       newSocket.on('gamePlayers', (data) => {
         console.log('Получен список игроков:', data.players);
-        if (data && data.players) {
+        if (Array.isArray(data.players)) {
           setPlayers(data.players);
+        } else {
+          console.error('Неверный формат данных игроков:', data);
         }
-      });
-
-      // Добавляем обработчик переподключения
-      newSocket.on('reconnect', (attempt) => {
-        console.log(`Reconnected after ${attempt} attempts`);
-        // После успешного переподключения снова присоединяемся к комнате
-        newSocket.emit('joinGameRoom', { gameId });
-        newSocket.emit('getGamePlayers', { gameId });
       });
 
       // Сохраняем сокет
@@ -230,12 +223,45 @@ export function MultiplayerDiceGame({
       setSocketError(`Ошибка при настройке соединения: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
       toast.error('Не удалось установить соединение с сервером');
     }
-  }, [gameId, connectionAttemptRef.current, socketRef.current]);
+  }, [gameId, userId]);
 
   // Подключаемся к WebSocket при монтировании компонента
   useEffect(() => {
     console.log('MultiplayerDiceGame component mounted with gameId:', gameId);
-    setupSocketConnection();
+    
+    // Сначала пытаемся получить userId из Telegram WebApp
+    const currentUserId = getTelegramUserId();
+    if (currentUserId) {
+      console.log('userId сразу получен из WebApp:', currentUserId);
+      setUserId(currentUserId.toString());
+      // Устанавливаем соединение только после получения userId
+      setupSocketConnection();
+    } else {
+      console.log('userId не получен при первой загрузке, ожидаем...');
+      // Если userId не получен, ждем 1 секунду и пробуем снова
+      const timer = setTimeout(() => {
+        const delayedUserId = getTelegramUserId();
+        if (delayedUserId) {
+          console.log('userId получен с задержкой:', delayedUserId);
+          setUserId(delayedUserId.toString());
+          setupSocketConnection();
+        } else {
+          console.log('userId не получен даже после задержки, используем пользователя-гостя');
+          // Если всё ещё не удалось получить userId, создаем гостевой ID
+          const guestId = getOrCreateGuestId();
+          setUserId(guestId);
+          setupSocketConnection();
+        }
+      }, 1000);
+      
+      return () => {
+        clearTimeout(timer);
+        if (socketRef.current) {
+          console.log('MultiplayerDiceGame component unmounting, disconnecting socket');
+          socketRef.current.disconnect();
+        }
+      };
+    }
     
     // Предотвращаем случайные свайпы на iOS, которые закрывают приложение
     const preventSwipe = (e: TouchEvent) => {
@@ -254,7 +280,7 @@ export function MultiplayerDiceGame({
       }
       document.removeEventListener('touchstart', preventSwipe);
     };
-  }, [gameId, setupSocketConnection]);
+  }, [gameId]);
 
   // Обновляем данные, когда меняется playerData
   useEffect(() => {
