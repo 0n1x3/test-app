@@ -128,7 +128,7 @@ export function MultiplayerDiceGame({
   const [isRolling, setIsRolling] = useState(false);
   const [playerDice, setPlayerDice] = useState(1);
   const [opponentDice, setOpponentDice] = useState(1);
-  const [round, setRound] = useState(1);
+  const [currentRound, setCurrentRound] = useState(1);
   const [playerScore, setPlayerScore] = useState(0);
   const [opponentScore, setOpponentScore] = useState(0);
   const [gameResult, setGameResult] = useState<GameResult | null>(null);
@@ -349,53 +349,33 @@ export function MultiplayerDiceGame({
       newSocket.on('gamePlayers', (data) => {
         console.log('Получен список игроков от сервера:', data);
         if (data && Array.isArray(data.players)) {
-          console.log(`Установка списка игроков (${data.players.length}):`, data.players);
+          setPlayers(data.players);
           
-          // Преобразуем данные игроков
-          const processedPlayers = data.players.map((player: any) => {
-            // Убедимся, что telegramId сохраняется как число или строка
-            return {
-              ...player,
-              telegramId: player.telegramId || player.id || player.userId || null
-            };
-          });
-          
-          console.log('Обработанные данные игроков:', processedPlayers);
-          setPlayers(processedPlayers);
-          
-          // Проверяем, включен ли текущий пользователь в список игроков
-          const currentUserTgId = parseInt(userId || '0', 10);
-          const isCurrentUserInList = processedPlayers.some(
-            (p: any) => (p.telegramId && p.telegramId.toString() === currentUserTgId.toString())
+          // Определяем, кто из игроков - текущий пользователь
+          const currentPlayer = data.players.find(
+            (player: Player) => player.telegramId.toString() === telegramId.toString()
           );
           
-          if (!isCurrentUserInList && processedPlayers.length > 0 && userId) {
-            console.log('Текущий пользователь не найден в списке игроков, добавляем его локально');
-            
-            // Добавляем текущего пользователя в локальный список
-            const userData = window.Telegram?.WebApp?.initDataUnsafe?.user;
-            const updatedPlayers = [
-              ...processedPlayers,
-              {
-                telegramId: currentUserTgId,
-                username: userData?.username || `Player ${userId.substring(0, 4)}`,
-                avatarUrl: userData?.photo_url || ''
-              }
-            ];
-            
-            console.log('Обновленный список игроков с текущим пользователем:', updatedPlayers);
-            setPlayers(updatedPlayers);
-            
-            // Также информируем сервер о новом пользователе
-            newSocket.emit('updateGame', {
-              gameId,
-              userId: currentUserTgId,
-              telegramId: currentUserTgId,
-              players: updatedPlayers
+          if (currentPlayer) {
+            setPlayerData({
+              id: currentPlayer.telegramId,
+              username: currentPlayer.username,
+              avatarUrl: currentPlayer.avatarUrl
             });
           }
-        } else {
-          console.error('Неверный формат данных игроков:', data);
+          
+          // Определяем, кто из игроков - оппонент
+          const opponent = data.players.find(
+            (player: Player) => player.telegramId.toString() !== telegramId.toString()
+          );
+          
+          if (opponent) {
+            setOpponentData({
+              id: opponent.telegramId,
+              username: opponent.username,
+              avatarUrl: opponent.avatarUrl
+            });
+          }
         }
       });
       
@@ -408,30 +388,69 @@ export function MultiplayerDiceGame({
         }
       });
 
-      // Добавляем обработчик события начала игры
+      // Обработчик для начала игры в кости
       newSocket.on('diceGameStarted', (data) => {
-        console.log('Получено событие начала игры:', data);
+        console.log('Игра в кости началась:', data);
         setGameState('playing');
         
-        // Определяем, кто ходит первым
-        if (data.firstPlayer !== undefined) {
-          const currentUserTgId = parseInt(userId || '0', 10);
-          
-          // Если firstPlayer - это индекс игрока (0 или 1)
-          if (typeof data.firstPlayer === 'number') {
-            const playersList = data.players || players;
-            if (playersList && playersList.length > data.firstPlayer) {
-              const firstPlayerTgId = playersList[data.firstPlayer].telegramId;
-              setIsMyTurn(firstPlayerTgId.toString() === currentUserTgId.toString());
-            }
-          } 
-          // Если firstPlayer - это telegramId игрока
-          else if (typeof data.firstPlayer === 'string') {
-            setIsMyTurn(data.firstPlayer === currentUserTgId.toString());
-          }
-          
-          console.log(`Игра началась! Мой ход: ${isMyTurn}`);
-          toast.success('Игра началась!');
+        // Определяем, чей первый ход
+        const isMyTurn = data.firstPlayer === telegramId.toString();
+        setIsMyTurn(isMyTurn);
+        
+        // Сбрасываем счет и кубики
+        setPlayerScore(0);
+        setOpponentScore(0);
+        setPlayerDice(1);
+        setOpponentDice(1);
+        setCurrentRound(1);
+        setGameResult(null);
+      });
+
+      // Добавляем обработчик хода в игре
+      newSocket.on('diceMove', (data) => {
+        console.log('Получен ход в игре:', data);
+        
+        // Если ход сделал оппонент, обновляем его кубик
+        if (data.userId !== telegramId) {
+          setOpponentDice(data.value);
+        }
+        
+        // Определяем, чей следующий ход
+        const isMyTurn = data.nextMove === telegramId.toString();
+        setIsMyTurn(isMyTurn);
+      });
+
+      // Обработчик для результата раунда
+      newSocket.on('roundResult', (data) => {
+        console.log('Получен результат раунда:', data);
+        
+        // Обновляем номер текущего раунда
+        setCurrentRound(data.round + 1);
+        
+        // Обновляем счет
+        if (data.result === 'win') {
+          setPlayerScore(prev => prev + 1);
+        } else if (data.result === 'lose') {
+          setOpponentScore(prev => prev + 1);
+        }
+        // При ничьей счет не меняется
+      });
+
+      // Добавляем обработчик для окончания игры
+      newSocket.on('gameEnd', (data) => {
+        console.log('Игра завершена:', data);
+        
+        // Определяем результат для текущего игрока
+        const isWinner = data.winner === telegramId.toString();
+        const result = isWinner ? 'win' : 'lose';
+        
+        // Устанавливаем результат игры
+        setGameResult(result);
+        setGameState('finished');
+        
+        // Вызываем колбэк окончания игры, если он предоставлен
+        if (onGameEnd) {
+          onGameEnd(result);
         }
       });
 
@@ -534,10 +553,27 @@ export function MultiplayerDiceGame({
 
   // Функция для броска кубика
   const rollDice = () => {
-    if (isRolling) return;
+    if (isRolling || !isMyTurn) return;
+    
     setIsRolling(true);
     console.log('Multiplayer roll initiated');
-    // Здесь можно добавить отправку события через сокет для броска кубика
+    
+    // Генерируем случайное значение от 1 до 6
+    const diceValue = Math.floor(Math.random() * 6) + 1;
+    
+    // Обновляем локальное значение кубика
+    setPlayerDice(diceValue);
+    
+    // Отправляем событие на сервер
+    if (socketRef.current) {
+      socketRef.current.emit('diceMove', {
+        gameId,
+        value: diceValue,
+        userId: playerData?.id
+      });
+    }
+    
+    // Анимация броска длится 1 секунду
     setTimeout(() => {
       setIsRolling(false);
       console.log('Multiplayer roll completed');
@@ -908,7 +944,7 @@ export function MultiplayerDiceGame({
               </div>
               
               <div className="round-info">
-                <div className="round-number">Раунд {round}/3</div>
+                <div className="round-number">Раунд {currentRound}/3</div>
                 <BetInfo amount={betAmount} />
               </div>
               
@@ -1037,7 +1073,7 @@ export function MultiplayerDiceGame({
             </div>
             
             <div className="round-info">
-              <div className="round-number">Раунд {round}/3</div>
+              <div className="round-number">Раунд {currentRound}/3</div>
               <BetInfo amount={betAmount} />
             </div>
             
