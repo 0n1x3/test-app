@@ -10,6 +10,7 @@ import { getUserId, getOrCreateGuestId } from '@/utils/telegramWebApp';
 import './style.css';
 import { PageContainer } from '@/components/_layout/PageContainer';
 import { WaitingRoom } from './WaitingRoom/index';
+import { Balance } from '@/components/_common/Balance';
 
 // Удаляем объявление глобального интерфейса, так как оно определено в global.d.ts
 
@@ -512,6 +513,11 @@ export function MultiplayerDiceGame({
         
         try {
           console.log('Игра в кости началась:', data);
+          console.log('Текущее состояние isMyTurn до обновления:', isMyTurn);
+          console.log('Состояние в хранилище isCurrentTurn до обновления:', useUserStore.getState().isCurrentTurn);
+          
+          // Обязательно указываем игре, что она началась и переходим в состояние playing
+          setGameState('playing');
           
           // Проверим, что telegramId установлен перед проверкой хода
           if (!telegramId) {
@@ -534,8 +540,11 @@ export function MultiplayerDiceGame({
                 telegramIdStr
               });
               
+              // Явно устанавливаем ход в компоненте и хранилище
               setIsMyTurn(isFirstPlayer);
               useUserStore.getState().setIsCurrentTurn(isFirstPlayer);
+              console.log('Установлен isMyTurn:', isFirstPlayer); // Добавленный лог
+              console.log('Установлен isCurrentTurn в store:', isFirstPlayer); // Добавленный лог
               
               if (isFirstPlayer) {
                 toast.success('Ваш ход первый!');
@@ -560,8 +569,11 @@ export function MultiplayerDiceGame({
               telegramIdStr
             });
             
+            // Явно устанавливаем ход в компоненте и хранилище
             setIsMyTurn(isFirstPlayer);
             useUserStore.getState().setIsCurrentTurn(isFirstPlayer);
+            console.log('Установлен isMyTurn:', isFirstPlayer); // Добавленный лог
+            console.log('Установлен isCurrentTurn в store:', isFirstPlayer); // Добавленный лог
             
             if (isFirstPlayer) {
               toast.success('Ваш ход первый!');
@@ -578,6 +590,14 @@ export function MultiplayerDiceGame({
           setCurrentRound(1);
           setGameResult(null);
           setGameStarted(true);
+          
+          // Принудительно проверяем после небольшой задержки, что статус хода корректно установлен
+          setTimeout(() => {
+            console.log('Статус хода через 100мс после начала игры:');
+            console.log('isMyTurn:', isMyTurn);
+            console.log('isCurrentTurn в хранилище:', useUserStore.getState().isCurrentTurn);
+          }, 100);
+          
           toast.success('Игра началась!');
         } catch (error) {
           console.error('Ошибка при обработке события diceGameStarted:', error);
@@ -664,6 +684,8 @@ export function MultiplayerDiceGame({
         
         // Получим строковое представление telegramId для сравнения, защищенное от null
         const telegramIdStr = telegramId?.toString() || '';
+        const userBalance = useUserStore.getState().balance;
+        console.log('Текущий баланс пользователя:', userBalance);
         
         // Определяем результат для текущего игрока
         const isWinner = data.winner === telegramIdStr;
@@ -771,7 +793,8 @@ export function MultiplayerDiceGame({
       isMyTurn,
       gameState,
       currentRound,
-      telegramId
+      telegramId,
+      isPlayerTurn: useUserStore.getState().isCurrentTurn // Добавленный лог
     });
     
     // Проверяем, что сейчас наш ход и анимация не запущена
@@ -998,16 +1021,50 @@ export function MultiplayerDiceGame({
     toast.success('Переходим в Telegram для присоединения к игре');
   };
 
-  // Подключаемся к WebSocket при монтировании компонента
+  // Эффект для инициализации компонента
   useEffect(() => {
     console.log('MultiplayerDiceGame component mounted with gameId:', gameId);
     
-    // Сначала пытаемся получить userId из Telegram WebApp
+    // Устанавливаем флаг монтирования
+    mounted.current = true;
+    
+    // Обязательно загружаем данные пользователя для корректного отображения баланса
+    useUserStore.getState().fetchUserData();
+    
+    // Пытаемся получить ID пользователя из Telegram WebApp
     const currentUserId = getTelegramUserId();
     if (currentUserId) {
       console.log('userId сразу получен из WebApp:', currentUserId);
       // Важно: устанавливаем состояние и передаём userId напрямую в функцию подключения
       setUserId(currentUserId.toString());
+      setTelegramId(currentUserId);
+      
+      // Получаем данные пользователя
+      fetch(`https://test.timecommunity.xyz/api/users/${currentUserId}`)
+        .then(response => response.json())
+        .then(userData => {
+          if (userData) {
+            console.log('Получены данные пользователя:', userData);
+            
+            // Более надежный способ обновления данных в хранилище
+            if (userData.balance !== undefined) {
+              console.log('Обновляем баланс пользователя:', userData.balance);
+              useUserStore.setState(state => ({
+                ...state,
+                telegramId: userData.telegramId || state.telegramId,
+                username: userData.username || state.username,
+                avatarUrl: userData.avatarUrl || state.avatarUrl,
+                balance: userData.balance,
+                level: userData.level || state.level,
+                experience: userData.experience || state.experience,
+                isActive: userData.isActive || state.isActive
+              }));
+            }
+          }
+        })
+        .catch(error => {
+          console.error('Ошибка при получении данных пользователя:', error);
+        });
       
       // Проверяем, есть ли уже активное соединение
       if (socketRef.current && socketRef.current.connected && hasJoinedRoomRef.current) {
@@ -1023,6 +1080,7 @@ export function MultiplayerDiceGame({
         if (delayedUserId) {
           console.log('userId получен с задержкой:', delayedUserId);
           setUserId(delayedUserId.toString());
+          setTelegramId(delayedUserId);
           
           // Проверяем, есть ли уже активное соединение
           if (socketRef.current && socketRef.current.connected && hasJoinedRoomRef.current) {
@@ -1054,21 +1112,27 @@ export function MultiplayerDiceGame({
       };
     }
     
-    // Предотвращаем случайные свайпы на iOS, которые закрывают приложение
+    // Функция для предотвращения свайпа при игре
     const preventSwipe = (e: TouchEvent) => {
-      if (e.touches.length > 1) {
+      // Проверяем, находимся ли мы в режиме игры
+      if (gameState === 'playing') {
         e.preventDefault();
       }
     };
     
+    // Добавляем обработчик события touchstart для предотвращения свайпа
     document.addEventListener('touchstart', preventSwipe, { passive: false });
     
-    // Очистка при размонтировании
+    // Очищаем ресурсы при размонтировании компонента
     return () => {
-      console.log('MultiplayerDiceGame component unmounting, disconnecting socket');
+      console.log('MultiplayerDiceGame component unmounting, cleanup');
+      mounted.current = false;
+      
       if (socketRef.current) {
+        console.log('Closing socket connection on unmount');
         socketRef.current.disconnect();
       }
+      
       document.removeEventListener('touchstart', preventSwipe);
     };
   }, [gameId]);
@@ -1211,6 +1275,115 @@ export function MultiplayerDiceGame({
     };
   }, [gameId]);
 
+  // Обработчик для возврата в лобби
+  const handleBackToLobby = useCallback(() => {
+    // Перенаправляем на страницу лобби
+    if (window.Telegram?.WebApp) {
+      // Закрываем WebApp Telegram
+      window.Telegram.WebApp.close();
+    } else {
+      // В случае тестирования в браузере
+      window.location.href = '/games';
+    }
+  }, []);
+
+  const renderGameInterface = () => {
+    // Получаем актуальный баланс из хранилища
+    const userBalance = useUserStore.getState().balance;
+    const isPlayerCurrentTurn = useUserStore.getState().isCurrentTurn;
+    
+    console.log('Render game interface with balance:', userBalance);
+    console.log('Current turn state:', { isMyTurn, isPlayerCurrentTurn });
+    
+    return (
+      <div className="dice-game">
+        <div className="game-header">
+          <div className="score">
+            <div className="player-side">
+              <div className={`player-avatar ${isMyTurn ? 'active-turn' : ''}`}>
+                {playerData?.avatarUrl ? (
+                  <img src={playerData.avatarUrl} alt={playerData.username || 'Player'} />
+                ) : (
+                  <Icon icon="mdi:account-circle" />
+                )}
+                {isMyTurn && <div className="turn-indicator">Ваш ход</div>}
+              </div>
+              <div className="player-score">{playerScore}</div>
+            </div>
+            
+            <div className="round-info">
+              <div className="round-number">Раунд {currentRound}/3</div>
+              <div className="bet-amount">
+                <Icon icon="material-symbols:diamond-rounded" />
+                <span>{displayedBetAmount}</span>
+              </div>
+              <Balance />
+            </div>
+            
+            <div className="opponent-side">
+              <div className="opponent-score">{opponentScore}</div>
+              <div className={`opponent-avatar ${!isMyTurn ? 'active-turn' : ''}`}>
+                {opponentData?.avatarUrl ? (
+                  <img src={opponentData.avatarUrl} alt={opponentData.username || 'Opponent'} />
+                ) : (
+                  <Icon icon="mdi:account-circle" />
+                )}
+                {!isMyTurn && <div className="turn-indicator">Ходит</div>}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <GameField 
+          playerDice={playerDice}
+          opponentDice={opponentDice}
+          isRolling={isRolling}
+        />
+        
+        <div className="controls-area">
+          {gameResult ? (
+            <GameResult result={gameResult} />
+          ) : (
+            <button 
+              className={`roll-button ${isMyTurn && !isRolling ? 'active' : 'inactive'}`}
+              onClick={rollDice}
+              disabled={isRolling || !isMyTurn}
+            >
+              {isMyTurn ? (isRolling ? 'Бросаем...' : 'Бросить кубик') : 'Ожидание хода соперника'}
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderGameResult = () => {
+    // Получаем актуальный баланс из хранилища
+    const userBalance = useUserStore.getState().balance;
+    
+    console.log('Render game result with balance:', userBalance);
+    
+    return (
+      <div className="dice-game">
+        <div className="game-info">
+          <h1>Игра завершена</h1>
+          <div className="bet-info">
+            <Icon icon="material-symbols:diamond-rounded" />
+            <span>{displayedBetAmount}</span>
+          </div>
+          <Balance />
+          <GameResult result={gameResult} />
+          <button 
+            className="back-button"
+            onClick={handleBackToLobby}
+          >
+            Вернуться в лобби
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   // Если есть проблемы с соединением
   if (connectionStatus === 'error') {
     return (
@@ -1277,63 +1450,7 @@ export function MultiplayerDiceGame({
   if (gameState === 'playing') {
     return (
       <PageContainer>
-        <div className="dice-game">
-          <div className="game-header">
-            <div className="score">
-              <div className="player-side">
-                <div className={`player-avatar ${isMyTurn ? 'active-turn' : ''}`}>
-                  {playerData?.avatarUrl ? (
-                    <img src={playerData.avatarUrl} alt={playerData.username || 'Player'} />
-                  ) : (
-                    <Icon icon="mdi:account-circle" />
-                  )}
-                  {isMyTurn && <div className="turn-indicator">Ваш ход</div>}
-                </div>
-                <div className="player-score">{playerScore}</div>
-              </div>
-              
-              <div className="round-info">
-                <div className="round-number">Раунд {currentRound}/3</div>
-                <div className="bet-amount">
-                  <Icon icon="material-symbols:diamond-rounded" />
-                  <span>{displayedBetAmount}</span>
-                </div>
-              </div>
-              
-              <div className="opponent-side">
-                <div className="opponent-score">{opponentScore}</div>
-                <div className={`opponent-avatar ${!isMyTurn ? 'active-turn' : ''}`}>
-                  {opponentData?.avatarUrl ? (
-                    <img src={opponentData.avatarUrl} alt={opponentData.username || 'Opponent'} />
-                  ) : (
-                    <Icon icon="mdi:account-circle" />
-                  )}
-                  {!isMyTurn && <div className="turn-indicator">Ходит</div>}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <GameField 
-            playerDice={playerDice}
-            opponentDice={opponentDice}
-            isRolling={isRolling}
-          />
-          
-          <div className="controls-area">
-            {gameResult ? (
-              <GameResult result={gameResult} />
-            ) : (
-              <button 
-                className={`roll-button ${isMyTurn && !isRolling ? 'active' : 'inactive'}`}
-                onClick={rollDice}
-                disabled={isRolling || !isMyTurn}
-              >
-                {isMyTurn ? (isRolling ? 'Бросаем...' : 'Бросить кубик') : 'Ожидание хода соперника'}
-              </button>
-            )}
-          </div>
-        </div>
+        {renderGameInterface()}
       </PageContainer>
     );
   }
@@ -1342,68 +1459,7 @@ export function MultiplayerDiceGame({
   if (gameState === 'finished') {
     return (
       <PageContainer>
-        <div className="dice-game">
-          <div className="game-info">
-            <h1>Игра завершена</h1>
-            <div className="bet-info">
-              <Icon icon="material-symbols:diamond-rounded" />
-              <span>{displayedBetAmount}</span>
-            </div>
-          </div>
-          
-          <div className="game-container">
-            {/* Оппонент */}
-            <div className="player-container">
-              <div className="player-info">
-                <div className="player-avatar">
-                  {opponentData?.avatarUrl ? (
-                    <img src={opponentData.avatarUrl} alt="avatar" />
-                  ) : (
-                    <Icon icon="mdi:account" />
-                  )}
-                </div>
-                <div className="player-name">
-                  {opponentData?.username || 'Соперник'}
-                </div>
-              </div>
-              
-              <div className="dice-container">
-                <Dice value={opponentDice} />
-              </div>
-            </div>
-            
-            {/* Разделитель */}
-            <div className="vs-indicator">VS</div>
-            
-            {/* Игрок */}
-            <div className="player-container">
-              <div className="dice-container">
-                <Dice value={playerDice} />
-              </div>
-              
-              <div className="player-info">
-                <div className="player-avatar">
-                  {playerData?.avatarUrl ? (
-                    <img src={playerData.avatarUrl} alt="avatar" />
-                  ) : (
-                    <Icon icon="mdi:account" />
-                  )}
-                </div>
-                <div className="player-name">
-                  {playerData?.username || 'Вы'}
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div className={`game-result ${gameResult}`}>
-            <h2>
-              {gameResult === 'win' && 'Вы победили!'}
-              {gameResult === 'lose' && 'Вы проиграли!'}
-              {gameResult === 'draw' && 'Ничья!'}
-            </h2>
-          </div>
-        </div>
+        {renderGameResult()}
       </PageContainer>
     );
   }
@@ -1411,63 +1467,7 @@ export function MultiplayerDiceGame({
   // Обновляем возвращаемый JSX для лучшей интеграции с макетом
   return (
     <PageContainer>
-      <div className="dice-game">
-        <div className="game-header">
-          <div className="score">
-            <div className="player-side">
-              <div className={`player-avatar ${isMyTurn ? 'active-turn' : ''}`}>
-                {playerData?.avatarUrl ? (
-                  <img src={playerData.avatarUrl} alt={playerData.username || 'Player'} />
-                ) : (
-                  <Icon icon="mdi:account-circle" />
-                )}
-                {isMyTurn && <div className="turn-indicator">Ваш ход</div>}
-              </div>
-              <div className="player-score">{playerScore}</div>
-            </div>
-            
-            <div className="round-info">
-              <div className="round-number">Раунд {currentRound}/3</div>
-              <div className="bet-amount">
-                <Icon icon="material-symbols:diamond-rounded" />
-                <span>{displayedBetAmount}</span>
-              </div>
-            </div>
-            
-            <div className="opponent-side">
-              <div className="opponent-score">{opponentScore}</div>
-              <div className={`opponent-avatar ${!isMyTurn ? 'active-turn' : ''}`}>
-                {opponentData?.avatarUrl ? (
-                  <img src={opponentData.avatarUrl} alt={opponentData.username || 'Opponent'} />
-                ) : (
-                  <Icon icon="mdi:account-circle" />
-                )}
-                {!isMyTurn && <div className="turn-indicator">Ходит</div>}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <GameField 
-          playerDice={playerDice}
-          opponentDice={opponentDice}
-          isRolling={isRolling}
-        />
-        
-        <div className="controls-area">
-          {gameResult ? (
-            <GameResult result={gameResult} />
-          ) : (
-            <button 
-              className={`roll-button ${isMyTurn && !isRolling ? 'active' : 'inactive'}`}
-              onClick={rollDice}
-              disabled={isRolling || !isMyTurn}
-            >
-              {isMyTurn ? (isRolling ? 'Бросаем...' : 'Бросить кубик') : 'Ожидание хода соперника'}
-            </button>
-          )}
-        </div>
-      </div>
+      {renderGameInterface()}
     </PageContainer>
   );
 } 
