@@ -100,6 +100,27 @@ export class GameService {
         throw new Error('Game is full');
       }
       
+      // Проверяем баланс пользователя
+      if (user.balance < game.betAmount) {
+        console.log(`У игрока ${user.username} недостаточно средств для ставки ${game.betAmount}. Текущий баланс: ${user.balance}`);
+        throw new Error('Insufficient balance for bet');
+      }
+      
+      // Списываем ставку у второго игрока
+      if (game.players.length === 1) {
+        // Проверяем, не является ли пользователь создателем игры
+        const creatorId = String(game.createdBy);
+        const joinerId = String(user.telegramId);
+        
+        if (creatorId !== joinerId) {
+          // Списываем ставку у второго игрока (не создателя)
+          console.log(`Списываем ставку ${game.betAmount} у второго игрока ${user.username} (${user.telegramId})`);
+          await this.transactionsService.createBet(user.telegramId, game.betAmount, GameType.DICE);
+        } else {
+          console.log(`Пользователь ${user.username} является создателем игры, ставка уже списана`);
+        }
+      }
+      
       // Добавляем игрока в игру
       console.log(`Добавляем игрока ${user.username} в игру ${gameId}`);
       game.players.push(user._id);
@@ -346,19 +367,40 @@ export class GameService {
         else if (round.result === 'lose') player2Wins++;
       });
       
-      if (player1Wins >= 2 || player2Wins >= 2) {
+      // Завершаем игру, если один из игроков набрал 2 очка или прошло максимум 7 раундов
+      const maxRounds = 7;
+      const winsNeeded = 2;
+      const isMaxRoundsReached = game.currentRound >= maxRounds;
+      const hasWinner = player1Wins >= winsNeeded || player2Wins >= winsNeeded;
+      
+      if (hasWinner || isMaxRoundsReached) {
         game.status = 'finished';
         
         // Определяем победителя
-        const winner = player1Wins >= 2 
-          ? game.players[0].telegramId 
-          : game.players[1].telegramId;
+        let winner: number;
+        
+        if (player1Wins > player2Wins) {
+          winner = game.players[0].telegramId;
+        } else if (player2Wins > player1Wins) {
+          winner = game.players[1].telegramId;
+        } else {
+          // В случае ничьей, выбираем случайного победителя
+          // или возвращаем обоим игрокам их ставки
+          const randomWinnerIndex = Math.random() < 0.5 ? 0 : 1;
+          winner = game.players[randomWinnerIndex].telegramId;
+          // В случае ничьей можно также:
+          // 1. Вернуть ставки обоим игрокам или
+          // 2. Запустить "золотой раунд" для определения победителя
+        }
+        
+        console.log(`Игра завершена. Победитель: ${winner}, счет: ${player1Wins}-${player2Wins}, раунд: ${game.currentRound}`);
         
         // Отправляем уведомление о завершении игры
         this.server.to(`game_${gameId}`).emit('gameEnd', {
           gameId,
           winner,
-          score: [player1Wins, player2Wins]
+          score: [player1Wins, player2Wins],
+          rounds: game.currentRound
         });
         
         // Начисляем выигрыш победителю

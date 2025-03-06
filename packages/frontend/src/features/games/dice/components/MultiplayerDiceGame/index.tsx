@@ -41,6 +41,8 @@ interface Player {
 // Константы
 const MAX_ATTEMPTS = 5;
 const MAX_AUTO_JOIN_ATTEMPTS = 3; // Максимум 3 попытки автоматического присоединения
+const MAX_ROUNDS = 7;
+const WINS_NEEDED = 2;
 
 // Компонент для отображения игрового поля
 const GameField = ({ 
@@ -726,13 +728,46 @@ export function MultiplayerDiceGame({
         // Обновляем номер текущего раунда
         setCurrentRound(data.round + 1);
         
-        // Обновляем счет
-        if (data.result === 'win') {
-          setPlayerScore(prev => prev + 1);
-        } else if (data.result === 'lose') {
-          setOpponentScore(prev => prev + 1);
+        // Получаем telegramId текущего игрока
+        const currentTelegramId = telegramId || getTelegramUserId();
+        const telegramIdStr = currentTelegramId?.toString() || '';
+        
+        // Определяем, является ли текущий игрок первым игроком (player1) или вторым (player2)
+        const isPlayer1 = data.players && data.players[0]?.toString() === telegramIdStr;
+        
+        console.log('Определяем счет для игрока:', {
+          isPlayer1,
+          currentTelegramId: telegramIdStr,
+          players: data.players,
+          result: data.result,
+          player1Value: data.player1Value,
+          player2Value: data.player2Value
+        });
+        
+        // Обновляем счет с учетом того, какой игрок текущий
+        if (isPlayer1) {
+          // Если текущий игрок - player1, то используем прямой результат
+          if (data.result === 'win') {
+            setPlayerScore(prev => prev + 1);
+            toast.success('Вы выиграли раунд!');
+          } else if (data.result === 'lose') {
+            setOpponentScore(prev => prev + 1);
+            toast('Раунд проигран', { icon: '😔' });
+          } else {
+            toast('Ничья в раунде', { icon: '🤝' });
+          }
+        } else {
+          // Если текущий игрок - player2, то инвертируем результат
+          if (data.result === 'win') {
+            setOpponentScore(prev => prev + 1);
+            toast('Раунд проигран', { icon: '😔' });
+          } else if (data.result === 'lose') {
+            setPlayerScore(prev => prev + 1);
+            toast.success('Вы выиграли раунд!');
+          } else {
+            toast('Ничья в раунде', { icon: '🤝' });
+          }
         }
-        // При ничьей счет не меняется
       });
 
       // Добавляем обработчик для окончания игры
@@ -740,17 +775,58 @@ export function MultiplayerDiceGame({
         console.log('Игра завершена:', data);
         
         // Получим строковое представление telegramId для сравнения, защищенное от null
-        const telegramIdStr = telegramId?.toString() || '';
+        const currentTelegramId = telegramId || getTelegramUserId();
+        const telegramIdStr = currentTelegramId?.toString() || '';
         const userBalance = useUserStore.getState().balance;
-        console.log('Текущий баланс пользователя:', userBalance);
+        
+        console.log('Завершение игры для игрока:', { 
+          telegramId: telegramIdStr, 
+          winner: data.winner,
+          score: data.score,
+          rounds: data.rounds,
+          currentBalance: userBalance
+        });
         
         // Определяем результат для текущего игрока
-        const isWinner = data.winner === telegramIdStr;
+        const isWinner = data.winner?.toString() === telegramIdStr;
         const result = isWinner ? 'win' : 'lose';
         
         // Устанавливаем результат игры
         setGameResult(result);
         setGameState('finished');
+        
+        // Показываем уведомление о результате игры
+        if (isWinner) {
+          const winAmount = displayedBetAmount * 2;
+          toast.success(`Вы выиграли ${winAmount} токенов!`, { 
+            duration: 5000,
+            icon: '🏆'
+          });
+        } else {
+          toast(`Вы проиграли ${displayedBetAmount} токенов`, { 
+            duration: 5000,
+            icon: '😔'
+          });
+        }
+        
+        // Обновляем баланс пользователя в хранилище
+        setTimeout(() => {
+          // Запрашиваем актуальный баланс с сервера
+          fetch('/api/users/balance')
+            .then(res => res.json())
+            .then(data => {
+              if (data.success && typeof data.balance === 'number') {
+                // Используем метод updateBalance для обновления баланса
+                const currentBalance = useUserStore.getState().balance;
+                const balanceDiff = data.balance - currentBalance;
+                useUserStore.getState().updateBalance(balanceDiff);
+                console.log('Баланс пользователя обновлен:', data.balance);
+              }
+            })
+            .catch(err => {
+              console.error('Ошибка при обновлении баланса:', err);
+            });
+        }, 1000);
         
         // Вызываем колбэк окончания игры, если он предоставлен
         if (onGameEnd) {
@@ -1379,7 +1455,7 @@ export function MultiplayerDiceGame({
             </div>
             
             <div className="round-info">
-              <div className="round-number">Раунд {currentRound}/3</div>
+              <div className="round-number">Раунд {currentRound}/{MAX_ROUNDS}</div>
               <div className="bet-amount">
                 <Icon icon="material-symbols:diamond-rounded" />
                 <span>{displayedBetAmount}</span>
