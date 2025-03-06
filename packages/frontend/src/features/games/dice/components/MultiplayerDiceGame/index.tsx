@@ -55,22 +55,26 @@ const GameField = ({
   
   return (
     <div className="game-field">
-      <div className="opponent-dice">
-        <Dice 
-          value={opponentDice} 
-          rolling={isRolling && !isPlayerTurn} // Анимируем только если это не ход игрока
-          size="large"
-        />
+      <div className="player-dice">
+        <div className={`dice-container ${isRolling ? 'rolling' : ''}`}>
+          <Dice 
+            value={playerDice} 
+            size="large" 
+            rolling={isRolling}
+          />
+        </div>
       </div>
       
       <div className="vs-indicator">VS</div>
       
-      <div className="player-dice">
-        <Dice 
-          value={playerDice} 
-          rolling={isRolling && isPlayerTurn} // Анимируем только если это ход игрока
-          size="large"
-        />
+      <div className="opponent-dice">
+        <div className={`dice-container ${isRolling ? 'rolling' : ''}`}>
+          <Dice 
+            value={opponentDice} 
+            size="large"
+            rolling={isRolling}
+          />
+        </div>
       </div>
     </div>
   );
@@ -453,19 +457,30 @@ export function MultiplayerDiceGame({
         console.log('Получен ход в игре:', data);
         
         // Если ход сделал оппонент, обновляем его кубик
-        if (data.telegramId !== telegramId) {
-          setOpponentDice(data.value);
-          // Анимируем только кубик оппонента
-          setIsRolling(false);
+        if (data.telegramId.toString() !== telegramId.toString()) {
+          console.log('Ход сделал оппонент, анимируем его бросок');
+          // Запускаем анимацию броска оппонента
+          setIsRolling(true);
+          
+          // Через секунду завершаем анимацию и устанавливаем результат
+          setTimeout(() => {
+            setOpponentDice(data.value);
+            setIsRolling(false);
+            console.log('Анимация броска оппонента завершена, результат:', data.value);
+          }, 1000);
         }
         
         // Определяем, чей следующий ход
-        const isMyTurn = data.nextMove === telegramId.toString();
+        const isMyTurn = data.nextMove.toString() === telegramId.toString();
         setIsMyTurn(isMyTurn);
         useUserStore.getState().setIsCurrentTurn(isMyTurn);
         
         if (isMyTurn) {
           toast.success('Ваш ход!');
+        } else {
+          toast('Ход соперника', {
+            icon: '🎲',
+          });
         }
       });
 
@@ -555,18 +570,16 @@ export function MultiplayerDiceGame({
     // Проверяем, что сейчас наш ход и анимация не запущена
     if (isRolling || !isMyTurn) return;
     
-    // Начинаем анимацию только для кубика игрока (не оппонента)
+    // Начинаем анимацию для кубика игрока
     setIsRolling(true);
     console.log('Multiplayer roll initiated');
     
     // Генерируем случайное значение от 1 до 6
     const diceValue = Math.floor(Math.random() * 6) + 1;
     
-    // Обновляем только локальное значение кубика игрока
-    setPlayerDice(diceValue);
-    
-    // Отправляем событие на сервер
+    // Отправляем событие на сервер сразу, не дожидаясь окончания анимации
     if (socketRef.current) {
+      console.log('Отправляем ход с значением:', diceValue, 'от игрока:', playerData?.id);
       socketRef.current.emit('diceMove', {
         gameId,
         value: diceValue,
@@ -574,10 +587,19 @@ export function MultiplayerDiceGame({
       });
     }
     
+    // Обновляем значение кубика игрока
+    setTimeout(() => {
+      setPlayerDice(diceValue);
+    }, 500); // Обновляем значение на полпути анимации
+    
     // Анимация броска длится 1 секунду
     setTimeout(() => {
       setIsRolling(false);
       console.log('Multiplayer roll completed');
+      
+      // Передаем ход другому игроку, меняя isMyTurn на false
+      // Ожидаем, что сервер отправит реальное обновление через событие diceMove
+      setIsMyTurn(false);
     }, 1000);
   };
 
@@ -817,28 +839,34 @@ export function MultiplayerDiceGame({
           <div className="game-header">
             <div className="score">
               <div className="player-side">
-                <div className="player-avatar">
+                <div className={`player-avatar ${isMyTurn ? 'active-turn' : ''}`}>
                   {playerData?.avatarUrl ? (
                     <img src={playerData.avatarUrl} alt={playerData.username || 'Player'} />
                   ) : (
                     <Icon icon="mdi:account-circle" />
                   )}
+                  {isMyTurn && <div className="turn-indicator">Ваш ход</div>}
                 </div>
                 <div className="player-score">{playerScore}</div>
               </div>
               
               <div className="round-info">
                 <div className="round-number">Раунд {currentRound}/3</div>
+                <div className="bet-amount">
+                  <Icon icon="material-symbols:diamond-rounded" />
+                  <span>{displayedBetAmount}</span>
+                </div>
               </div>
               
               <div className="opponent-side">
                 <div className="opponent-score">{opponentScore}</div>
-                <div className="opponent-avatar">
+                <div className={`opponent-avatar ${!isMyTurn ? 'active-turn' : ''}`}>
                   {opponentData?.avatarUrl ? (
                     <img src={opponentData.avatarUrl} alt={opponentData.username || 'Opponent'} />
                   ) : (
                     <Icon icon="mdi:account-circle" />
                   )}
+                  {!isMyTurn && <div className="turn-indicator">Ходит</div>}
                 </div>
               </div>
             </div>
@@ -945,28 +973,34 @@ export function MultiplayerDiceGame({
         <div className="game-header">
           <div className="score">
             <div className="player-side">
-              <div className="player-avatar">
+              <div className={`player-avatar ${isMyTurn ? 'active-turn' : ''}`}>
                 {playerData?.avatarUrl ? (
                   <img src={playerData.avatarUrl} alt={playerData.username || 'Player'} />
                 ) : (
                   <Icon icon="mdi:account-circle" />
                 )}
+                {isMyTurn && <div className="turn-indicator">Ваш ход</div>}
               </div>
               <div className="player-score">{playerScore}</div>
             </div>
             
             <div className="round-info">
               <div className="round-number">Раунд {currentRound}/3</div>
+              <div className="bet-amount">
+                <Icon icon="material-symbols:diamond-rounded" />
+                <span>{displayedBetAmount}</span>
+              </div>
             </div>
             
             <div className="opponent-side">
               <div className="opponent-score">{opponentScore}</div>
-              <div className="opponent-avatar">
+              <div className={`opponent-avatar ${!isMyTurn ? 'active-turn' : ''}`}>
                 {opponentData?.avatarUrl ? (
                   <img src={opponentData.avatarUrl} alt={opponentData.username || 'Opponent'} />
                 ) : (
                   <Icon icon="mdi:account-circle" />
                 )}
+                {!isMyTurn && <div className="turn-indicator">Ходит</div>}
               </div>
             </div>
           </div>
