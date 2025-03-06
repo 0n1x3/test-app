@@ -295,6 +295,15 @@ export class GameService {
       game.currentPlayer = String(nextPlayer.telegramId);
       
       console.log(`Ход переходит к игроку ${game.currentPlayer}`);
+      console.log(`Ход переходит к игроку ${game.currentPlayer} (${nextPlayer.username})`);
+      
+      // Отправляем событие о ходе и информацию о следующем игроке
+      this.server.to(`game_${gameId}`).emit('diceMove', {
+        gameId,
+        telegramId: telegramId,
+        value,
+        nextMove: nextPlayer.telegramId
+      });
     } 
     // Если это второй игрок в раунде
     else {
@@ -367,6 +376,14 @@ export class GameService {
         game.currentPlayer = String(game.players[0].telegramId);
         
         console.log(`Переход к новому раунду ${game.currentRound}, первым ходит игрок ${game.currentPlayer}`);
+        
+        // Отправляем событие о ходе и информацию о следующем игроке
+        this.server.to(`game_${gameId}`).emit('diceMove', {
+          gameId,
+          telegramId: telegramId,
+          value,
+          nextMove: game.players[0].telegramId
+        });
       }
     }
     

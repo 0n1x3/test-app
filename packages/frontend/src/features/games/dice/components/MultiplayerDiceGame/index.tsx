@@ -55,6 +55,26 @@ const GameField = ({
   const { telegramId } = useUserStore();
   const isPlayerTurn = useUserStore(state => state.isCurrentTurn);
   
+  // Добавляем отладочные логи для понимания состояния компонента
+  console.log('GameField render:', { 
+    playerDice, 
+    opponentDice, 
+    isRolling, 
+    isPlayerTurn,
+    playerRolling: isRolling && isPlayerTurn,
+    opponentRolling: isRolling && !isPlayerTurn
+  });
+  
+  // Логируем завершение анимации через setTimeout
+  useEffect(() => {
+    if (isRolling) {
+      const timer = setTimeout(() => {
+        console.log('Анимация броска завершена через таймер');
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [isRolling]);
+  
   return (
     <div className="game-field">
       <div className="player-dice">
@@ -610,24 +630,26 @@ export function MultiplayerDiceGame({
         console.log('Получен ход в игре:', data);
         
         // Проверяем полноту полученных данных
-        if (!data || !data.nextMove) {
-          console.error('Получены неполные данные о ходе:', data);
+        if (!data) {
+          console.error('Получены пустые данные о ходе');
           return;
         }
         
         // Получим строковое представление telegramId для сравнения, защищенное от null
-        const telegramIdStr = telegramId?.toString() || '';
+        const currentTelegramId = telegramId || getTelegramUserId();
+        const telegramIdStr = currentTelegramId?.toString() || '';
+        
+        // Для отладки проверяем и логируем все необходимые данные
+        console.log('Анализ хода:', { 
+          moverTelegramId: data.telegramId,
+          myTelegramId: telegramIdStr,
+          nextMove: data.nextMove,
+          diceValue: data.value 
+        });
         
         // Проверяем, кто сделал ход: мы или оппонент
         const isMoveByCurrentPlayer = data.telegramId && data.telegramId.toString() === telegramIdStr;
         const isMoveByOpponent = data.telegramId && data.telegramId.toString() !== telegramIdStr;
-        
-        console.log('Анализ хода:', { 
-          isMoveByCurrentPlayer: isMoveByCurrentPlayer, 
-          isMoveByOpponent: isMoveByOpponent, 
-          moverTelegramId: data.telegramId,
-          myTelegramId: telegramIdStr 
-        });
         
         // Если ход сделал оппонент, обновляем его кубик и запускаем анимацию
         if (isMoveByOpponent) {
@@ -655,33 +677,45 @@ export function MultiplayerDiceGame({
         // Определяем, чей следующий ход
         if (data.nextMove && telegramIdStr) {
           const myNextTurn = data.nextMove.toString() === telegramIdStr;
-          console.log('Следующий ход определен:', { 
+          console.log('Определение следующего хода:', { 
             nextMove: data.nextMove, 
-            myId: telegramId,
-            nextMoveType: typeof data.nextMove,
-            telegramIdType: typeof telegramId,
+            myId: currentTelegramId,
             isMyTurn: myNextTurn,
             сравнение: `${data.nextMove.toString()} === ${telegramIdStr}`
           });
           
-          // Явно обновляем статус хода
+          // Явно обновляем статус хода как в компоненте, так и в хранилище
           setIsMyTurn(myNextTurn);
           useUserStore.getState().setIsCurrentTurn(myNextTurn);
           console.log(`Обновлен статус хода: isMyTurn = ${myNextTurn}, isCurrentTurn в хранилище = ${myNextTurn}`);
           
-          // Добавляем уведомления о смене хода
-          if (myNextTurn) {
-            toast.success('Ваш ход!');
-          } else {
-            toast('Ход соперника', {
-              icon: '🎲',
-            });
-          }
+          // Добавляем уведомления о смене хода с временной задержкой для анимации
+          setTimeout(() => {
+            if (myNextTurn) {
+              toast.success('Ваш ход!', { duration: 3000 });
+            } else {
+              toast('Ход соперника', {
+                icon: '🎲',
+                duration: 3000
+              });
+            }
+          }, 1200); // Задержка больше чем длительность анимации (1000мс)
         } else {
           console.warn('В данных хода отсутствует информация о следующем игроке или нет текущего telegramId:', {
             nextMove: data.nextMove,
             telegramId
           });
+          
+          // Если данных о следующем ходе нет, но мы можем определить, что текущий ход не наш
+          if (isMoveByOpponent) {
+            // Предполагаем, что после хода оппонента следующий ход должен быть наш
+            console.log('Предполагаем, что после хода оппонента следующий ход наш');
+            setTimeout(() => {
+              setIsMyTurn(true);
+              useUserStore.getState().setIsCurrentTurn(true);
+              toast.success('Ваш ход!', { duration: 3000 });
+            }, 1200);
+          }
         }
       });
 
@@ -817,17 +851,24 @@ export function MultiplayerDiceGame({
       gameState: gameState,
       currentRound: currentRound,
       telegramId: telegramId,
-      isPlayerTurn: useUserStore.getState().isCurrentTurn // Добавленный лог
+      isPlayerTurn: useUserStore.getState().isCurrentTurn
     });
     
     // Проверяем, что сейчас наш ход и анимация не запущена
-    if (isRolling || !isMyTurn) {
-      console.log('Нельзя бросать кубик:', { isRolling: isRolling, isMyTurn: isMyTurn });
+    if (isRolling) {
+      console.log('Анимация броска уже запущена, ожидаем её завершения');
+      return;
+    }
+
+    if (!isMyTurn) {
+      console.log('Сейчас не ваш ход, кнопка должна быть неактивна');
+      toast.error('Сейчас не ваш ход');
       return;
     }
     
     // Дополнительная проверка telegramId перед отправкой хода
-    if (!telegramId) {
+    const currentTelegramId = telegramId || getTelegramUserId();
+    if (!currentTelegramId) {
       console.error('Отсутствует telegramId пользователя, невозможно сделать ход');
       toast.error('Ошибка: не удалось определить идентификатор пользователя');
       return;
@@ -835,7 +876,7 @@ export function MultiplayerDiceGame({
     
     console.log('Начинаем бросок кубика, наш ход:', isMyTurn);
     
-    // Начинаем анимацию для кубика игрока (isMyTurn уже true, так что анимироваться будет только наш кубик)
+    // Начинаем анимацию для кубика игрока
     setIsRolling(true);
     console.log('Multiplayer roll initiated, анимируем только кубик игрока (наш)');
     
@@ -844,12 +885,12 @@ export function MultiplayerDiceGame({
     
     // Отправляем событие на сервер сразу, не дожидаясь окончания анимации
     if (socketRef.current) {
-      const userTelegramId = Number(telegramId);
+      const userTelegramId = Number(currentTelegramId);
       console.log('Отправляем ход с значением:', diceValue, 'от игрока с telegramId:', userTelegramId);
       
       // Дополнительно проверяем, что telegramId не null и не NaN после преобразования
       if (isNaN(userTelegramId)) {
-        console.error('Ошибка: telegramId не является числом:', telegramId);
+        console.error('Ошибка: telegramId не является числом:', currentTelegramId);
         toast.error('Ошибка при отправке хода');
         setIsRolling(false);
         return;
@@ -861,10 +902,17 @@ export function MultiplayerDiceGame({
         telegramId: userTelegramId // Явно преобразуем в число, чтобы избежать проблем с типами
       });
       
-      // Обновляем значение кубика игрока на клиенте
+      // Обновляем значение кубика игрока на клиенте с небольшой задержкой для анимации
       setTimeout(() => {
         setPlayerDice(diceValue);
+        console.log('Установлено значение кубика игрока:', diceValue);
       }, 500); // Обновляем значение на полпути анимации
+      
+      // Сразу же блокируем кнопку броска, передавая ход другому игроку
+      // Статус хода будет обновлен сервером через событие diceMove
+      setIsMyTurn(false);
+      useUserStore.getState().setIsCurrentTurn(false);
+      console.log('Временно блокируем кнопку броска до получения ответа от сервера');
     } else {
       console.error('Ошибка: отсутствует соединение с сервером');
       toast.error('Ошибка: нет соединения с сервером');
@@ -875,12 +923,6 @@ export function MultiplayerDiceGame({
     setTimeout(() => {
       setIsRolling(false);
       console.log('Multiplayer roll completed');
-      
-      // Передаем ход другому игроку, меняя isMyTurn на false
-      // Ожидаем, что сервер отправит реальное обновление через событие diceMove
-      setIsMyTurn(false);
-      useUserStore.getState().setIsCurrentTurn(false);
-      console.log('Ход передан сопернику, isMyTurn установлен в false');
     }, 1000);
   };
 
