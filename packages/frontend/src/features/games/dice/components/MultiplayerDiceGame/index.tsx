@@ -391,19 +391,27 @@ export function MultiplayerDiceGame({
       // Обработчик для начала игры в кости
       newSocket.on('diceGameStarted', (data) => {
         console.log('Игра в кости началась:', data);
-        setGameState('playing');
         
-        // Определяем, чей первый ход
-        const isMyTurn = data.firstPlayer === telegramId.toString();
-        setIsMyTurn(isMyTurn);
-        
-        // Сбрасываем счет и кубики
-        setPlayerScore(0);
-        setOpponentScore(0);
-        setPlayerDice(1);
-        setOpponentDice(1);
-        setCurrentRound(1);
-        setGameResult(null);
+        // Проверяем, что игра еще не в статусе playing, чтобы избежать повторного запуска
+        if (gameState !== 'playing') {
+          setGameState('playing');
+          setGameStarted(true);
+          toast.success('Игра началась!');
+          
+          // Определяем, чей первый ход
+          const isMyTurn = data.firstPlayer === telegramId.toString();
+          setIsMyTurn(isMyTurn);
+          
+          // Сбрасываем счет и кубики
+          setPlayerScore(0);
+          setOpponentScore(0);
+          setPlayerDice(1);
+          setOpponentDice(1);
+          setCurrentRound(1);
+          setGameResult(null);
+        } else {
+          console.log('Игра уже запущена, игнорируем повторное событие diceGameStarted');
+        }
       });
 
       // Добавляем обработчик хода в игре
@@ -411,7 +419,7 @@ export function MultiplayerDiceGame({
         console.log('Получен ход в игре:', data);
         
         // Если ход сделал оппонент, обновляем его кубик
-        if (data.userId !== telegramId) {
+        if (data.telegramId !== telegramId) {
           setOpponentDice(data.value);
         }
         
@@ -469,8 +477,32 @@ export function MultiplayerDiceGame({
         if (data.connectedClients < 2 && gameState === 'playing') {
           toast.error('Соперник отключился от игры');
         } else if (data.connectedClients === 2 && gameState === 'waiting') {
-          // Если оба игрока подключены и игра в режиме ожидания, пробуем запустить игру
+          // Проверяем, что игра еще не запущена и оба игрока подключены
+          console.log('Оба игрока подключены, запрашиваем статус игры');
+          newSocket.emit('getGameStatus', { gameId });
+        }
+      });
+
+      // Добавляем обработчик для получения статуса игры
+      newSocket.on('gameStatus', (data) => {
+        console.log('Получен статус игры:', data);
+        
+        // Обновляем состояние на основе полученных данных
+        setGameState(data.status);
+        
+        // Если игра в режиме ожидания и оба игрока подключены, пробуем запустить игру
+        if (data.status === 'waiting') {
+          console.log('Игра в режиме ожидания, пробуем запустить');
           newSocket.emit('startDiceGame', { gameId });
+        } else if (data.status === 'playing') {
+          // Если игра уже запущена, обновляем UI соответственно
+          console.log('Игра уже запущена, обновляем UI');
+          setGameStarted(true);
+          setCurrentRound(data.currentRound || 1);
+          
+          // Определяем, чей сейчас ход
+          const isMyTurn = data.currentPlayer === telegramId.toString();
+          setIsMyTurn(isMyTurn);
         }
       });
 
@@ -569,7 +601,7 @@ export function MultiplayerDiceGame({
       socketRef.current.emit('diceMove', {
         gameId,
         value: diceValue,
-        userId: playerData?.id
+        telegramId: playerData?.id
       });
     }
     

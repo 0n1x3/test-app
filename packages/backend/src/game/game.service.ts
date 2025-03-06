@@ -217,26 +217,37 @@ export class GameService {
   }
 
   // Записываем ход игрока
-  async recordDiceMove(gameId: string, userId: number, value: number): Promise<Game> {
+  async recordDiceMove(gameId: string, telegramId: number, value: number): Promise<Game> {
+    console.log(`Запись хода для игры ${gameId}, пользователь с Telegram ID ${telegramId}, значение ${value}`);
+    
     const game = await this.gameModel.findById(gameId)
       .populate('players')
       .exec();
     
     if (!game) {
+      console.error(`Игра с ID ${gameId} не найдена`);
       throw new Error('Game not found');
     }
     
-    // Проверяем, чей ход
-    if (game.currentPlayer && game.currentPlayer !== userId.toString()) {
+    // Проверяем статус игры
+    if (game.status !== 'playing') {
+      console.error(`Игра не в статусе playing: ${game.status}`);
+      throw new Error(`Game is not in playing status: ${game.status}`);
+    }
+    
+    // Проверяем, чей ход (сравниваем telegramId с currentPlayer)
+    if (game.currentPlayer && game.currentPlayer !== telegramId.toString()) {
+      console.error(`Не ваш ход: текущий игрок ${game.currentPlayer}, вы пытаетесь ходить как ${telegramId}`);
       throw new Error('Not your turn');
     }
     
     // Получение индекса текущего игрока
     const playerIndex = game.players.findIndex(p => 
-      p.telegramId === userId
+      p.telegramId.toString() === telegramId.toString()
     );
     
     if (playerIndex === -1) {
+      console.error(`Игрок с Telegram ID ${telegramId} не найден в игре`);
       throw new Error('Player not found in game');
     }
     
@@ -245,8 +256,11 @@ export class GameService {
       game.rounds = [];
     }
     
+    console.log(`Текущий раунд: ${game.currentRound}, всего раундов: ${game.rounds.length}`);
+    
     // Если это первый игрок в текущем раунде
     if (!game.rounds[game.currentRound - 1]) {
+      console.log(`Первый ход в раунде ${game.currentRound}`);
       game.rounds[game.currentRound - 1] = {
         player1: value,
         player2: 0,
@@ -257,9 +271,12 @@ export class GameService {
       const nextPlayerIndex = (playerIndex + 1) % game.players.length;
       const nextPlayer = game.players[nextPlayerIndex];
       game.currentPlayer = nextPlayer.telegramId.toString();
+      
+      console.log(`Ход переходит к игроку ${game.currentPlayer}`);
     } 
     // Если это второй игрок в раунде
     else {
+      console.log(`Второй ход в раунде ${game.currentRound}`);
       game.rounds[game.currentRound - 1].player2 = value;
       
       // Определяем результат раунда
@@ -277,6 +294,8 @@ export class GameService {
       }
       
       game.rounds[game.currentRound - 1].result = result;
+      
+      console.log(`Результат раунда ${game.currentRound}: ${result}, значения: ${player1Value} vs ${player2Value}`);
       
       // Отправляем результат раунда
       this.server.to(gameId).emit('roundResult', {
@@ -337,7 +356,9 @@ export class GameService {
       console.log(`Запуск игры в кости с ID: ${gameId}`);
       
       // Находим игру по ID
-      const game = await this.gameModel.findById(gameId).exec();
+      const game = await this.gameModel.findById(gameId)
+        .populate('players')
+        .exec();
       
       if (!game) {
         console.error(`Игра с ID ${gameId} не найдена`);
@@ -357,9 +378,14 @@ export class GameService {
       }
       
       // Проверяем статус игры
-      if (game.status !== 'waiting') {
-        console.error(`Игра уже в статусе: ${game.status}`);
-        throw new Error(`Game is already in ${game.status} status`);
+      if (game.status === 'playing') {
+        console.log(`Игра ${gameId} уже запущена, возвращаем текущее состояние`);
+        return game;
+      }
+      
+      if (game.status === 'finished') {
+        console.error(`Игра ${gameId} уже завершена`);
+        throw new Error('Game is already finished');
       }
       
       // Обновляем статус игры на "playing"
@@ -368,26 +394,24 @@ export class GameService {
       
       // Определяем, кто ходит первым (случайно)
       const firstPlayerIndex = Math.floor(Math.random() * 2); // 0 или 1
+      game.currentPlayer = game.players[firstPlayerIndex].telegramId.toString();
       
-      // Заполняем игроков актуальными данными
-      const populatedPlayers = [];
-      for (const playerId of game.players) {
-        const player = await this.userModel.findById(playerId).exec();
-        if (player) {
-          populatedPlayers.push(player);
-        }
+      // Инициализируем массив раундов, если его нет
+      if (!game.rounds) {
+        game.rounds = [];
       }
       
       await game.save();
       
-      console.log(`Игра ${gameId} успешно запущена. Первым ходит игрок с индексом ${firstPlayerIndex}`);
+      console.log(`Игра ${gameId} успешно запущена. Первым ходит игрок ${game.currentPlayer}`);
       
       // Отправляем событие о начале игры через WebSocket
       if (this.server) {
         this.server.to(`game_${gameId}`).emit('diceGameStarted', {
           gameId,
-          firstPlayer: firstPlayerIndex,
-          players: populatedPlayers.map(p => ({
+          firstPlayer: game.currentPlayer,
+          status: 'playing',
+          players: game.players.map(p => ({
             telegramId: p.telegramId,
             username: p.username,
             avatarUrl: p.avatarUrl

@@ -77,9 +77,105 @@ export class GameGateway {
     return { games: [] };
   }
 
+  @SubscribeMessage('getGameStatus')
+  async handleGetGameStatus(@MessageBody() data: { gameId: string }) {
+    try {
+      const game = await this.gameService.getGameById(data.gameId);
+      
+      if (!game) {
+        return { success: false, error: 'Game not found' };
+      }
+      
+      return { 
+        success: true, 
+        status: game.status,
+        currentRound: game.currentRound,
+        currentPlayer: game.currentPlayer,
+        players: game.players.map(p => ({
+          telegramId: p.telegramId,
+          username: p.username,
+          avatarUrl: p.avatarUrl
+        }))
+      };
+    } catch (error) {
+      console.error('Error getting game status:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  @SubscribeMessage('updateGame')
+  async handleUpdateGame(@MessageBody() data: { gameId: string }) {
+    try {
+      console.log(`Запрос на обновление игры с ID: ${data.gameId}`);
+      
+      const game = await this.gameService.getGameById(data.gameId);
+      
+      if (!game) {
+        console.error(`Игра с ID ${data.gameId} не найдена`);
+        return { success: false, error: 'Game not found' };
+      }
+      
+      // Отправляем данные игры клиенту, который запросил обновление
+      return { 
+        success: true, 
+        game: {
+          id: game.id,
+          _id: game._id,
+          status: game.status,
+          currentRound: game.currentRound,
+          currentPlayer: game.currentPlayer,
+          players: game.players,
+          betAmount: game.betAmount,
+          type: game.type,
+          rounds: game.rounds
+        }
+      };
+    } catch (error) {
+      console.error('Error updating game:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  @SubscribeMessage('getGamePlayers')
+  async handleGetGamePlayers(@MessageBody() data: { gameId: string }) {
+    try {
+      console.log(`Получен запрос на получение игроков для игры с ID: ${data.gameId}`);
+      
+      const game = await this.gameService.getGameById(data.gameId);
+      
+      if (!game) {
+        console.error(`Игра с ID ${data.gameId} не найдена`);
+        return { success: false, error: 'Game not found' };
+      }
+      
+      // Получаем данные игроков
+      const players = [];
+      for (const playerId of game.players) {
+        const player = await this.gameService.validateUser(playerId.telegramId);
+        if (player) {
+          players.push({
+            telegramId: player.telegramId,
+            username: player.username,
+            avatarUrl: player.avatarUrl
+          });
+        }
+      }
+      
+      // Отправляем игрокам
+      this.server.to(`game_${data.gameId}`).emit('gamePlayers', {
+        players
+      });
+      
+      return { success: true, players };
+    } catch (error) {
+      console.error('Error getting game players:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
   @SubscribeMessage('diceMove')
   async handleDiceMove(
-    @MessageBody() data: { gameId: string; value: number; userId: number }
+    @MessageBody() data: { gameId: string; value: number; telegramId: number }
   ) {
     try {
       console.log('Dice move:', data);
@@ -91,7 +187,7 @@ export class GameGateway {
       
       // Находим индекс игрока
       const playerIndex = game.players.findIndex(
-        playerId => playerId.toString() === data.userId.toString()
+        playerId => playerId.toString() === data.telegramId.toString()
       );
       
       if (playerIndex === -1) {
@@ -101,14 +197,14 @@ export class GameGateway {
       // Обновляем состояние игры
       const updatedGame = await this.gameService.recordDiceMove(
         data.gameId,
-        data.userId,
+        data.telegramId,
         data.value
       );
       
       // Сообщаем всем подключенным клиентам о ходе
       this.server.to(data.gameId).emit('diceMove', {
         gameId: data.gameId,
-        userId: data.userId,
+        telegramId: data.telegramId,
         value: data.value,
         nextMove: updatedGame.currentPlayer
       });
@@ -125,10 +221,32 @@ export class GameGateway {
     @MessageBody() data: { gameId: string }
   ) {
     try {
+      // Сначала проверяем текущий статус игры
+      const existingGame = await this.gameService.getGameById(data.gameId);
+      
+      // Если игра уже в процессе или завершена, не запускаем её снова
+      if (existingGame && existingGame.status === 'playing') {
+        console.log(`Игра ${data.gameId} уже запущена, пропускаем запрос на запуск`);
+        return { 
+          success: true, 
+          message: 'Game is already started', 
+          game: existingGame 
+        };
+      }
+      
+      if (existingGame && existingGame.status === 'finished') {
+        console.log(`Игра ${data.gameId} уже завершена, пропускаем запрос на запуск`);
+        return { 
+          success: false, 
+          error: 'Game is already finished'
+        };
+      }
+      
+      // Если игра в статусе 'waiting' или статус не определен, запускаем игру
       const game = await this.gameService.startDiceGame(data.gameId);
       
       // Используем оператор опционального доступа для предотвращения ошибок
-      this.server.to(data.gameId).emit('diceGameStarted', {
+      this.server.to(`game_${data.gameId}`).emit('diceGameStarted', {
         gameId: data.gameId,
         firstPlayer: game.currentPlayer ?? '',
         status: 'playing'
@@ -162,6 +280,13 @@ export class GameGateway {
       
       console.log(`Пользователь ${username} (${userId}) присоединяется к комнате ${gameId}`);
       
+      // Получаем информацию об игре
+      const game = await this.gameService.getGameById(gameId);
+      if (!game) {
+        console.error(`Игра с ID ${gameId} не найдена`);
+        return { success: false, error: 'Game not found' };
+      }
+      
       // Покидаем все другие комнаты игр
       const rooms = Object.keys(client.rooms);
       for (const room of rooms) {
@@ -184,8 +309,21 @@ export class GameGateway {
       }
       this.activeConnections.get(gameId)?.add(client.id);
       
+      // Отправляем актуальное состояние игры клиенту
+      client.emit('gameStatus', {
+        gameId,
+        status: game.status,
+        currentRound: game.currentRound,
+        currentPlayer: game.currentPlayer,
+        players: game.players.map(p => ({
+          telegramId: p.telegramId,
+          username: p.username,
+          avatarUrl: p.avatarUrl
+        }))
+      });
+      
       // Отправляем обновление о статусе подключения
-      this.updateConnectionStatus(gameId);
+      await this.updateConnectionStatus(gameId);
       
       return { success: true };
     } catch (error) {
@@ -243,7 +381,7 @@ export class GameGateway {
   }
 
   // Метод для отправки обновления о статусе подключения
-  private updateConnectionStatus(gameId: string) {
+  private async updateConnectionStatus(gameId: string) {
     const connectedClients = this.activeConnections.get(gameId)?.size || 0;
     
     console.log(`Обновление статуса подключения для игры ${gameId}: ${connectedClients} активных клиентов`);
@@ -253,5 +391,21 @@ export class GameGateway {
       connectedClients,
       timestamp: Date.now()
     });
+
+    // Если подключены два клиента, проверяем статус игры и отправляем дополнительное событие
+    if (connectedClients === 2) {
+      const game = await this.gameService.getGameById(gameId);
+      
+      if (game) {
+        // Отправляем информацию о текущем статусе игры
+        this.server.to(`game_${gameId}`).emit('gameStatus', {
+          gameId,
+          status: game.status,
+          currentRound: game.currentRound,
+          currentPlayer: game.currentPlayer,
+          players: game.players
+        });
+      }
+    }
   }
 } 
