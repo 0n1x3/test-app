@@ -43,6 +43,8 @@ declare global {
     platform: string;
     requestFullscreen: () => void;
     exitFullscreen: () => void;
+    openLink: (url: string) => void;
+    openTelegramLink: (url: string) => void;
     showPopup: (params: {
       title?: string;
       message: string;

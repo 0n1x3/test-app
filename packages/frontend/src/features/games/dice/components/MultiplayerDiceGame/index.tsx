@@ -744,8 +744,34 @@ export function MultiplayerDiceGame({
     
     console.log(`Открываем URL для входа в игру: ${url}`);
     
-    // Используем стандартный способ перенаправления
-    window.location.href = url;
+    // Проверяем, доступен ли Telegram WebApp API
+    if (window.Telegram?.WebApp) {
+      try {
+        // Проверяем наличие метода openTelegramLink
+        if (typeof window.Telegram.WebApp.openTelegramLink === 'function') {
+          console.log('Используем Telegram.WebApp.openTelegramLink для открытия ссылки');
+          // Для t.me ссылок используем openTelegramLink
+          window.Telegram.WebApp.openTelegramLink(url);
+        } 
+        // Проверяем наличие метода openLink
+        else if (typeof window.Telegram.WebApp.openLink === 'function') {
+          console.log('Используем Telegram.WebApp.openLink для открытия ссылки');
+          window.Telegram.WebApp.openLink(url);
+        } 
+        // Резервный вариант - обычное перенаправление
+        else {
+          console.log('Методы Telegram WebApp для открытия ссылок недоступны, используем обычное перенаправление');
+          window.location.href = url;
+        }
+      } catch (error) {
+        console.error('Ошибка при использовании Telegram WebApp API:', error);
+        // В случае ошибки делаем обычное перенаправление
+        window.location.href = url;
+      }
+    } else {
+      console.log('Telegram WebApp API недоступен, используем обычное перенаправление');
+      window.location.href = url;
+    }
     
     // Показываем уведомление пользователю
     toast.success('Переходим в Telegram для присоединения к игре');
