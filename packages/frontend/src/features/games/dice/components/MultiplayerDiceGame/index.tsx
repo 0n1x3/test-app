@@ -94,6 +94,9 @@ export function MultiplayerDiceGame({
   betAmount, 
   onGameEnd 
 }: MultiplayerDiceGameProps) {
+  // Отладочный вывод для входящего значения ставки
+  console.log('MultiplayerDiceGame received betAmount:', betAmount);
+  
   // Состояния игры
   const [playerData, setPlayerData] = useState<PlayerData | null>(null);
   const [opponentData, setOpponentData] = useState<PlayerData | null>(null);
@@ -110,7 +113,18 @@ export function MultiplayerDiceGame({
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('connecting');
   const [socketError, setSocketError] = useState<string | null>(null);
   const [gameStarted, setGameStarted] = useState(false);
-  const [displayedBetAmount, setDisplayedBetAmount] = useState(betAmount || 0);
+  const [displayedBetAmount, setDisplayedBetAmount] = useState(Number(betAmount) || 0);
+  
+  // Обновляем displayedBetAmount при изменении betAmount из пропсов
+  useEffect(() => {
+    if (betAmount !== undefined && betAmount !== null) {
+      const numericBetAmount = Number(betAmount);
+      if (!isNaN(numericBetAmount) && numericBetAmount > 0) {
+        console.log('Updating displayedBetAmount from props:', numericBetAmount);
+        setDisplayedBetAmount(numericBetAmount);
+      }
+    }
+  }, [betAmount]);
   
   // Для WebSocket
   const socketRef = useRef<Socket | null>(null);
@@ -197,6 +211,12 @@ export function MultiplayerDiceGame({
    */
   const setupSocketConnection = useCallback((userIdParam?: string) => {
     console.log('Настройка соединения с сокетом, userId:', userIdParam || userId);
+    
+    // Проверяем, есть ли уже активное соединение
+    if (socketRef.current && socketRef.current.connected && hasJoinedRoomRef.current) {
+      console.log('Соединение уже установлено, пропускаем повторное подключение');
+      return;
+    }
     
     const effectiveUserId = userIdParam || userId;
     if (!effectiveUserId) {
@@ -318,8 +338,15 @@ export function MultiplayerDiceGame({
       // Обработчик обновления состояния игры
       newSocket.on('gameStatus', (data) => {
         console.log('Получено состояние игры:', data);
-        if (data.game && data.game.betAmount) {
-          setDisplayedBetAmount(data.game.betAmount);
+        if (data.game && data.game.betAmount !== undefined) {
+          const serverBetAmount = Number(data.game.betAmount);
+          // Проверяем, нужно ли обновлять значение ставки
+          if (!isNaN(serverBetAmount) && serverBetAmount > 0 && displayedBetAmount === 0) {
+            console.log('Обновляем ставку с сервера:', serverBetAmount);
+            setDisplayedBetAmount(serverBetAmount);
+          } else {
+            console.log('Сохраняем текущую ставку:', displayedBetAmount);
+          }
         }
         // Обновляем состояние игры
         if (data.status) {
@@ -481,63 +508,6 @@ export function MultiplayerDiceGame({
     }
   }, [gameId, userId]);
 
-  // Подключаемся к WebSocket при монтировании компонента
-  useEffect(() => {
-    console.log('MultiplayerDiceGame component mounted with gameId:', gameId);
-    
-    // Сначала пытаемся получить userId из Telegram WebApp
-    const currentUserId = getTelegramUserId();
-    if (currentUserId) {
-      console.log('userId сразу получен из WebApp:', currentUserId);
-      // Важно: устанавливаем состояние и передаём userId напрямую в функцию подключения
-      setUserId(currentUserId.toString());
-      setupSocketConnection(currentUserId.toString());
-    } else {
-      console.log('userId не получен при первой загрузке, ожидаем...');
-      // Если userId не получен, ждем 1 секунду и пробуем снова
-      const timer = setTimeout(() => {
-        const delayedUserId = getTelegramUserId();
-        if (delayedUserId) {
-          console.log('userId получен с задержкой:', delayedUserId);
-          setUserId(delayedUserId.toString());
-          setupSocketConnection(delayedUserId.toString());
-        } else {
-          console.log('userId не получен даже после задержки, используем пользователя-гостя');
-          // Если всё ещё не удалось получить userId, создаем гостевой ID
-          const guestId = getOrCreateGuestId();
-          setUserId(guestId);
-          setupSocketConnection(guestId);
-        }
-      }, 1000);
-      
-      return () => {
-        clearTimeout(timer);
-        if (socketRef.current) {
-          console.log('MultiplayerDiceGame component unmounting, disconnecting socket');
-          socketRef.current.disconnect();
-        }
-      };
-    }
-    
-    // Предотвращаем случайные свайпы на iOS, которые закрывают приложение
-    const preventSwipe = (e: TouchEvent) => {
-      if (e.touches.length > 1) {
-        e.preventDefault();
-      }
-    };
-    
-    document.addEventListener('touchstart', preventSwipe, { passive: false });
-    
-    // Очистка при размонтировании
-    return () => {
-      console.log('MultiplayerDiceGame component unmounting, disconnecting socket');
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-      }
-      document.removeEventListener('touchstart', preventSwipe);
-    };
-  }, [gameId]);
-
   // Обновляем данные, когда меняется playerData
   useEffect(() => {
     if (playerData && socketRef.current && gameState === 'waiting' && players.length === 2) {
@@ -619,48 +589,80 @@ export function MultiplayerDiceGame({
     window.location.href = `https://t.me/neometria_bot?startapp=${fullGameId}`;
   };
 
-  // После получения userId, обновляем сокет
+  // Подключаемся к WebSocket при монтировании компонента
   useEffect(() => {
-    if (userId && !socketRef.current) {
-      console.log('userId получен, инициализируем соединение:', userId);
+    console.log('MultiplayerDiceGame component mounted with gameId:', gameId);
+    
+    // Сначала пытаемся получить userId из Telegram WebApp
+    const currentUserId = getTelegramUserId();
+    if (currentUserId) {
+      console.log('userId сразу получен из WebApp:', currentUserId);
+      // Важно: устанавливаем состояние и передаём userId напрямую в функцию подключения
+      setUserId(currentUserId.toString());
       
-      // Преобразуем userId в число
-      const telegramId = parseInt(userId, 10);
-      
-      // Предварительно регистрируем пользователя через REST API
-      // Это может помочь серверу распознать пользователя в WebSocket соединении
-      const userData = window.Telegram?.WebApp?.initDataUnsafe?.user;
-      if (userData) {
-        console.log('Регистрируем пользователя перед WebSocket подключением:', userData);
-        
-        // Отправляем запрос на инициализацию пользователя
-        fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://test.timecommunity.xyz'}/api/users/init`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache'
-          },
-          body: JSON.stringify({
-            initData: window.Telegram?.WebApp?.initData || ''
-          })
-        })
-        .then(res => res.json())
-        .then(data => {
-          console.log('Пользователь зарегистрирован:', data);
-          // После регистрации пользователя устанавливаем соединение
-          setupSocketConnection(userId);
-        })
-        .catch(err => {
-          console.error('Ошибка при регистрации пользователя:', err);
-          // Даже при ошибке регистрации пробуем подключиться
-          setupSocketConnection(userId);
-        });
+      // Проверяем, есть ли уже активное соединение
+      if (socketRef.current && socketRef.current.connected && hasJoinedRoomRef.current) {
+        console.log('Соединение уже установлено, пропускаем повторное подключение');
       } else {
-        // Если нет данных пользователя, просто пытаемся подключиться
-        setupSocketConnection(userId);
+        setupSocketConnection(currentUserId.toString());
       }
+    } else {
+      console.log('userId не получен при первой загрузке, ожидаем...');
+      // Если userId не получен, ждем 1 секунду и пробуем снова
+      const timer = setTimeout(() => {
+        const delayedUserId = getTelegramUserId();
+        if (delayedUserId) {
+          console.log('userId получен с задержкой:', delayedUserId);
+          setUserId(delayedUserId.toString());
+          
+          // Проверяем, есть ли уже активное соединение
+          if (socketRef.current && socketRef.current.connected && hasJoinedRoomRef.current) {
+            console.log('Соединение уже установлено, пропускаем повторное подключение');
+          } else {
+            setupSocketConnection(delayedUserId.toString());
+          }
+        } else {
+          console.log('userId не получен даже после задержки, используем пользователя-гостя');
+          // Если всё ещё не удалось получить userId, создаем гостевой ID
+          const guestId = getOrCreateGuestId();
+          setUserId(guestId);
+          
+          // Проверяем, есть ли уже активное соединение
+          if (socketRef.current && socketRef.current.connected && hasJoinedRoomRef.current) {
+            console.log('Соединение уже установлено, пропускаем повторное подключение');
+          } else {
+            setupSocketConnection(guestId);
+          }
+        }
+      }, 1000);
+      
+      return () => {
+        clearTimeout(timer);
+        if (socketRef.current) {
+          console.log('MultiplayerDiceGame component unmounting, disconnecting socket');
+          socketRef.current.disconnect();
+        }
+      };
     }
-  }, [userId, setupSocketConnection]);
+    
+    // Предотвращаем случайные свайпы на iOS, которые закрывают приложение
+    const preventSwipe = (e: TouchEvent) => {
+      if (e.touches.length > 1) {
+        e.preventDefault();
+      }
+    };
+    
+    document.addEventListener('touchstart', preventSwipe, { passive: false });
+    
+    // Очистка при размонтировании
+    return () => {
+      console.log('MultiplayerDiceGame component unmounting, disconnecting socket');
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+      }
+      document.removeEventListener('touchstart', preventSwipe);
+    };
+  }, [gameId]);
 
   // Добавляем эффект для запроса обновления списка игроков после подключения
   useEffect(() => {
@@ -678,62 +680,24 @@ export function MultiplayerDiceGame({
       });
       
       // Затем пробуем присоединиться, если ещё не присоединились
-      socketRef.current.emit('joinGameRoom', { 
-        gameId,
-        userId: telegramId,
-        telegramId: telegramId,
-        username: window.Telegram?.WebApp?.initDataUnsafe?.user?.username || 'unknown'
-      });
-      
-      // Отправляем информацию о пользователе (вдруг сервер ее использует)
-      socketRef.current.emit('userInfo', { 
-        userId: telegramId, 
-        telegramId: telegramId,
-        gameId,
-        username: window.Telegram?.WebApp?.initDataUnsafe?.user?.username || 'unknown'
-      });
-      
-      // Через секунду проверяем, есть ли игроки
-      setTimeout(() => {
-        console.log('Проверка списка игроков через 1 секунду:', players);
-        if (players.length === 0 && socketRef.current) {
-          console.log('Игроки не получены, повторно запрашиваем');
-          
-          // Пробуем прямое обновление списка игроков через REST API
-          fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://test.timecommunity.xyz'}/api/games/${gameId}?timestamp=${Date.now()}`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'Cache-Control': 'no-cache'
-            }
-          })
-            .then(response => response.json())
-            .then(data => {
-              console.log('Получены данные игры через REST API:', data);
-              if (data.success && data.game && data.game.players) {
-                console.log('Установка игроков из REST API:', data.game.players);
-                setPlayers(data.game.players);
-              }
-            })
-            .catch(error => {
-              console.error('Ошибка получения данных игры:', error);
-            });
-          
-          // Также пробуем через Socket.IO
-          socketRef.current.emit('getGamePlayers', { 
-            gameId,
-            userId: telegramId,
-            telegramId: telegramId
-          });
-          
-          // Также запрашиваем обновление игры на сервере
-          socketRef.current.emit('updateGame', { 
-            gameId,
-            userId: telegramId,
-            telegramId: telegramId
-          });
-        }
-      }, 1000);
+      if (!hasJoinedRoomRef.current) {
+        socketRef.current.emit('joinGameRoom', { 
+          gameId,
+          userId: telegramId,
+          telegramId: telegramId,
+          username: window.Telegram?.WebApp?.initDataUnsafe?.user?.username || 'unknown'
+        });
+        
+        // Отправляем информацию о пользователе (вдруг сервер ее использует)
+        socketRef.current.emit('userInfo', { 
+          userId: telegramId, 
+          telegramId: telegramId,
+          gameId,
+          username: window.Telegram?.WebApp?.initDataUnsafe?.user?.username || 'unknown'
+        });
+        
+        hasJoinedRoomRef.current = true;
+      }
       
       // Устанавливаем интервал для периодического обновления списка игроков
       const interval = setInterval(() => {
@@ -749,77 +713,7 @@ export function MultiplayerDiceGame({
       
       return () => clearInterval(interval);
     }
-  }, [connectionStatus, gameId, players, userId]);
-
-  // Новый эффект для обновления игроков при изменении подключения
-  useEffect(() => {
-    // Проверяем есть ли подключение и установленный userId
-    if (connectionStatus === 'connected' && userId) {
-      // Если игроков меньше чем ожидаем, пробуем получить данные напрямую из API
-      console.log('Обновление списка игроков после изменения статуса подключения');
-      
-      // Преобразуем userId в число
-      const telegramId = parseInt(userId, 10);
-      
-      // Используем таймаут для того, чтобы дать WebSocket соединению время на обработку
-      setTimeout(() => {
-        // Если до сих пор нет игроков, попробуем обновить их через REST API
-        if (players.length < 1) {
-          console.log('Игроки не получены после установки соединения, получаем через REST API');
-          
-          // Форсируем получение информации об игре через HTTP запрос
-          fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://test.timecommunity.xyz'}/api/games/${gameId}?_=${Date.now()}`, {
-            headers: {
-              'Cache-Control': 'no-cache',
-              'Pragma': 'no-cache',
-              'X-User-Id': String(telegramId),
-              'X-Telegram-Id': String(telegramId)
-            }
-          })
-            .then(res => res.json())
-            .then(data => {
-              if (data.success && data.game && Array.isArray(data.game.players)) {
-                console.log('Получены игроки через REST API:', data.game.players);
-                
-                // Если пользователя нет в списке игроков, добавляем его
-                let updatedPlayers = [...data.game.players];
-                const currentUserInList = updatedPlayers.some(
-                  p => p.telegramId && p.telegramId.toString() === userId
-                );
-                
-                if (!currentUserInList) {
-                  // Добавляем текущего пользователя в список, если его там нет
-                  const userData = window.Telegram?.WebApp?.initDataUnsafe?.user;
-                  console.log('Добавляем текущего пользователя в список игроков', userData);
-                  
-                  updatedPlayers.push({
-                    telegramId: userId,
-                    username: userData?.username || `Player ${userId.substring(0, 4)}`,
-                    avatarUrl: userData?.photo_url || null
-                  });
-                }
-                
-                console.log('Установка обновленного списка игроков:', updatedPlayers);
-                setPlayers(updatedPlayers);
-                
-                // Если игра уже ожидает игроков, запускаем обновление статуса
-                if (data.game.status === 'waiting' && updatedPlayers.length > 0) {
-                  console.log('Игра в статусе ожидания с игроками, отправляем updateGame');
-                  socketRef.current?.emit('updateGame', { 
-                    gameId, 
-                    userId,
-                    players: updatedPlayers
-                  });
-                }
-              }
-            })
-            .catch(err => {
-              console.error('Ошибка при получении игроков через REST API:', err);
-            });
-        }
-      }, 2000);
-    }
-  }, [connectionStatus, gameId, players, userId]);
+  }, [connectionStatus, gameId, userId]);
 
   // Если есть проблемы с соединением
   if (connectionStatus === 'error') {
@@ -865,6 +759,7 @@ export function MultiplayerDiceGame({
 
   // Если игра в режиме ожидания
   if (gameState === 'waiting') {
+    console.log('Rendering WaitingRoom with betAmount:', displayedBetAmount);
     return (
       <PageContainer>
         <WaitingRoom
@@ -928,7 +823,7 @@ export function MultiplayerDiceGame({
             ) : (
               <button 
                 className="roll-button" 
-                onClick={rollDice} 
+                onClick={rollDice}
                 disabled={isRolling || !isMyTurn}
               >
                 Бросить кубик
@@ -1056,7 +951,7 @@ export function MultiplayerDiceGame({
           ) : (
             <button 
               className="roll-button" 
-              onClick={rollDice} 
+              onClick={rollDice}
               disabled={isRolling || !isMyTurn}
             >
               Бросить кубик

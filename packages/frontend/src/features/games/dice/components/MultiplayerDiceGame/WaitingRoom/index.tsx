@@ -40,7 +40,13 @@ export function WaitingRoom({
   const shortGameId = gameId.slice(-4);
   
   // Отладочный вывод
-  console.log('WaitingRoom props:', { gameId, betAmount, players });
+  console.log('WaitingRoom props:', { 
+    gameId, 
+    betAmount, 
+    betAmountType: typeof betAmount,
+    players,
+    connectionStatus
+  });
   
   return (
     <div className="dice-game">
