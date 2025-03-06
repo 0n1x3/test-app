@@ -72,11 +72,21 @@ export default function GamePage() {
       
       const data = await response.json();
       console.log('Полученные данные игры:', data);
+      console.log('Полная структура ответа:', JSON.stringify(data, null, 2));
+      console.log('Структура game в ответе:', data.game ? JSON.stringify(data.game, null, 2) : 'game отсутствует');
+      console.log('Значение betAmount из данных игры:', data.game?.betAmount);
       
-      // Обеспечиваем, что betAmount - число
-      if (data && data.betAmount !== undefined) {
+      // Проверяем, есть ли betAmount в данных игры
+      if (data.game && data.game.betAmount !== undefined) {
+        data.betAmount = Number(data.game.betAmount);
+        console.log('Установлено betAmount из данных игры.game:', data.betAmount);
+      } else if (data.betAmount !== undefined) {
         data.betAmount = Number(data.betAmount);
-        console.log('Приведенное значение betAmount:', data.betAmount, typeof data.betAmount);
+        console.log('Установлено betAmount из корня данных:', data.betAmount);
+      } else {
+        // Значение по умолчанию, если не найдено
+        data.betAmount = 100;
+        console.log('Установлено значение betAmount по умолчанию:', data.betAmount);
       }
       
       return data;
@@ -150,7 +160,7 @@ export default function GamePage() {
     }
   };
 
-  // Эффект для загрузки данных игры при монтировании
+  // Функция для загрузки данных игры при монтировании
   useEffect(() => {
     // Функция для загрузки данных и присоединения к игре
     const loadGameAndJoin = async () => {
@@ -165,13 +175,28 @@ export default function GamePage() {
           return;
         }
         
-        // Сохраняем данные игры
-        setGameData(gameData);
         console.log('Полученные данные игры перед сохранением в состояние:', gameData);
-        console.log('Значение betAmount из данных игры:', gameData.betAmount);
+        console.log('Структура данных перед сохранением:', JSON.stringify(gameData, null, 2));
+        console.log('Проверка betAmount перед сохранением:', gameData.betAmount, gameData.game?.betAmount);
+        
+        // Преобразуем структуру данных, если необходимо
+        const processedData = {
+          ...gameData,
+          betAmount: gameData.betAmount || (gameData.game && gameData.game.betAmount ? Number(gameData.game.betAmount) : 100),
+          status: gameData.status || (gameData.game && gameData.game.status),
+          players: gameData.players || (gameData.game && gameData.game.players),
+          isPlayerInGame: gameData.isPlayerInGame !== undefined ? gameData.isPlayerInGame : 
+                         (gameData.game && gameData.game.isPlayerInGame !== undefined ? gameData.game.isPlayerInGame : false)
+        };
+        
+        console.log('Преобразованные данные игры:', processedData);
+        console.log('Итоговое значение betAmount:', processedData.betAmount);
+        
+        // Сохраняем данные игры
+        setGameData(processedData);
         
         // Проверяем, нужно ли присоединяться к игре
-        if (!gameData.isPlayerInGame) {
+        if (!processedData.isPlayerInGame) {
           console.log('Пользователь не в игре, присоединяемся...');
           // Присоединяемся к игре
           await joinGame(gameId);
