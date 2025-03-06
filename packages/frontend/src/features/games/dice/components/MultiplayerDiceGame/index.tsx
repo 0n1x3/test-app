@@ -39,10 +39,6 @@ interface Player {
 
 // Константы
 const MAX_ATTEMPTS = 5;
-
-// В начале компонента добавляем счетчик попыток автоматического подключения
-const autoJoinAttemptsRef = useRef(0);
-const lastPlayerCheckTimeRef = useRef(0);
 const MAX_AUTO_JOIN_ATTEMPTS = 3; // Максимум 3 попытки автоматического присоединения
 
 // Компонент для отображения игрового поля
@@ -107,34 +103,9 @@ export function MultiplayerDiceGame({
   console.log('MultiplayerDiceGame received betAmount:', betAmount);
   console.log('MultiplayerDiceGame betAmount type:', typeof betAmount);
   
-  // Проверяем, получаем ли мы информацию о ставке через socket
-  useEffect(() => {
-    // Подключаемся к socket.io для получения информации о ставке
-    const socketUrl = process.env.NEXT_PUBLIC_API_URL || 'https://test.timecommunity.xyz';
-    const socket = io(`${socketUrl}`, {
-      path: '/socket.io',
-      transports: ['websocket'],
-      query: {
-        gameId
-      }
-    });
-    
-    socket.on('connect', () => {
-      console.log('Connected to socket to check game data');
-      socket.emit('getGameInfo', { gameId });
-    });
-    
-    socket.on('gameInfo', (gameInfo) => {
-      console.log('Received game info from socket:', gameInfo);
-      if (gameInfo && gameInfo.betAmount) {
-        console.log('Полученная ставка через сокет:', gameInfo.betAmount);
-      }
-    });
-    
-    return () => {
-      socket.disconnect();
-    };
-  }, [gameId]);
+  // Референсы для автоматических попыток подключения
+  const autoJoinAttemptsRef = useRef(0);
+  const lastPlayerCheckTimeRef = useRef(0);
   
   // Состояния игры
   const [playerData, setPlayerData] = useState<PlayerData | null>(null);
@@ -1210,6 +1181,35 @@ export function MultiplayerDiceGame({
       }
     }
   }, [telegramId, telegramIdFromStore]);
+
+  // Проверяем, получаем ли мы информацию о ставке через socket
+  useEffect(() => {
+    // Подключаемся к socket.io для получения информации о ставке
+    const socketUrl = process.env.NEXT_PUBLIC_API_URL || 'https://test.timecommunity.xyz';
+    const socket = io(`${socketUrl}`, {
+      path: '/socket.io',
+      transports: ['websocket'],
+      query: {
+        gameId
+      }
+    });
+    
+    socket.on('connect', () => {
+      console.log('Connected to socket to check game data');
+      socket.emit('getGameInfo', { gameId });
+    });
+    
+    socket.on('gameInfo', (gameInfo) => {
+      console.log('Received game info from socket:', gameInfo);
+      if (gameInfo && gameInfo.betAmount) {
+        console.log('Полученная ставка через сокет:', gameInfo.betAmount);
+      }
+    });
+    
+    return () => {
+      socket.disconnect();
+    };
+  }, [gameId]);
 
   // Если есть проблемы с соединением
   if (connectionStatus === 'error') {
