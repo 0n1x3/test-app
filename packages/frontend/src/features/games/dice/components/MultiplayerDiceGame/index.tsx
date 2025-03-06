@@ -436,9 +436,22 @@ export function MultiplayerDiceGame({
           toast.success('Игра началась!');
           
           // Определяем, чей первый ход
-          const isMyTurn = data.firstPlayer === telegramId.toString();
-          setIsMyTurn(isMyTurn);
-          useUserStore.getState().setIsCurrentTurn(isMyTurn);
+          const isFirstPlayer = data.firstPlayer.toString() === telegramId.toString();
+          console.log('Первый ход определен:', { 
+            firstPlayer: data.firstPlayer, 
+            myId: telegramId, 
+            isMyTurn: isFirstPlayer,
+            telegramIdType: typeof telegramId
+          });
+          
+          setIsMyTurn(isFirstPlayer);
+          useUserStore.getState().setIsCurrentTurn(isFirstPlayer);
+          
+          if (isFirstPlayer) {
+            toast.success('Ваш ход первый!');
+          } else {
+            toast('Ожидайте хода соперника', { icon: '⌛' });
+          }
           
           // Сбрасываем счет и кубики
           setPlayerScore(0);
@@ -471,16 +484,28 @@ export function MultiplayerDiceGame({
         }
         
         // Определяем, чей следующий ход
-        const isMyTurn = data.nextMove.toString() === telegramId.toString();
-        setIsMyTurn(isMyTurn);
-        useUserStore.getState().setIsCurrentTurn(isMyTurn);
-        
-        if (isMyTurn) {
-          toast.success('Ваш ход!');
-        } else {
-          toast('Ход соперника', {
-            icon: '🎲',
+        if (data.nextMove) {
+          const myNextTurn = data.nextMove.toString() === telegramId.toString();
+          console.log('Следующий ход определен:', { 
+            nextMove: data.nextMove, 
+            myId: telegramId,
+            nextMoveType: typeof data.nextMove,
+            telegramIdType: typeof telegramId,
+            isMyTurn: myNextTurn 
           });
+          
+          setIsMyTurn(myNextTurn);
+          useUserStore.getState().setIsCurrentTurn(myNextTurn);
+          
+          if (myNextTurn) {
+            toast.success('Ваш ход!');
+          } else {
+            toast('Ход соперника', {
+              icon: '🎲',
+            });
+          }
+        } else {
+          console.warn('В данных хода отсутствует информация о следующем игроке:', data);
         }
       });
 
@@ -567,8 +592,20 @@ export function MultiplayerDiceGame({
 
   // Функция для броска кубика
   const rollDice = () => {
+    console.log('Нажата кнопка "Бросить кубик", текущее состояние:', {
+      isRolling,
+      isMyTurn,
+      gameState,
+      currentRound
+    });
+    
     // Проверяем, что сейчас наш ход и анимация не запущена
-    if (isRolling || !isMyTurn) return;
+    if (isRolling || !isMyTurn) {
+      console.log('Нельзя бросать кубик:', { isRolling, isMyTurn });
+      return;
+    }
+    
+    console.log('Начинаем бросок кубика, наш ход:', isMyTurn);
     
     // Начинаем анимацию для кубика игрока
     setIsRolling(true);
@@ -583,7 +620,7 @@ export function MultiplayerDiceGame({
       socketRef.current.emit('diceMove', {
         gameId,
         value: diceValue,
-        telegramId: playerData?.id
+        telegramId: telegramId // Используем наш telegramId вместо playerData?.id
       });
     }
     
@@ -883,11 +920,11 @@ export function MultiplayerDiceGame({
               <GameResult result={gameResult} />
             ) : (
               <button 
-                className="roll-button" 
+                className={`roll-button ${isMyTurn && !isRolling ? 'active' : 'inactive'}`}
                 onClick={rollDice}
                 disabled={isRolling || !isMyTurn}
               >
-                Бросить кубик
+                {isMyTurn ? (isRolling ? 'Бросаем...' : 'Бросить кубик') : 'Ожидание хода соперника'}
               </button>
             )}
           </div>
@@ -1017,11 +1054,11 @@ export function MultiplayerDiceGame({
             <GameResult result={gameResult} />
           ) : (
             <button 
-              className="roll-button" 
+              className={`roll-button ${isMyTurn && !isRolling ? 'active' : 'inactive'}`}
               onClick={rollDice}
               disabled={isRolling || !isMyTurn}
             >
-              Бросить кубик
+              {isMyTurn ? (isRolling ? 'Бросаем...' : 'Бросить кубик') : 'Ожидание хода соперника'}
             </button>
           )}
         </div>

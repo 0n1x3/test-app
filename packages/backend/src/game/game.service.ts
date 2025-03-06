@@ -351,73 +351,64 @@ export class GameService {
   }
 
   // Начало игры в кубики
-  async startDiceGame(gameId: string): Promise<Game> {
+  async startDiceGame(gameId: string): Promise<any> {
+    console.log(`Запуск игры в кости с ID: ${gameId}`);
+    
     try {
-      console.log(`Запуск игры в кости с ID: ${gameId}`);
-      
       // Находим игру по ID
       const game = await this.gameModel.findById(gameId)
         .populate('players')
         .exec();
       
       if (!game) {
-        console.error(`Игра с ID ${gameId} не найдена`);
         throw new Error('Game not found');
       }
       
-      // Проверяем тип игры
+      // Проверяем, что у игры правильный тип
       if (game.type !== 'dice') {
-        console.error(`Неверный тип игры: ${game.type}, ожидался: dice`);
-        throw new Error('Invalid game type');
+        throw new Error('This is not a dice game');
       }
       
-      // Проверяем количество игроков
-      if (game.players.length < 2) {
-        console.error(`Недостаточное количество игроков для начала игры: ${game.players.length}`);
-        throw new Error('Not enough players to start the game');
-      }
-      
-      // Проверяем статус игры
-      if (game.status === 'playing') {
-        console.log(`Игра ${gameId} уже запущена, возвращаем текущее состояние`);
+      // Проверяем, что игра еще не запущена
+      if (game.status === 'playing' || game.status === 'finished') {
+        console.log(`Игра ${gameId} уже запущена или завершена`);
         return game;
       }
       
-      if (game.status === 'finished') {
-        console.error(`Игра ${gameId} уже завершена`);
-        throw new Error('Game is already finished');
+      // Проверяем, что подключилось 2 игрока
+      if (game.players.length !== 2) {
+        console.error(`Для начала игры необходимо 2 игрока, текущее количество: ${game.players.length}`);
+        throw new Error('Not enough players to start the game');
       }
       
-      // Обновляем статус игры на "playing"
+      // Обновляем статус игры
       game.status = 'playing';
       game.currentRound = 1;
       
-      // Определяем, кто ходит первым (случайно)
-      const firstPlayerIndex = Math.floor(Math.random() * 2); // 0 или 1
-      game.currentPlayer = game.players[firstPlayerIndex].telegramId.toString();
+      // Выбираем случайного игрока для первого хода
+      const randomPlayerIndex = Math.floor(Math.random() * 2);
+      const firstPlayer = game.players[randomPlayerIndex];
       
-      // Инициализируем массив раундов, если его нет
-      if (!game.rounds) {
-        game.rounds = [];
-      }
-      
-      await game.save();
+      // Устанавливаем первого игрока
+      game.currentPlayer = firstPlayer.telegramId.toString();
       
       console.log(`Игра ${gameId} успешно запущена. Первым ходит игрок ${game.currentPlayer}`);
       
-      // Отправляем событие о начале игры через WebSocket
-      if (this.server) {
-        this.server.to(`game_${gameId}`).emit('diceGameStarted', {
-          gameId,
-          firstPlayer: game.currentPlayer,
-          status: 'playing',
-          players: game.players.map(p => ({
-            telegramId: p.telegramId,
-            username: p.username,
-            avatarUrl: p.avatarUrl
-          }))
-        });
-      }
+      // Сохраняем изменения в базе данных
+      await game.save();
+      
+      // Оповещаем всех игроков о начале игры
+      this.server.to(`game_${gameId}`).emit('diceGameStarted', {
+        gameId,
+        status: 'playing',
+        firstPlayer: game.currentPlayer,
+        players: game.players.map(p => ({
+          telegramId: p.telegramId,
+          username: p.username || 'Unknown',
+          avatarUrl: p.avatarUrl
+        })),
+        timestamp: Date.now()
+      });
       
       return game;
     } catch (error) {
