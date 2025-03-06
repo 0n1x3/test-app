@@ -1,5 +1,5 @@
 import React from 'react';
-import './ConnectionStatusIndicator.css';
+import './style.css';
 
 export type ConnectionStatus = 'connecting' | 'connected' | 'error';
 

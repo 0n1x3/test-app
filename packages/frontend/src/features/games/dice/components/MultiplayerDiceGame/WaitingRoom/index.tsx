@@ -4,7 +4,7 @@ import React from 'react';
 import { Icon } from '@iconify/react';
 import { ConnectionStatusIndicator } from './ConnectionStatusIndicator';
 import { BetInfo } from './BetInfo';
-import './WaitingRoom.css';
+import './style.css';
 
 // Типы
 type ConnectionStatus = 'connecting' | 'connected' | 'error';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Icon } from '@iconify/react';
-import './BetInfo.css';
+import './style.css';
 
 interface BetInfoProps {
   amount: number;

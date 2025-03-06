@@ -9,9 +9,7 @@ import { toast } from 'react-hot-toast';
 import { getUserId, getOrCreateGuestId } from '@/utils/telegramWebApp';
 import './style.css';
 import { PageContainer } from '@/components/_layout/PageContainer';
-import { WaitingRoom } from './WaitingRoom';
-import { ConnectionStatusIndicator } from './ConnectionStatusIndicator';
-import { BetInfo } from './BetInfo';
+import { WaitingRoom } from './WaitingRoom/index';
 
 // Удаляем объявление глобального интерфейса, так как оно определено в global.d.ts
 
@@ -895,7 +893,6 @@ export function MultiplayerDiceGame({
               
               <div className="round-info">
                 <div className="round-number">Раунд {currentRound}/3</div>
-                <BetInfo amount={displayedBetAmount} />
               </div>
               
               <div className="opponent-side">
@@ -1024,7 +1021,6 @@ export function MultiplayerDiceGame({
             
             <div className="round-info">
               <div className="round-number">Раунд {currentRound}/3</div>
-              <BetInfo amount={displayedBetAmount} />
             </div>
             
             <div className="opponent-side">
