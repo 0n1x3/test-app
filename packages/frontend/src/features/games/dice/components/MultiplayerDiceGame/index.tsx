@@ -96,6 +96,7 @@ export function MultiplayerDiceGame({
 }: MultiplayerDiceGameProps) {
   // Отладочный вывод для входящего значения ставки
   console.log('MultiplayerDiceGame received betAmount:', betAmount);
+  console.log('MultiplayerDiceGame betAmount type:', typeof betAmount);
   
   // Состояния игры
   const [playerData, setPlayerData] = useState<PlayerData | null>(null);

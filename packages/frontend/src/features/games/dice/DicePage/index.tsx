@@ -58,6 +58,8 @@ export function DicePage() {
             return;
           }
           
+          console.log('Создание игры со ставкой:', betAmount, typeof betAmount);
+          
           const response = await fetch('/api/games/create', {
             method: 'POST',
             headers: {
@@ -65,7 +67,7 @@ export function DicePage() {
             },
             body: JSON.stringify({
               type: 'dice', // Измените gameType на type для соответствия ожиданиям сервера
-              betAmount,
+              betAmount: Number(betAmount),
               initData: tg.initData
             }),
           });

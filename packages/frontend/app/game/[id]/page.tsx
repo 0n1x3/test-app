@@ -72,6 +72,13 @@ export default function GamePage() {
       
       const data = await response.json();
       console.log('Полученные данные игры:', data);
+      
+      // Обеспечиваем, что betAmount - число
+      if (data && data.betAmount !== undefined) {
+        data.betAmount = Number(data.betAmount);
+        console.log('Приведенное значение betAmount:', data.betAmount, typeof data.betAmount);
+      }
+      
       return data;
     } catch (error) {
       console.error('Ошибка при загрузке данных игры:', error);
@@ -160,6 +167,8 @@ export default function GamePage() {
         
         // Сохраняем данные игры
         setGameData(gameData);
+        console.log('Полученные данные игры перед сохранением в состояние:', gameData);
+        console.log('Значение betAmount из данных игры:', gameData.betAmount);
         
         // Проверяем, нужно ли присоединяться к игре
         if (!gameData.isPlayerInGame) {
@@ -248,9 +257,10 @@ export default function GamePage() {
             {/* Игровой компонент */}
             {!loading && !error && gameData && joinStatus === 'joined' && (
               <div className="isolated-game-container">
+                {/* Передаем в MultiplayerDiceGame betAmount: {gameData.betAmount} */}
                 <MultiplayerDiceGame 
                   gameId={gameId}
-                  betAmount={gameData.betAmount}
+                  betAmount={Number(gameData.betAmount) || 0}
                   onGameEnd={handleGameEnd}
                 />
               </div>
