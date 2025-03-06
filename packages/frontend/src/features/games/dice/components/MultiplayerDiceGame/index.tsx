@@ -147,6 +147,7 @@ export function MultiplayerDiceGame({
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('connecting');
   const [socketError, setSocketError] = useState<string | null>(null);
   const [gameStarted, setGameStarted] = useState(false);
+  const [isJoining, setIsJoining] = useState(false);
   
   // Инициализируем displayedBetAmount с корректным значением из пропсов
   const [displayedBetAmount, setDisplayedBetAmount] = useState(() => {
@@ -275,7 +276,28 @@ export function MultiplayerDiceGame({
     
     // Убедимся, что у нас установлен telegramId для последующего использования
     if (!telegramId) {
+      console.log('Устанавливаем telegramId из userId перед подключением сокета:', numericTelegramId);
       setTelegramId(numericTelegramId);
+      // Также сохраним в хранилище
+      useUserStore.getState().updateUser({
+        telegramId: numericTelegramId,
+        username: 'Player', // Временное имя пользователя
+        avatarUrl: undefined,
+        balance: 0,
+        isActive: true
+      });
+    } else if (telegramId !== numericTelegramId) {
+      console.warn('Текущий telegramId отличается от ID для сокета:', { telegramId, numericTelegramId });
+      console.log('Обновляем telegramId для соответствия:', numericTelegramId);
+      setTelegramId(numericTelegramId);
+      // Также сохраним в хранилище
+      useUserStore.getState().updateUser({
+        telegramId: numericTelegramId,
+        username: 'Player', // Временное имя пользователя
+        avatarUrl: undefined,
+        balance: 0,
+        isActive: true
+      });
     }
     
     console.log('Используется telegramId для подключения:', numericTelegramId);
@@ -435,34 +457,66 @@ export function MultiplayerDiceGame({
       
       // Обработчик для начала игры в кости
       newSocket.on('diceGameStarted', (data) => {
-        console.log('Игра в кости началась:', data);
+        if (!mounted.current) return;
         
-        // Проверяем, что игра еще не в статусе playing, чтобы избежать повторного запуска
-        if (gameState !== 'playing') {
-          setGameState('playing');
-          setGameStarted(true);
-          toast.success('Игра началась!');
+        try {
+          console.log('Игра в кости началась:', data);
           
-          // Получим строковое представление telegramId для сравнения, защищенное от null
-          const telegramIdStr = telegramId?.toString() || '';
-          
-          // Определяем, чей первый ход
-          const isFirstPlayer = data.firstPlayer.toString() === telegramIdStr;
-          console.log('Первый ход определен:', { 
-            firstPlayer: data.firstPlayer, 
-            myId: telegramId, 
-            isMyTurn: isFirstPlayer,
-            telegramIdType: typeof telegramId,
-            telegramIdStr
-          });
-          
-          setIsMyTurn(isFirstPlayer);
-          useUserStore.getState().setIsCurrentTurn(isFirstPlayer);
-          
-          if (isFirstPlayer) {
-            toast.success('Ваш ход первый!');
+          // Проверим, что telegramId установлен перед проверкой хода
+          if (!telegramId) {
+            // Дополнительная попытка получить ID
+            const currentTelegramId = getTelegramUserId();
+            if (currentTelegramId) {
+              console.log('Обновляем telegramId непосредственно перед проверкой хода:', currentTelegramId);
+              setTelegramId(currentTelegramId);
+              
+              // Получим строковое представление telegramId для сравнения
+              const telegramIdStr = currentTelegramId.toString();
+              
+              // Определяем, чей первый ход
+              const isFirstPlayer = data.firstPlayer.toString() === telegramIdStr;
+              console.log('Первый ход определен с обновленным ID:', { 
+                firstPlayer: data.firstPlayer, 
+                myId: currentTelegramId, 
+                isMyTurn: isFirstPlayer,
+                telegramIdType: typeof currentTelegramId,
+                telegramIdStr
+              });
+              
+              setIsMyTurn(isFirstPlayer);
+              useUserStore.getState().setIsCurrentTurn(isFirstPlayer);
+              
+              if (isFirstPlayer) {
+                toast.success('Ваш ход первый!');
+              } else {
+                toast('Ожидайте хода соперника', { icon: '⌛' });
+              }
+            } else {
+              console.error('Невозможно определить telegramId даже после дополнительной попытки');
+              toast.error('Не удалось определить ваш идентификатор. Перезагрузите страницу.');
+            }
           } else {
-            toast('Ожидайте хода соперника', { icon: '⌛' });
+            // Получим строковое представление telegramId для сравнения, защищенное от null
+            const telegramIdStr = telegramId.toString();
+            
+            // Определяем, чей первый ход
+            const isFirstPlayer = data.firstPlayer.toString() === telegramIdStr;
+            console.log('Первый ход определен:', { 
+              firstPlayer: data.firstPlayer, 
+              myId: telegramId, 
+              isMyTurn: isFirstPlayer,
+              telegramIdType: typeof telegramId,
+              telegramIdStr
+            });
+            
+            setIsMyTurn(isFirstPlayer);
+            useUserStore.getState().setIsCurrentTurn(isFirstPlayer);
+            
+            if (isFirstPlayer) {
+              toast.success('Ваш ход первый!');
+            } else {
+              toast('Ожидайте хода соперника', { icon: '⌛' });
+            }
           }
           
           // Сбрасываем счет и кубики
@@ -472,8 +526,11 @@ export function MultiplayerDiceGame({
           setOpponentDice(1);
           setCurrentRound(1);
           setGameResult(null);
-        } else {
-          console.log('Игра уже запущена, игнорируем повторное событие diceGameStarted');
+          setGameStarted(true);
+          toast.success('Игра началась!');
+        } catch (error) {
+          console.error('Ошибка при обработке события diceGameStarted:', error);
+          toast.error('Не удалось начать игру');
         }
       });
 
@@ -690,6 +747,30 @@ export function MultiplayerDiceGame({
     }, 1000);
   };
 
+  // Функция для присоединения к игре вручную
+  const handleJoinGame = useCallback(() => {
+    if (isJoining) return; // Предотвращаем повторные попытки
+    
+    console.log('Попытка подключения к игре:', gameId);
+    setIsJoining(true);
+    
+    if (socketRef.current) {
+      socketRef.current.emit('joinGameRoom', { gameId }, (response: any) => {
+        setIsJoining(false);
+        if (response.success) {
+          console.log('Успешное подключение к игре');
+          toast.success('Успешное подключение к игре');
+        } else {
+          console.error('Ошибка при подключении к игре:', response.error);
+          toast.error(`Ошибка при подключении к игре: ${response.error || 'Неизвестная ошибка'}`);
+        }
+      });
+    } else {
+      setIsJoining(false);
+      toast.error('Ошибка подключения: сокет не инициализирован');
+    }
+  }, [gameId, isJoining]);
+
   // Функция для копирования пригласительной ссылки
   const copyInviteLink = () => {
     const inviteLink = `https://t.me/neometria_bot?startapp=game_${gameId}`;
@@ -724,7 +805,7 @@ export function MultiplayerDiceGame({
     }
   };
 
-  // Функция для ручного входа в игру
+  // Функция для перехода к игре по приглашению через Telegram
   const handleManualJoin = () => {
     // Формируем полную ссылку на приложение
     const fullGameId = `game_${gameId}`;
@@ -921,9 +1002,25 @@ export function MultiplayerDiceGame({
     const updateTelegramId = (id: number | null | undefined) => {
       if (id && !isNaN(Number(id))) {
         console.log('Обновляем telegramId:', id);
-        setTelegramId(Number(id));
+        const numericId = Number(id);
+        setTelegramId(numericId);
+        
+        // Также сохраним в хранилище для последующего использования
+        useUserStore.getState().updateUser({
+          telegramId: numericId,
+          username: 'Player', // Временное имя пользователя
+          avatarUrl: undefined,
+          balance: 0,
+          isActive: true
+        });
+        
+        // Обновим также userId для единообразия
+        setUserId(numericId.toString());
+        
+        return numericId;
       } else {
         console.warn('Получен некорректный telegramId:', id);
+        return null;
       }
     };
     
@@ -1001,6 +1098,8 @@ export function MultiplayerDiceGame({
           onCopyInviteLink={copyInviteLink}
           onReconnect={() => setupSocketConnection()}
           onManualJoin={handleManualJoin}
+          onJoinGame={handleJoinGame}
+          isJoining={isJoining}
         />
       </PageContainer>
     );

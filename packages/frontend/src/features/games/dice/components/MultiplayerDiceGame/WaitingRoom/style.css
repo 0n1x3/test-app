@@ -24,31 +24,70 @@
   max-width: 300px;
 }
 
-.copy-link-button {
-  margin-top: 16px;
+/* Обновленные стили для кнопок */
+.waiting-room-controls {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  max-width: 400px;
+  margin-top: 8px;
 }
 
-.copy-link-button button {
+.copy-link-button,
+.join-game-button {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 24px;
-  background: #2196F3;
-  border: none;
+  padding: 12px 20px;
   border-radius: 8px;
-  color: white;
   font-size: 16px;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  border: none;
+  color: white;
 }
 
-.copy-link-button button:hover {
-  background: #1976D2;
+.copy-link-button {
+  background: linear-gradient(45deg, #0098EA, #0077cc);
+}
+
+.join-game-button {
+  background: linear-gradient(45deg, #4CAF50, #45a049);
+}
+
+.join-game-button.joining {
+  background: linear-gradient(45deg, #666666, #444444);
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.join-game-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.copy-link-button:hover,
+.join-game-button:not(:disabled):hover {
   transform: translateY(-2px);
+  filter: brightness(1.1);
 }
 
-.copy-link-button button svg {
-  font-size: 20px;
+.copy-link-button:active,
+.join-game-button:not(:disabled):active {
+  transform: translateY(0);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
 }
 
 /* Стили для информации об игре */

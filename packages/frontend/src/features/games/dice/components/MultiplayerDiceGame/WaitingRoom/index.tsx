@@ -24,6 +24,8 @@ interface WaitingRoomProps {
   onCopyInviteLink: () => void;
   onReconnect: () => void;
   onManualJoin?: () => void;
+  onJoinGame: () => void;
+  isJoining: boolean;
 }
 
 export function WaitingRoom({
@@ -34,7 +36,9 @@ export function WaitingRoom({
   socketError,
   onCopyInviteLink,
   onReconnect,
-  onManualJoin
+  onManualJoin,
+  onJoinGame,
+  isJoining
 }: WaitingRoomProps) {
   // Получаем последние 4 символа ID игры
   const shortGameId = gameId.slice(-4);
@@ -80,10 +84,29 @@ export function WaitingRoom({
           <h2>Ожидание соперника</h2>
           <p>Поделитесь ссылкой с другом или дождитесь пока кто-то присоединится</p>
           
-          <div className="copy-link-button">
-            <button onClick={onCopyInviteLink}>
-              <Icon icon="mdi:content-copy" />
-              <span>Скопировать ссылку</span>
+          {/* Кнопка копирования ссылки приглашения */}
+          <div className="waiting-room-controls">
+            <button className="copy-link-button" onClick={onCopyInviteLink}>
+              <Icon icon="solar:copy-linear" />
+              Копировать ссылку-приглашение
+            </button>
+            
+            <button 
+              className={`join-game-button ${isJoining ? 'joining' : ''}`} 
+              onClick={onJoinGame}
+              disabled={isJoining}
+            >
+              {isJoining ? (
+                <>
+                  <Icon icon="solar:spinner-line-duotone" className="spinning" />
+                  Подключение...
+                </>
+              ) : (
+                <>
+                  <Icon icon="solar:login-3-linear" />
+                  Присоединиться к игре
+                </>
+              )}
             </button>
           </div>
           
