@@ -386,12 +386,55 @@ export function MultiplayerDiceGame({
         setSocketError(`Ошибка подключения: ${error.message}`);
         toast.error('Ошибка подключения к серверу');
         connectionAttemptRef.current += 1;
+        
+        // Добавляем автоматическое переподключение при ошибке
+        if (connectionAttemptRef.current < 5) {
+          const retryDelay = 3000 + (connectionAttemptRef.current * 1000); // Увеличиваем задержку с каждой попыткой
+          console.log(`Попытка переподключения #${connectionAttemptRef.current} через ${retryDelay/1000} сек...`);
+          
+          setTimeout(() => {
+            if (mounted.current && !socketRef.current?.connected) {
+              console.log('Выполняется автоматическое переподключение...');
+              setupSocketConnection();
+            }
+          }, retryDelay);
+        }
       });
 
       // Добавляем обработчик ошибок данных
       newSocket.on('error', (error) => {
         console.error('Ошибка сокета:', error);
         setSocketError(`Ошибка сокета: ${error.message || 'Неизвестная ошибка'}`);
+      });
+      
+      // Обработчик отключения
+      newSocket.on('disconnect', (reason) => {
+        console.warn('Соединение с сервером разорвано. Причина:', reason);
+        
+        if (reason === 'io server disconnect') {
+          // Сервер разорвал соединение, нужно переподключиться
+          console.log('Сервер разорвал соединение, пробуем переподключиться...');
+          setTimeout(() => {
+            if (mounted.current) {
+              newSocket.connect();
+            }
+          }, 2000);
+        } else {
+          // Соединение разорвано по другой причине
+          setConnectionStatus('error');
+          setSocketError(`Соединение разорвано: ${reason}`);
+          toast.error('Соединение с сервером потеряно');
+          
+          // Автоматическое переподключение при потере связи
+          if (connectionAttemptRef.current < 5) {
+            setTimeout(() => {
+              if (mounted.current && !socketRef.current?.connected) {
+                console.log('Попытка восстановления соединения...');
+                setupSocketConnection();
+              }
+            }, 3000);
+          }
+        }
       });
 
       // Добавляем обработчик для получения всех событий (отладка)
@@ -425,32 +468,61 @@ export function MultiplayerDiceGame({
           setPlayers(data.players);
           
           // Получим строковое представление telegramId для сравнения, защищенное от null
-          const telegramIdStr = telegramId?.toString() || '';
+          const currentTelegramId = telegramId || getTelegramUserId();
+          const telegramIdStr = currentTelegramId?.toString() || '';
+          
+          console.log('Идентификация игроков. Текущий пользователь TelegramID:', telegramIdStr);
+          console.log('Список игроков в игре:', data.players.map((p: Player) => ({ 
+            telegramId: p.telegramId, 
+            username: p.username 
+          })));
           
           // Определяем, кто из игроков - текущий пользователь
           const currentPlayer = data.players.find(
-            (player: Player) => player.telegramId.toString() === telegramIdStr
+            (player: Player) => player.telegramId?.toString() === telegramIdStr
           );
           
           if (currentPlayer) {
+            console.log('Найден текущий игрок:', currentPlayer);
             setPlayerData({
               id: currentPlayer.telegramId,
               username: currentPlayer.username,
               avatarUrl: currentPlayer.avatarUrl
             });
+          } else {
+            console.warn('Текущий игрок не найден в списке игроков. TelegramID:', telegramIdStr);
           }
           
           // Определяем, кто из игроков - оппонент
           const opponent = data.players.find(
-            (player: Player) => player.telegramId.toString() !== telegramIdStr
+            (player: Player) => player.telegramId?.toString() !== telegramIdStr
           );
           
           if (opponent) {
+            console.log('Найден оппонент:', opponent);
             setOpponentData({
               id: opponent.telegramId,
               username: opponent.username,
               avatarUrl: opponent.avatarUrl
             });
+          } else {
+            console.log('Оппонент еще не подключился к игре');
+          }
+          
+          // Проверяем количество игроков для отладки
+          if (data.players.length < 2) {
+            console.log('Недостаточно игроков для начала игры:', data.players.length);
+            // Если игрок всего один, и это не текущий пользователь - попробуем присоединиться
+            if (data.players.length === 1 && !currentPlayer) {
+              console.log('Попробуем присоединиться к игре автоматически...');
+              setTimeout(() => {
+                if (socketRef.current && !isJoining) {
+                  handleJoinGame();
+                }
+              }, 2000);
+            }
+          } else {
+            console.log('Достаточно игроков для начала игры:', data.players.length);
           }
         }
       });
@@ -646,11 +718,38 @@ export function MultiplayerDiceGame({
           // Проверяем, что игра еще не запущена и оба игрока подключены
           console.log('Оба игрока подключены, запрашиваем статус игры');
           newSocket.emit('getGameStatus', { gameId });
+          newSocket.emit('getGamePlayers', { gameId });
+          
+          // Запоминаем время последнего обновления состояния игроков
+          const lastUpdateTime = Date.now();
           
           // Пробуем запустить игру, если она еще не началась
           if (!gameStarted) {
             console.log('Пробуем запустить игру');
             newSocket.emit('startDiceGame', { gameId });
+            
+            // Если есть подключение, но игрок не в списке играющих, пробуем явно присоединиться
+            setTimeout(() => {
+              if (players.length < 2 && socketRef.current && !isJoining) {
+                console.log('Обнаружено 2 подключенных клиента, но только', players.length, 'игроков в списке');
+                console.log('Пробуем явно присоединиться к игре...');
+                
+                // Проверяем, присутствует ли текущий игрок в списке
+                const currentTelegramId = telegramId || getTelegramUserId();
+                const telegramIdStr = currentTelegramId?.toString() || '';
+                
+                const isPlayerInGame = players.some(player => 
+                  player.telegramId?.toString() === telegramIdStr
+                );
+                
+                if (!isPlayerInGame) {
+                  console.log('Текущий игрок не в списке, пробуем присоединиться к игре...');
+                  handleJoinGame();
+                } else {
+                  console.log('Текущий игрок уже в списке игроков');
+                }
+              }
+            }, 1000);
           }
         }
       });
@@ -751,15 +850,28 @@ export function MultiplayerDiceGame({
   const handleJoinGame = useCallback(() => {
     if (isJoining) return; // Предотвращаем повторные попытки
     
-    console.log('Попытка подключения к игре:', gameId);
+    // Получаем текущее значение telegramId
+    const currentTelegramId = telegramId || getTelegramUserId();
+    const username = window.Telegram?.WebApp?.initDataUnsafe?.user?.username || 'unknown';
+    
+    console.log('Попытка подключения к игре:', gameId, 'с TelegramID:', currentTelegramId, 'и именем:', username);
     setIsJoining(true);
     
     if (socketRef.current) {
-      socketRef.current.emit('joinGameRoom', { gameId }, (response: any) => {
+      // Отправляем полные данные для авторизации
+      socketRef.current.emit('joinGameRoom', { 
+        gameId,
+        telegramId: currentTelegramId,
+        username: username
+      }, (response: any) => {
         setIsJoining(false);
         if (response.success) {
           console.log('Успешное подключение к игре');
           toast.success('Успешное подключение к игре');
+          
+          // Запрашиваем обновленные данные игры после успешного подключения
+          socketRef.current?.emit('getGamePlayers', { gameId });
+          socketRef.current?.emit('getGameStatus', { gameId });
         } else {
           console.error('Ошибка при подключении к игре:', response.error);
           toast.error(`Ошибка при подключении к игре: ${response.error || 'Неизвестная ошибка'}`);
@@ -768,8 +880,12 @@ export function MultiplayerDiceGame({
     } else {
       setIsJoining(false);
       toast.error('Ошибка подключения: сокет не инициализирован');
+      
+      // Попробуем переинициализировать сокет
+      console.log('Попытка переподключения сокета...');
+      setupSocketConnection();
     }
-  }, [gameId, isJoining]);
+  }, [gameId, isJoining, telegramId, setupSocketConnection]);
 
   // Функция для копирования пригласительной ссылки
   const copyInviteLink = () => {
@@ -1097,7 +1213,6 @@ export function MultiplayerDiceGame({
           socketError={socketError}
           onCopyInviteLink={copyInviteLink}
           onReconnect={() => setupSocketConnection()}
-          onManualJoin={handleManualJoin}
           onJoinGame={handleJoinGame}
           isJoining={isJoining}
         />

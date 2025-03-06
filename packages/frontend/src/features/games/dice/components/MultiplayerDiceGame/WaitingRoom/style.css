@@ -107,48 +107,6 @@
   border-radius: 4px;
 }
 
-/* Стили для ручного входа в игру */
-.manual-join {
-  margin-top: 24px;
-  width: 100%;
-  max-width: 300px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.manual-join h3 {
-  font-size: 16px;
-  font-weight: 500;
-  color: white;
-  margin: 0;
-}
-
-.manual-join-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px 24px;
-  background: #2196F3;
-  border: none;
-  border-radius: 8px;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  width: 100%;
-}
-
-.manual-join-button:hover {
-  background: #1976D2;
-  transform: translateY(-2px);
-}
-
-.manual-join-button svg {
-  font-size: 20px;
-}
-
 .player-count {
   width: 100%;
   max-width: 300px;

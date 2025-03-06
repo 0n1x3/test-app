@@ -23,7 +23,6 @@ interface WaitingRoomProps {
   socketError: string | null;
   onCopyInviteLink: () => void;
   onReconnect: () => void;
-  onManualJoin?: () => void;
   onJoinGame: () => void;
   isJoining: boolean;
 }
@@ -36,7 +35,6 @@ export function WaitingRoom({
   socketError,
   onCopyInviteLink,
   onReconnect,
-  onManualJoin,
   onJoinGame,
   isJoining
 }: WaitingRoomProps) {
@@ -109,16 +107,6 @@ export function WaitingRoom({
               )}
             </button>
           </div>
-          
-          {onManualJoin && (
-            <div className="manual-join">
-              <h3>Ручной вход в игру</h3>
-              <button className="manual-join-button" onClick={onManualJoin}>
-                <Icon icon="mdi:login" />
-                <span>Войти в игру</span>
-              </button>
-            </div>
-          )}
           
           <div className="player-count">
             <p>Подключенные игроки ({players.length}/2):</p>
