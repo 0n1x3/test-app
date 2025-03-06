@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Icon } from '@iconify/react';
 import { ConnectionStatusIndicator } from './ConnectionStatusIndicator';
 import { BetInfo } from './BetInfo';
@@ -23,7 +23,7 @@ interface WaitingRoomProps {
   socketError: string | null;
   onCopyInviteLink: () => void;
   onReconnect: () => void;
-  onManualJoin?: (gameId: string) => void;
+  onManualJoin?: () => void;
 }
 
 export function WaitingRoom({
@@ -36,17 +36,11 @@ export function WaitingRoom({
   onReconnect,
   onManualJoin
 }: WaitingRoomProps) {
-  const [manualGameId, setManualGameId] = useState('');
-  
   // Получаем последние 4 символа ID игры
   const shortGameId = gameId.slice(-4);
   
-  // Функция для ручного входа в игру
-  const handleManualJoin = () => {
-    if (onManualJoin && manualGameId.trim()) {
-      onManualJoin(manualGameId.trim());
-    }
-  };
+  // Отладочный вывод
+  console.log('WaitingRoom props:', { gameId, betAmount, players });
   
   return (
     <div className="dice-game">
@@ -90,18 +84,10 @@ export function WaitingRoom({
           {onManualJoin && (
             <div className="manual-join">
               <h3>Ручной вход в игру</h3>
-              <div className="manual-join-form">
-                <input 
-                  type="text" 
-                  placeholder="Введите ID игры" 
-                  value={manualGameId}
-                  onChange={(e) => setManualGameId(e.target.value)}
-                />
-                <button onClick={handleManualJoin}>
-                  <Icon icon="mdi:login" />
-                  <span>Войти</span>
-                </button>
-              </div>
+              <button className="manual-join-button" onClick={onManualJoin}>
+                <Icon icon="mdi:login" />
+                <span>Войти в игру</span>
+              </button>
             </div>
           )}
           

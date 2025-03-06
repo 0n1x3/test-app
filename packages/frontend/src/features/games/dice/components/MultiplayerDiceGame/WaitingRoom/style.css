@@ -85,47 +85,29 @@
   margin: 0;
 }
 
-.manual-join-form {
-  display: flex;
-  gap: 8px;
-  width: 100%;
-}
-
-.manual-join-form input {
-  flex: 1;
-  padding: 10px 12px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  color: white;
-  font-size: 14px;
-}
-
-.manual-join-form input:focus {
-  outline: none;
-  border-color: #2196F3;
-}
-
-.manual-join-form button {
+.manual-join-button {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 10px 16px;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
   background: #2196F3;
   border: none;
   border-radius: 8px;
   color: white;
-  font-size: 14px;
+  font-size: 16px;
   cursor: pointer;
   transition: all 0.2s ease;
+  width: 100%;
 }
 
-.manual-join-form button:hover {
+.manual-join-button:hover {
   background: #1976D2;
+  transform: translateY(-2px);
 }
 
-.manual-join-form button svg {
-  font-size: 18px;
+.manual-join-button svg {
+  font-size: 20px;
 }
 
 .player-count {
