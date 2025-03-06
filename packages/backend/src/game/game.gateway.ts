@@ -185,6 +185,18 @@ export class GameGateway {
         return { success: false, error: 'Game not found' };
       }
       
+      // Проверяем, что игра в статусе 'playing'
+      if (game.status !== 'playing') {
+        console.error(`Попытка хода в игре, которая не в статусе playing: ${game.status}`);
+        return { success: false, error: 'Game is not in playing status' };
+      }
+      
+      // Проверяем, чей ход
+      if (game.currentPlayer && game.currentPlayer !== data.telegramId.toString()) {
+        console.error(`Не ваш ход: текущий игрок ${game.currentPlayer}, вы пытаетесь ходить как ${data.telegramId}`);
+        return { success: false, error: 'Not your turn' };
+      }
+      
       // Находим индекс игрока
       const playerIndex = game.players.findIndex(
         playerId => playerId.toString() === data.telegramId.toString()
@@ -201,12 +213,26 @@ export class GameGateway {
         data.value
       );
       
+      // Получаем индекс следующего игрока
+      const nextPlayerIndex = updatedGame.players.findIndex(
+        playerId => playerId.toString() === updatedGame.currentPlayer
+      );
+      
+      // Имя следующего игрока
+      const nextPlayerName = nextPlayerIndex >= 0 ? 
+        await this.gameService.getUsernameById(updatedGame.currentPlayer) : 
+        'unknown';
+      
+      console.log(`Ход переходит к игроку ${updatedGame.currentPlayer} (${nextPlayerName})`);
+      
       // Сообщаем всем подключенным клиентам о ходе
-      this.server.to(data.gameId).emit('diceMove', {
+      this.server.to(`game_${data.gameId}`).emit('diceMove', {
         gameId: data.gameId,
         telegramId: data.telegramId,
         value: data.value,
-        nextMove: updatedGame.currentPlayer
+        nextMove: updatedGame.currentPlayer,
+        round: updatedGame.currentRound,
+        timestamp: Date.now()
       });
       
       return { success: true };

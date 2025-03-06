@@ -438,6 +438,17 @@ export class GameService {
     }
   }
 
+  // Метод для получения имени пользователя по его telegramId
+  async getUsernameById(telegramId: string): Promise<string> {
+    try {
+      const user = await this.userModel.findOne({ telegramId: parseInt(telegramId) }).exec();
+      return user ? user.username : 'unknown';
+    } catch (error) {
+      console.error(`Error getting username for telegramId ${telegramId}:`, error);
+      return 'unknown';
+    }
+  }
+
   // Метод для удаления игры
   async deleteGame(gameId: string, userId: number): Promise<boolean> {
     try {

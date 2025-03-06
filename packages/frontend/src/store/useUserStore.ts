@@ -9,11 +9,13 @@ interface UserState {
   level: number;
   experience: number;
   isActive: boolean;
+  isCurrentTurn: boolean;
   setUserData: (data: { balance: number; level: number; experience: number }) => void;
   fetchUserData: () => Promise<void>;
   updateUser: (data: UserData) => void;
   updateAvatar: (url: string) => void;
   updateBalance: (amount: number) => void;
+  setIsCurrentTurn: (isTurn: boolean) => void;
 }
 
 export const useUserStore = create<UserState>((set) => ({
@@ -24,6 +26,7 @@ export const useUserStore = create<UserState>((set) => ({
   level: 1,
   experience: 0,
   isActive: false,
+  isCurrentTurn: false,
   setUserData: (data) => {
     console.log('Setting user data:', data);
     set(data);
@@ -63,4 +66,5 @@ export const useUserStore = create<UserState>((set) => ({
   updateBalance: (amount: number) => set((state) => ({ 
     balance: state.balance + amount 
   })),
+  setIsCurrentTurn: (isTurn: boolean) => set({ isCurrentTurn: isTurn }),
 })); 
