@@ -113,16 +113,19 @@ export function MultiplayerDiceGame({
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('connecting');
   const [socketError, setSocketError] = useState<string | null>(null);
   const [gameStarted, setGameStarted] = useState(false);
-  const [displayedBetAmount, setDisplayedBetAmount] = useState(Number(betAmount) || 0);
+  
+  // Инициализируем displayedBetAmount с корректным значением из пропсов
+  const [displayedBetAmount, setDisplayedBetAmount] = useState(() => {
+    const numericBetAmount = Number(betAmount);
+    return !isNaN(numericBetAmount) ? numericBetAmount : 0;
+  });
   
   // Обновляем displayedBetAmount при изменении betAmount из пропсов
   useEffect(() => {
-    if (betAmount !== undefined && betAmount !== null) {
-      const numericBetAmount = Number(betAmount);
-      if (!isNaN(numericBetAmount) && numericBetAmount > 0) {
-        console.log('Updating displayedBetAmount from props:', numericBetAmount);
-        setDisplayedBetAmount(numericBetAmount);
-      }
+    const numericBetAmount = Number(betAmount);
+    if (!isNaN(numericBetAmount)) {
+      console.log('Updating displayedBetAmount from props:', numericBetAmount);
+      setDisplayedBetAmount(numericBetAmount);
     }
   }, [betAmount]);
   
