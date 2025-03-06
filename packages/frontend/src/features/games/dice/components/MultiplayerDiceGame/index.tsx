@@ -58,11 +58,11 @@ const GameField = ({
   return (
     <div className="game-field">
       <div className="player-dice">
-        <div className={`dice-container ${isRolling ? 'rolling' : ''}`}>
+        <div className={`dice-container ${isRolling && isPlayerTurn ? 'rolling' : ''}`}>
           <Dice 
             value={playerDice} 
             size="large" 
-            rolling={isRolling}
+            rolling={isRolling && isPlayerTurn}
           />
         </div>
       </div>
@@ -70,11 +70,11 @@ const GameField = ({
       <div className="vs-indicator">VS</div>
       
       <div className="opponent-dice">
-        <div className={`dice-container ${isRolling ? 'rolling' : ''}`}>
+        <div className={`dice-container ${isRolling && !isPlayerTurn ? 'rolling' : ''}`}>
           <Dice 
             value={opponentDice} 
             size="large"
-            rolling={isRolling}
+            rolling={isRolling && !isPlayerTurn}
           />
         </div>
       </div>
@@ -618,11 +618,24 @@ export function MultiplayerDiceGame({
         // Получим строковое представление telegramId для сравнения, защищенное от null
         const telegramIdStr = telegramId?.toString() || '';
         
-        // Если ход сделал оппонент, обновляем его кубик
-        if (telegramIdStr && data.telegramId && data.telegramId.toString() !== telegramIdStr) {
+        // Проверяем, кто сделал ход: мы или оппонент
+        const isMoveByCurrentPlayer = data.telegramId && data.telegramId.toString() === telegramIdStr;
+        const isMoveByOpponent = data.telegramId && data.telegramId.toString() !== telegramIdStr;
+        
+        console.log('Анализ хода:', { 
+          isMoveByCurrentPlayer: isMoveByCurrentPlayer, 
+          isMoveByOpponent: isMoveByOpponent, 
+          moverTelegramId: data.telegramId,
+          myTelegramId: telegramIdStr 
+        });
+        
+        // Если ход сделал оппонент, обновляем его кубик и запускаем анимацию
+        if (isMoveByOpponent) {
           console.log('Ход сделал оппонент, анимируем его бросок');
           // Запускаем анимацию броска оппонента
           setIsRolling(true);
+          setIsMyTurn(false); // Убеждаемся, что статус текущего хода = false
+          useUserStore.getState().setIsCurrentTurn(false);
           
           // Через секунду завершаем анимацию и устанавливаем результат
           setTimeout(() => {
@@ -630,6 +643,13 @@ export function MultiplayerDiceGame({
             setIsRolling(false);
             console.log('Анимация броска оппонента завершена, результат:', data.value);
           }, 1000);
+        }
+        
+        // Если наш ход уже отправлен, но ещё не обработан сервером,
+        // просто обновляем значение локального кубика
+        if (isMoveByCurrentPlayer) {
+          console.log('Получено подтверждение нашего хода от сервера');
+          setPlayerDice(data.value);
         }
         
         // Определяем, чей следующий ход
@@ -644,9 +664,12 @@ export function MultiplayerDiceGame({
             сравнение: `${data.nextMove.toString()} === ${telegramIdStr}`
           });
           
+          // Явно обновляем статус хода
           setIsMyTurn(myNextTurn);
           useUserStore.getState().setIsCurrentTurn(myNextTurn);
+          console.log(`Обновлен статус хода: isMyTurn = ${myNextTurn}, isCurrentTurn в хранилище = ${myNextTurn}`);
           
+          // Добавляем уведомления о смене хода
           if (myNextTurn) {
             toast.success('Ваш ход!');
           } else {
@@ -789,17 +812,17 @@ export function MultiplayerDiceGame({
   // Функция для броска кубика
   const rollDice = () => {
     console.log('Нажата кнопка "Бросить кубик", текущее состояние:', {
-      isRolling,
-      isMyTurn,
-      gameState,
-      currentRound,
-      telegramId,
+      isRolling: isRolling,
+      isMyTurn: isMyTurn,
+      gameState: gameState,
+      currentRound: currentRound,
+      telegramId: telegramId,
       isPlayerTurn: useUserStore.getState().isCurrentTurn // Добавленный лог
     });
     
     // Проверяем, что сейчас наш ход и анимация не запущена
     if (isRolling || !isMyTurn) {
-      console.log('Нельзя бросать кубик:', { isRolling, isMyTurn });
+      console.log('Нельзя бросать кубик:', { isRolling: isRolling, isMyTurn: isMyTurn });
       return;
     }
     
@@ -812,9 +835,9 @@ export function MultiplayerDiceGame({
     
     console.log('Начинаем бросок кубика, наш ход:', isMyTurn);
     
-    // Начинаем анимацию для кубика игрока
+    // Начинаем анимацию для кубика игрока (isMyTurn уже true, так что анимироваться будет только наш кубик)
     setIsRolling(true);
-    console.log('Multiplayer roll initiated');
+    console.log('Multiplayer roll initiated, анимируем только кубик игрока (наш)');
     
     // Генерируем случайное значение от 1 до 6
     const diceValue = Math.floor(Math.random() * 6) + 1;
@@ -833,7 +856,7 @@ export function MultiplayerDiceGame({
       }
       
       socketRef.current.emit('diceMove', {
-        gameId,
+        gameId: gameId,
         value: diceValue,
         telegramId: userTelegramId // Явно преобразуем в число, чтобы избежать проблем с типами
       });
@@ -856,6 +879,8 @@ export function MultiplayerDiceGame({
       // Передаем ход другому игроку, меняя isMyTurn на false
       // Ожидаем, что сервер отправит реальное обновление через событие diceMove
       setIsMyTurn(false);
+      useUserStore.getState().setIsCurrentTurn(false);
+      console.log('Ход передан сопернику, isMyTurn установлен в false');
     }, 1000);
   };
 
@@ -1317,7 +1342,6 @@ export function MultiplayerDiceGame({
                 <Icon icon="material-symbols:diamond-rounded" />
                 <span>{displayedBetAmount}</span>
               </div>
-              <Balance />
             </div>
             
             <div className="opponent-side">
@@ -1371,7 +1395,6 @@ export function MultiplayerDiceGame({
             <Icon icon="material-symbols:diamond-rounded" />
             <span>{displayedBetAmount}</span>
           </div>
-          <Balance />
           <GameResult result={gameResult} />
           <button 
             className="back-button"
