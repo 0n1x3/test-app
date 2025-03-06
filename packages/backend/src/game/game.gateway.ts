@@ -341,16 +341,65 @@ export class GameGateway {
       
       console.log(`Пользователь ${username} (${userId}) присоединяется к комнате ${gameId}`);
       
+      // Проверяем, существует ли игра
+      const game = await this.gameService.getGameById(gameId);
+      if (!game) {
+        console.error(`Игра с ID ${gameId} не найдена`);
+        return { success: false, error: 'Игра не найдена' };
+      }
+      
       // Присоединяем клиента к комнате игры
       await client.join(`game_${gameId}`);
       console.log(`Клиент ${client.id} успешно присоединился к комнате game_${gameId}`);
+      
+      // Обновляем данные клиента
+      client.data = {
+        ...client.data,
+        user: {
+          telegramId: userId,
+          username
+        },
+        gameId
+      };
+      
+      // Отправляем текущее состояние игры 
+      this.server.to(`game_${gameId}`).emit('gameStatus', {
+        gameId,
+        status: game.status,
+        currentRound: game.currentRound,
+        currentPlayer: game.currentPlayer,
+        players: game.players.map(p => ({
+          telegramId: p.telegramId,
+          username: p.username,
+          avatarUrl: p.avatarUrl
+        }))
+      });
+      
+      // Проверяем, является ли клиент игроком в этой игре
+      const isPlayerInGame = game.players.some(p => String(p.telegramId) === String(userId));
+      
+      if (!isPlayerInGame && game.status === 'waiting') {
+        console.log(`Игрок ${userId} не присоединен к игре, пробуем присоединить автоматически`);
+        
+        try {
+          // Находим пользователя
+          const user = await this.gameService.validateUser(Number(userId));
+          if (user) {
+            // Присоединяем к игре
+            await this.gameService.joinGame(gameId, user);
+            console.log(`Игрок ${username} (${userId}) успешно присоединен к игре ${gameId}`);
+          }
+        } catch (joinError) {
+          console.error(`Ошибка при присоединении игрока ${userId} к игре:`, joinError);
+        }
+      }
       
       // Обновляем статус подключения для всех клиентов в комнате
       this.updateConnectionStatus(gameId);
       
       return { success: true };
     } catch (error) {
-      console.error('Error joining game room:', error);
+      console.error('Ошибка при присоединении к комнате игры:', error);
       return { success: false, error: error.message };
     }
   }
