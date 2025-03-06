@@ -1,0 +1,19 @@
+.bet-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.bet-info svg {
+  font-size: 24px;
+  color: #2196F3;
+}
+
+.bet-info__amount {
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+} 

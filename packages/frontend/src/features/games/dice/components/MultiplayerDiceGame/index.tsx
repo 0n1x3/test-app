@@ -9,6 +9,9 @@ import { toast } from 'react-hot-toast';
 import { getUserId, getOrCreateGuestId } from '@/utils/telegramWebApp';
 import './style.css';
 import { PageContainer } from '@/components/_layout/PageContainer';
+import { WaitingRoom } from './WaitingRoom';
+import { ConnectionStatusIndicator } from './ConnectionStatusIndicator';
+import { BetInfo } from './BetInfo';
 
 // Удаляем объявление глобального интерфейса, так как оно определено в global.d.ts
 
@@ -38,37 +41,6 @@ interface Player {
 
 // Константы
 const MAX_ATTEMPTS = 5;
-
-// Компонент для отображения статуса подключения
-const ConnectionStatusIndicator = ({ status }: { status: ConnectionStatus }) => {
-  return (
-    <div className={`connection-status ${status}`}>
-      <div className="connection-indicator-dot"></div>
-      <span>
-        {(() => {
-          switch (status) {
-            case 'connecting':
-              return 'Подключение...';
-            case 'connected':
-              return 'Подключено';
-            case 'error':
-              return 'Ошибка подключения';
-            default:
-              return '';
-          }
-        })()}
-      </span>
-    </div>
-  );
-};
-
-// Компонент для отображения информации о ставке
-const BetInfo = ({ amount }: { amount: number }) => (
-  <div className="bet-info">
-    <Icon icon="material-symbols:diamond-rounded" />
-    <span className="bet-info__amount">{amount}</span>
-  </div>
-);
 
 // Компонент для отображения игрового поля
 const GameField = ({ 
@@ -890,65 +862,15 @@ export function MultiplayerDiceGame({
   if (gameState === 'waiting') {
     return (
       <PageContainer>
-        <div className="dice-game">
-          {/* Индикатор статуса подключения */}
-          <ConnectionStatusIndicator status={connectionStatus} />
-          
-          {/* Информация об игре */}
-          <div className="game-header">
-            <h2>Игра в кости</h2>
-            <BetInfo amount={displayedBetAmount} />
-          </div>
-          
-          {connectionStatus !== 'connected' ? (
-            <div className="connecting-container">
-              <div className="loading-spinner"></div>
-              <p>Подключение к игре...</p>
-              {socketError && (
-                <div className="error-container">
-                  <p>{socketError}</p>
-                  <button className="reload-button" onClick={() => setupSocketConnection()}>
-                    Повторить подключение
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="waiting-container">
-              <h2>Ожидание соперника</h2>
-              <p>Поделитесь ссылкой с другом или дождитесь пока кто-то присоединится</p>
-              
-              <div className="copy-link-button">
-                <button onClick={copyInviteLink}>
-                  <Icon icon="mdi:content-copy" />
-                  <span>Скопировать ссылку</span>
-                </button>
-              </div>
-              
-              <div className="player-count">
-                <p>Подключенные игроки ({players.length}/2):</p>
-                {players.length === 0 ? (
-                  <p className="no-players">Ожидание подключения игроков...</p>
-                ) : (
-                  <div className="players-list">
-                    {players.map((player, index) => (
-                      <div key={index} className="player-item">
-                        <div className="player-avatar">
-                          {player.avatarUrl ? (
-                            <img src={player.avatarUrl} alt={player.username || 'Игрок'} />
-                          ) : (
-                            <span className="avatar-placeholder">👤</span>
-                          )}
-                        </div>
-                        <span className="player-name">{player.username || `Игрок ${index + 1}`}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
+        <WaitingRoom
+          gameId={gameId}
+          betAmount={displayedBetAmount}
+          players={players}
+          connectionStatus={connectionStatus}
+          socketError={socketError}
+          onCopyInviteLink={copyInviteLink}
+          onReconnect={() => setupSocketConnection()}
+        />
       </PageContainer>
     );
   }
