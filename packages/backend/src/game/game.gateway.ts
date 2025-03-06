@@ -178,10 +178,28 @@ export class GameGateway {
     @MessageBody() data: { gameId: string; value: number; telegramId: number }
   ) {
     try {
-      console.log('Dice move:', data);
+      console.log('Получен запрос на ход в игре:', data);
+      
+      // Проверка наличия всех необходимых данных
+      if (!data || !data.gameId) {
+        console.error('Отсутствует gameId в запросе diceMove');
+        return { success: false, error: 'Missing gameId' };
+      }
+      
+      if (data.value === undefined || data.value === null) {
+        console.error('Отсутствует значение броска в запросе diceMove');
+        return { success: false, error: 'Missing dice value' };
+      }
+      
+      if (!data.telegramId && data.telegramId !== 0) {
+        console.error('Отсутствует telegramId в запросе diceMove:', data);
+        return { success: false, error: 'Missing telegramId' };
+      }
+      
       const game = await this.gameService.getDiceGameById(data.gameId);
       
       if (!game) {
+        console.error(`Игра с ID ${data.gameId} не найдена`);
         return { success: false, error: 'Game not found' };
       }
       
@@ -191,53 +209,54 @@ export class GameGateway {
         return { success: false, error: 'Game is not in playing status' };
       }
       
+      // Преобразуем telegramId в строку для корректного сравнения
+      const playerTelegramId = String(data.telegramId);
+      
       // Проверяем, чей ход
-      if (game.currentPlayer && game.currentPlayer !== data.telegramId.toString()) {
-        console.error(`Не ваш ход: текущий игрок ${game.currentPlayer}, вы пытаетесь ходить как ${data.telegramId}`);
+      if (game.currentPlayer && game.currentPlayer !== playerTelegramId) {
+        console.error(`Не ваш ход: текущий игрок ${game.currentPlayer}, вы пытаетесь ходить как ${playerTelegramId}`);
         return { success: false, error: 'Not your turn' };
       }
       
-      // Находим индекс игрока
-      const playerIndex = game.players.findIndex(
-        playerId => playerId.toString() === data.telegramId.toString()
-      );
+      console.log(`Игрок ${playerTelegramId} выполняет ход со значением ${data.value}`);
       
-      if (playerIndex === -1) {
-        return { success: false, error: 'Player not in game' };
+      try {
+        // Обновляем состояние игры
+        const updatedGame = await this.gameService.recordDiceMove(
+          data.gameId,
+          data.telegramId,
+          data.value
+        );
+        
+        // Получаем индекс следующего игрока
+        const nextPlayerIndex = updatedGame.players.findIndex(
+          p => String(p.telegramId) === String(updatedGame.currentPlayer)
+        );
+        
+        // Имя следующего игрока
+        const nextPlayerName = nextPlayerIndex >= 0 ? 
+          await this.gameService.getUsernameById(String(updatedGame.currentPlayer)) : 
+          'unknown';
+        
+        console.log(`Ход переходит к игроку ${updatedGame.currentPlayer} (${nextPlayerName})`);
+        
+        // Сообщаем всем подключенным клиентам о ходе
+        this.server.to(`game_${data.gameId}`).emit('diceMove', {
+          gameId: data.gameId,
+          telegramId: data.telegramId,
+          value: data.value,
+          nextMove: updatedGame.currentPlayer,
+          round: updatedGame.currentRound,
+          timestamp: Date.now()
+        });
+        
+        return { success: true };
+      } catch (moveError) {
+        console.error('Ошибка при обработке хода:', moveError);
+        return { success: false, error: moveError.message };
       }
-      
-      // Обновляем состояние игры
-      const updatedGame = await this.gameService.recordDiceMove(
-        data.gameId,
-        data.telegramId,
-        data.value
-      );
-      
-      // Получаем индекс следующего игрока
-      const nextPlayerIndex = updatedGame.players.findIndex(
-        playerId => playerId.toString() === updatedGame.currentPlayer
-      );
-      
-      // Имя следующего игрока
-      const nextPlayerName = nextPlayerIndex >= 0 ? 
-        await this.gameService.getUsernameById(updatedGame.currentPlayer) : 
-        'unknown';
-      
-      console.log(`Ход переходит к игроку ${updatedGame.currentPlayer} (${nextPlayerName})`);
-      
-      // Сообщаем всем подключенным клиентам о ходе
-      this.server.to(`game_${data.gameId}`).emit('diceMove', {
-        gameId: data.gameId,
-        telegramId: data.telegramId,
-        value: data.value,
-        nextMove: updatedGame.currentPlayer,
-        round: updatedGame.currentRound,
-        timestamp: Date.now()
-      });
-      
-      return { success: true };
     } catch (error) {
-      console.error('Error handling dice move:', error);
+      console.error('Общая ошибка при обработке события diceMove:', error);
       return { success: false, error: error.message };
     }
   }
@@ -271,11 +290,26 @@ export class GameGateway {
       // Если игра в статусе 'waiting' или статус не определен, запускаем игру
       const game = await this.gameService.startDiceGame(data.gameId);
       
+      console.log('Игра успешно запущена, отправляем событие diceGameStarted:', {
+        gameId: data.gameId,
+        firstPlayer: game.currentPlayer,
+        players: game.players.map(p => ({
+          telegramId: p.telegramId,
+          username: p.username
+        }))
+      });
+      
       // Используем оператор опционального доступа для предотвращения ошибок
       this.server.to(`game_${data.gameId}`).emit('diceGameStarted', {
         gameId: data.gameId,
+        status: 'playing',
         firstPlayer: game.currentPlayer ?? '',
-        status: 'playing'
+        players: game.players.map(p => ({
+          telegramId: p.telegramId,
+          username: p.username || 'Unknown',
+          avatarUrl: p.avatarUrl
+        })),
+        timestamp: Date.now()
       });
       
       return { success: true, game };
@@ -287,7 +321,7 @@ export class GameGateway {
 
   @SubscribeMessage('joinGameRoom')
   async handleJoinGameRoom(
-    @MessageBody() data: { gameId: string },
+    @MessageBody() data: { gameId: string; telegramId?: number; username?: string },
     @ConnectedSocket() client: Socket
   ) {
     try {
@@ -295,61 +329,24 @@ export class GameGateway {
       console.log(`Клиент ${client.id} пытается присоединиться к комнате игры ${gameId}`);
       
       // Проверяем, есть ли данные пользователя
-      if (!client.data || !client.data.user) {
-        console.warn('Нет данных пользователя в сокете:', client.id);
+      const userId = data.telegramId || (client.data?.user?.telegramId);
+      
+      if (!userId) {
+        console.warn('Нет данных пользователя в сокете или запросе:', client.id);
         return { success: false, error: 'Не авторизован' };
       }
       
-      // Получаем ID пользователя и его имя (если есть)
-      const userId = client.data.user.id || 'unknown';
-      const username = client.data.user.username || 'unknown';
+      // Пробуем получить имя пользователя
+      const username = data.username || client.data?.user?.username || 'unknown';
       
       console.log(`Пользователь ${username} (${userId}) присоединяется к комнате ${gameId}`);
       
-      // Получаем информацию об игре
-      const game = await this.gameService.getGameById(gameId);
-      if (!game) {
-        console.error(`Игра с ID ${gameId} не найдена`);
-        return { success: false, error: 'Game not found' };
-      }
+      // Присоединяем клиента к комнате игры
+      await client.join(`game_${gameId}`);
+      console.log(`Клиент ${client.id} успешно присоединился к комнате game_${gameId}`);
       
-      // Покидаем все другие комнаты игр
-      const rooms = Object.keys(client.rooms);
-      for (const room of rooms) {
-        if (room !== client.id && room.startsWith('game_')) {
-          client.leave(room);
-        }
-      }
-      
-      // Присоединяемся к комнате игры
-      const roomName = `game_${gameId}`;
-      client.join(roomName);
-      console.log(`Клиент ${client.id} успешно присоединился к комнате ${roomName}`);
-      
-      // Сохраняем gameId в данных клиента
-      client.data.gameId = gameId;
-      
-      // Обновляем список активных подключений
-      if (!this.activeConnections.has(gameId)) {
-        this.activeConnections.set(gameId, new Set());
-      }
-      this.activeConnections.get(gameId)?.add(client.id);
-      
-      // Отправляем актуальное состояние игры клиенту
-      client.emit('gameStatus', {
-        gameId,
-        status: game.status,
-        currentRound: game.currentRound,
-        currentPlayer: game.currentPlayer,
-        players: game.players.map(p => ({
-          telegramId: p.telegramId,
-          username: p.username,
-          avatarUrl: p.avatarUrl
-        }))
-      });
-      
-      // Отправляем обновление о статусе подключения
-      await this.updateConnectionStatus(gameId);
+      // Обновляем статус подключения для всех клиентов в комнате
+      this.updateConnectionStatus(gameId);
       
       return { success: true };
     } catch (error) {
@@ -360,78 +357,93 @@ export class GameGateway {
 
   // Обработчик подключения клиента
   handleConnection(client: Socket) {
-    console.log(`Новое WebSocket соединение: ${client.id}`);
-    
-    // Получаем данные пользователя из запроса
-    const telegramId = client.handshake.query.telegramId;
-    const userId = client.handshake.query.userId;
-    const gameId = client.handshake.query.gameId as string;
-    
-    // Сохраняем данные пользователя в объекте сокета
-    client.data = {
-      user: {
-        id: telegramId || userId,
-        username: client.handshake.query.username || 'unknown'
-      },
-      gameId
-    };
-    
-    console.log(`Аутентифицированный пользователь: ${client.data.user?.id}`);
-    
-    // Если есть gameId, добавляем клиента в список активных подключений для этой игры
-    if (gameId) {
-      if (!this.activeConnections.has(gameId)) {
-        this.activeConnections.set(gameId, new Set());
-      }
-      this.activeConnections.get(gameId)?.add(client.id);
+    try {
+      console.log(`Новое WebSocket соединение: ${client.id}`);
       
-      // Отправляем обновление о статусе подключения всем клиентам в этой игре
-      this.updateConnectionStatus(gameId);
+      // Получаем параметры из запроса
+      const { telegramId, gameId } = client.handshake.query;
+      
+      if (!telegramId || !gameId) {
+        console.warn(`Соединение без необходимых параметров: ${client.id}, параметры:`, client.handshake.query);
+        return;
+      }
+      
+      // Проверяем, что telegramId является строкой/числом
+      const userTelegramId = typeof telegramId === 'string' 
+        ? telegramId 
+        : Array.isArray(telegramId) ? telegramId[0] : null;
+      
+      if (!userTelegramId) {
+        console.error(`Некорректный формат telegramId:`, telegramId);
+        return;
+      }
+      
+      // Преобразуем gameId в строку
+      const gameIdStr = typeof gameId === 'string' 
+        ? gameId 
+        : Array.isArray(gameId) ? gameId[0] : null;
+      
+      if (!gameIdStr) {
+        console.error(`Некорректный формат gameId:`, gameId);
+        return;
+      }
+      
+      console.log(`Аутентифицированный пользователь: ${userTelegramId}`);
+      
+      // Сохраняем данные соединения
+      client.data = { 
+        ...client.data,
+        user: { telegramId: userTelegramId },
+        gameId: gameIdStr
+      };
+      
+      // Обновляем статус подключения для игры
+      this.updateConnectionStatus(gameIdStr);
+    } catch (error) {
+      console.error('Ошибка при обработке нового соединения:', error);
     }
   }
 
   // Обработчик отключения клиента
   handleDisconnect(client: Socket) {
-    console.log(`WebSocket соединение закрыто: ${client.id}`);
-    
-    // Получаем gameId из данных клиента
-    const gameId = client.data?.gameId;
-    
-    // Если есть gameId, удаляем клиента из списка активных подключений
-    if (gameId && this.activeConnections.has(gameId)) {
-      this.activeConnections.get(gameId)?.delete(client.id);
+    try {
+      console.log(`WebSocket соединение закрыто: ${client.id}`);
       
-      // Отправляем обновление о статусе подключения всем оставшимся клиентам
+      // Получаем gameId из данных клиента
+      const gameId = client.data?.gameId;
+      
+      if (!gameId) {
+        console.log(`Соединение без gameId закрыто: ${client.id}`);
+        return;
+      }
+      
+      // Обновляем статус подключения
       this.updateConnectionStatus(gameId);
+    } catch (error) {
+      console.error('Ошибка при обработке отключения:', error);
     }
   }
 
   // Метод для отправки обновления о статусе подключения
   private async updateConnectionStatus(gameId: string) {
-    const connectedClients = this.activeConnections.get(gameId)?.size || 0;
-    
-    console.log(`Обновление статуса подключения для игры ${gameId}: ${connectedClients} активных клиентов`);
-    
-    this.server.to(`game_${gameId}`).emit('connectionStatus', {
-      gameId,
-      connectedClients,
-      timestamp: Date.now()
-    });
-
-    // Если подключены два клиента, проверяем статус игры и отправляем дополнительное событие
-    if (connectedClients === 2) {
-      const game = await this.gameService.getGameById(gameId);
+    try {
+      // Получаем количество клиентов в комнате
+      const room = await this.server.in(`game_${gameId}`).fetchSockets();
+      const connectedClients = room.length;
       
-      if (game) {
-        // Отправляем информацию о текущем статусе игры
-        this.server.to(`game_${gameId}`).emit('gameStatus', {
-          gameId,
-          status: game.status,
-          currentRound: game.currentRound,
-          currentPlayer: game.currentPlayer,
-          players: game.players
-        });
-      }
+      console.log(`Обновление статуса подключения для игры ${gameId}: ${connectedClients} активных клиентов`);
+      
+      // Отправляем всем клиентам в комнате обновленный статус подключения
+      this.server.to(`game_${gameId}`).emit('connectionStatus', {
+        gameId,
+        connectedClients,
+        timestamp: Date.now()
+      });
+      
+      return connectedClients;
+    } catch (error) {
+      console.error(`Ошибка при обновлении статуса подключения для игры ${gameId}:`, error);
+      return 0;
     }
   }
 } 

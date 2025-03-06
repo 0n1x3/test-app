@@ -235,15 +235,23 @@ export class GameService {
       throw new Error(`Game is not in playing status: ${game.status}`);
     }
     
+    // Преобразуем telegramId в строку для единообразия
+    const playerTelegramIdStr = String(telegramId);
+    
     // Проверяем, чей ход (сравниваем telegramId с currentPlayer)
-    if (game.currentPlayer && game.currentPlayer !== telegramId.toString()) {
-      console.error(`Не ваш ход: текущий игрок ${game.currentPlayer}, вы пытаетесь ходить как ${telegramId}`);
+    if (game.currentPlayer && game.currentPlayer !== playerTelegramIdStr) {
+      console.error(`Не ваш ход: текущий игрок ${game.currentPlayer}, вы пытаетесь ходить как ${playerTelegramIdStr}`);
       throw new Error('Not your turn');
     }
     
+    console.log(`Игроки в игре:`, game.players.map(p => ({
+      telegramId: p.telegramId,
+      username: p.username
+    })));
+    
     // Получение индекса текущего игрока
     const playerIndex = game.players.findIndex(p => 
-      p.telegramId.toString() === telegramId.toString()
+      String(p.telegramId) === playerTelegramIdStr
     );
     
     if (playerIndex === -1) {
@@ -270,7 +278,21 @@ export class GameService {
       // Переход хода к другому игроку
       const nextPlayerIndex = (playerIndex + 1) % game.players.length;
       const nextPlayer = game.players[nextPlayerIndex];
-      game.currentPlayer = nextPlayer.telegramId.toString();
+      
+      console.log(`Переход хода к следующему игроку:`, {
+        текущийИгрок: {
+          индекс: playerIndex,
+          telegramId: game.players[playerIndex].telegramId,
+          username: game.players[playerIndex].username
+        },
+        следующийИгрок: {
+          индекс: nextPlayerIndex,
+          telegramId: nextPlayer.telegramId,
+          username: nextPlayer.username
+        }
+      });
+      
+      game.currentPlayer = String(nextPlayer.telegramId);
       
       console.log(`Ход переходит к игроку ${game.currentPlayer}`);
     } 
@@ -298,7 +320,7 @@ export class GameService {
       console.log(`Результат раунда ${game.currentRound}: ${result}, значения: ${player1Value} vs ${player2Value}`);
       
       // Отправляем результат раунда
-      this.server.to(gameId).emit('roundResult', {
+      this.server.to(`game_${gameId}`).emit('roundResult', {
         round: game.currentRound,
         players: game.players.map(p => p.telegramId),
         result,
@@ -324,7 +346,7 @@ export class GameService {
           : game.players[1].telegramId;
         
         // Отправляем уведомление о завершении игры
-        this.server.to(gameId).emit('gameEnd', {
+        this.server.to(`game_${gameId}`).emit('gameEnd', {
           gameId,
           winner,
           score: [player1Wins, player2Wins]
@@ -342,7 +364,9 @@ export class GameService {
         game.currentRound++;
         
         // Первый ход в новом раунде отдаем первому игроку
-        game.currentPlayer = game.players[0].telegramId.toString();
+        game.currentPlayer = String(game.players[0].telegramId);
+        
+        console.log(`Переход к новому раунду ${game.currentRound}, первым ходит игрок ${game.currentPlayer}`);
       }
     }
     

@@ -285,8 +285,8 @@ export function MultiplayerDiceGame({
       timeout: 10000,
       // Параметры для запроса
       query: { 
-        telegramId: telegramId, // Явно передаем как число
-        userId: telegramId,     // Дублируем для совместимости
+        telegramId: telegramId || '', // Передаем пустую строку вместо undefined
+        userId: telegramId || '',     // Дублируем для совместимости
         gameId,
         timestamp: Date.now()
       },
@@ -337,7 +337,7 @@ export function MultiplayerDiceGame({
           console.log('Socket connected, joining game room:', gameId);
           newSocket.emit('joinGameRoom', { 
             gameId,
-            telegramId: telegramId,
+            telegramId, // Явно передаем telegramId
             username: window.Telegram?.WebApp?.initDataUnsafe?.user?.username || 'unknown'
           });
           
@@ -469,6 +469,12 @@ export function MultiplayerDiceGame({
       newSocket.on('diceMove', (data) => {
         console.log('Получен ход в игре:', data);
         
+        // Проверяем полноту полученных данных
+        if (!data || !data.nextMove) {
+          console.error('Получены неполные данные о ходе:', data);
+          return;
+        }
+        
         // Если ход сделал оппонент, обновляем его кубик
         if (data.telegramId.toString() !== telegramId.toString()) {
           console.log('Ход сделал оппонент, анимируем его бросок');
@@ -491,7 +497,8 @@ export function MultiplayerDiceGame({
             myId: telegramId,
             nextMoveType: typeof data.nextMove,
             telegramIdType: typeof telegramId,
-            isMyTurn: myNextTurn 
+            isMyTurn: myNextTurn,
+            сравнение: `${data.nextMove.toString()} === ${telegramId.toString()}`
           });
           
           setIsMyTurn(myNextTurn);
@@ -596,12 +603,20 @@ export function MultiplayerDiceGame({
       isRolling,
       isMyTurn,
       gameState,
-      currentRound
+      currentRound,
+      telegramId
     });
     
     // Проверяем, что сейчас наш ход и анимация не запущена
     if (isRolling || !isMyTurn) {
       console.log('Нельзя бросать кубик:', { isRolling, isMyTurn });
+      return;
+    }
+    
+    // Дополнительная проверка telegramId перед отправкой хода
+    if (!telegramId) {
+      console.error('Отсутствует telegramId пользователя, невозможно сделать ход');
+      toast.error('Ошибка: не удалось определить идентификатор пользователя');
       return;
     }
     
@@ -616,18 +631,32 @@ export function MultiplayerDiceGame({
     
     // Отправляем событие на сервер сразу, не дожидаясь окончания анимации
     if (socketRef.current) {
-      console.log('Отправляем ход с значением:', diceValue, 'от игрока:', playerData?.id);
+      const userTelegramId = Number(telegramId);
+      console.log('Отправляем ход с значением:', diceValue, 'от игрока с telegramId:', userTelegramId);
+      
+      // Дополнительно проверяем, что telegramId не null и не NaN после преобразования
+      if (isNaN(userTelegramId)) {
+        console.error('Ошибка: telegramId не является числом:', telegramId);
+        toast.error('Ошибка при отправке хода');
+        setIsRolling(false);
+        return;
+      }
+      
       socketRef.current.emit('diceMove', {
         gameId,
         value: diceValue,
-        telegramId: telegramId // Используем наш telegramId вместо playerData?.id
+        telegramId: userTelegramId // Явно преобразуем в число, чтобы избежать проблем с типами
       });
+      
+      // Обновляем значение кубика игрока на клиенте
+      setTimeout(() => {
+        setPlayerDice(diceValue);
+      }, 500); // Обновляем значение на полпути анимации
+    } else {
+      console.error('Ошибка: отсутствует соединение с сервером');
+      toast.error('Ошибка: нет соединения с сервером');
+      setIsRolling(false);
     }
-    
-    // Обновляем значение кубика игрока
-    setTimeout(() => {
-      setPlayerDice(diceValue);
-    }, 500); // Обновляем значение на полпути анимации
     
     // Анимация броска длится 1 секунду
     setTimeout(() => {
@@ -775,8 +804,7 @@ export function MultiplayerDiceGame({
       if (!hasJoinedRoomRef.current) {
         socketRef.current.emit('joinGameRoom', { 
           gameId,
-          userId: telegramId,
-          telegramId: telegramId,
+          telegramId, // Явно передаем telegramId
           username: window.Telegram?.WebApp?.initDataUnsafe?.user?.username || 'unknown'
         });
         
@@ -806,6 +834,53 @@ export function MultiplayerDiceGame({
       return () => clearInterval(interval);
     }
   }, [connectionStatus, gameId, userId]);
+
+  // Добавляем эффект для обновления telegramId при изменении в хранилище
+  useEffect(() => {
+    if (telegramIdFromStore) {
+      const numericId = Number(telegramIdFromStore);
+      if (!isNaN(numericId)) {
+        console.log('Обновляем telegramId из хранилища:', numericId);
+        setTelegramId(numericId);
+      } else {
+        console.error('TelegramId в хранилище не является числом:', telegramIdFromStore);
+      }
+    }
+  }, [telegramIdFromStore]);
+
+  // Для более надежной инициализации telegramId
+  useEffect(() => {
+    // Пытаемся получить telegramId из нескольких источников
+    const initTelegramId = () => {
+      // Проверяем значение из хранилища
+      if (telegramId) {
+        console.log('telegramId уже установлен:', telegramId);
+        return;
+      }
+      
+      // Пытаемся получить из хранилища
+      if (telegramIdFromStore) {
+        const numericId = Number(telegramIdFromStore);
+        if (!isNaN(numericId)) {
+          console.log('Установка telegramId из хранилища:', numericId);
+          setTelegramId(numericId);
+          return;
+        }
+      }
+      
+      // Пытаемся получить из Telegram WebApp
+      const id = getTelegramUserId();
+      if (id) {
+        console.log('Установка telegramId из Telegram WebApp:', id);
+        setTelegramId(id);
+        return;
+      }
+      
+      console.warn('Не удалось определить telegramId пользователя');
+    };
+    
+    initTelegramId();
+  }, []);
 
   // Если есть проблемы с соединением
   if (connectionStatus === 'error') {
