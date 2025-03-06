@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Icon } from '@iconify/react';
 import { ConnectionStatusIndicator } from './ConnectionStatusIndicator';
 import { BetInfo } from './BetInfo';
@@ -23,6 +23,7 @@ interface WaitingRoomProps {
   socketError: string | null;
   onCopyInviteLink: () => void;
   onReconnect: () => void;
+  onManualJoin?: (gameId: string) => void;
 }
 
 export function WaitingRoom({
@@ -32,8 +33,21 @@ export function WaitingRoom({
   connectionStatus,
   socketError,
   onCopyInviteLink,
-  onReconnect
+  onReconnect,
+  onManualJoin
 }: WaitingRoomProps) {
+  const [manualGameId, setManualGameId] = useState('');
+  
+  // Получаем последние 4 символа ID игры
+  const shortGameId = gameId.slice(-4);
+  
+  // Функция для ручного входа в игру
+  const handleManualJoin = () => {
+    if (onManualJoin && manualGameId.trim()) {
+      onManualJoin(manualGameId.trim());
+    }
+  };
+  
   return (
     <div className="dice-game">
       {/* Индикатор статуса подключения */}
@@ -42,7 +56,10 @@ export function WaitingRoom({
       {/* Информация об игре */}
       <div className="game-header">
         <h2>Игра в кости</h2>
-        <BetInfo amount={betAmount} />
+        <div className="game-info-details">
+          <BetInfo amount={betAmount} />
+          <div className="game-id">ID: #{shortGameId}</div>
+        </div>
       </div>
       
       {connectionStatus !== 'connected' ? (
@@ -69,6 +86,24 @@ export function WaitingRoom({
               <span>Скопировать ссылку</span>
             </button>
           </div>
+          
+          {onManualJoin && (
+            <div className="manual-join">
+              <h3>Ручной вход в игру</h3>
+              <div className="manual-join-form">
+                <input 
+                  type="text" 
+                  placeholder="Введите ID игры" 
+                  value={manualGameId}
+                  onChange={(e) => setManualGameId(e.target.value)}
+                />
+                <button onClick={handleManualJoin}>
+                  <Icon icon="mdi:login" />
+                  <span>Войти</span>
+                </button>
+              </div>
+            </div>
+          )}
           
           <div className="player-count">
             <p>Подключенные игроки ({players.length}/2):</p>

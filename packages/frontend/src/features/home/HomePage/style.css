@@ -12,7 +12,7 @@
   gap: 12px;
 }
 
-.game-card {
+.home-game-card {
   background: #1A1A1A;
   border-radius: 12px;
   padding: 16px;
@@ -21,36 +21,36 @@
   align-items: center;
 }
 
-.game-info {
+.home-game-info {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.game-icon {
+.home-game-icon {
   width: 32px;
   height: 32px;
   color: #FFFFFF;
 }
 
-.game-details {
+.home-game-details {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.game-title {
+.home-game-title {
   font-size: 15px;
   font-weight: 500;
   color: #FFFFFF;
 }
 
-.game-plays {
+.home-game-plays {
   font-size: 13px;
   color: #808080;
 }
 
-.play-button {
+.home-play-button {
   padding: 8px 16px;
   background: #2196F3;
   border-radius: 12px;
@@ -60,7 +60,7 @@
   transition: background 0.2s;
 }
 
-.play-button:hover {
+.home-play-button:hover {
   background: #1976D2;
 }
 
@@ -239,7 +239,7 @@ input:checked + .slider:before {
 }
 
 /* Добавляем новые стили для неактивных игр */
-.game-card.inactive {
+.home-game-card.inactive {
   opacity: 0.7;
 }
 
@@ -249,11 +249,11 @@ input:checked + .slider:before {
   font-weight: 500;
 }
 
-.play-button.disabled {
+.home-play-button.disabled {
   background: #808080;
   cursor: not-allowed;
 }
 
-.play-button.disabled:hover {
+.home-play-button.disabled:hover {
   background: #808080;
 } 

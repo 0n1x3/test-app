@@ -612,6 +612,27 @@ export function MultiplayerDiceGame({
     }
   };
 
+  // Функция для ручного входа в игру
+  const handleManualJoin = (manualGameId: string) => {
+    if (!manualGameId) return;
+    
+    // Проверяем, что ID игры имеет правильный формат
+    if (manualGameId.length < 4) {
+      toast.error('Неверный формат ID игры');
+      return;
+    }
+    
+    // Если ID совпадает с текущей игрой, показываем сообщение
+    if (manualGameId === gameId || gameId.endsWith(manualGameId)) {
+      toast.error('Вы уже находитесь в этой игре');
+      return;
+    }
+    
+    // Перенаправляем на страницу с указанной игрой
+    const fullGameId = manualGameId.length === 24 ? manualGameId : `game_${manualGameId}`;
+    window.location.href = `https://t.me/neometria_bot?startapp=${fullGameId}`;
+  };
+
   // После получения userId, обновляем сокет
   useEffect(() => {
     if (userId && !socketRef.current) {
@@ -868,6 +889,7 @@ export function MultiplayerDiceGame({
           socketError={socketError}
           onCopyInviteLink={copyInviteLink}
           onReconnect={() => setupSocketConnection()}
+          onManualJoin={handleManualJoin}
         />
       </PageContainer>
     );

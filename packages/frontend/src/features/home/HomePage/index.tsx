@@ -78,18 +78,18 @@ export function HomePage() {
         <div className="games-page">
           <div className="games-list">
             {games.map(game => (
-              <div key={game.id} className={`game-card ${!game.isActive ? 'inactive' : ''}`}>
-                <div className="game-info">
-                  <Icon icon={game.icon} className="game-icon" />
-                  <div className="game-details">
-                    <div className="game-title">{game.title}</div>
+              <div key={game.id} className={`home-game-card ${!game.isActive ? 'inactive' : ''}`}>
+                <div className="home-game-info">
+                  <Icon icon={game.icon} className="home-game-icon" />
+                  <div className="home-game-details">
+                    <div className="home-game-title">{game.title}</div>
                     {!game.isActive && (
                       <div className="coming-soon">{t('pages.home.comingSoon')}</div>
                     )}
                   </div>
                 </div>
                 <button 
-                  className={`play-button ${!game.isActive ? 'disabled' : ''}`}
+                  className={`home-play-button ${!game.isActive ? 'disabled' : ''}`}
                   onClick={() => handlePlayClick(game)}
                   disabled={!game.isActive}
                 >
