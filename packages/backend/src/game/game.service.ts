@@ -292,8 +292,8 @@ export class GameService {
       console.log(`Первый ход в раунде ${game.currentRound}`);
       game.rounds[game.currentRound - 1] = {
         player1: value,
-        player2: 0,
-        result: 'draw' // Временное значение
+        player2: null, // Используем null вместо 0, чтобы явно показать, что значение отсутствует
+        result: null // Используем null вместо 'draw', так как результат еще неизвестен
       };
       
       // Переход хода к другому игроку
@@ -355,8 +355,10 @@ export class GameService {
       // Проверяем целостность данных раундов
       for (let i = 0; i < game.rounds.length; i++) {
         const round = game.rounds[i];
-        // Проверяем и корректируем результат, если необходимо
-        if (round.player1 && round.player2) {
+        // Проверяем и корректируем результат только для завершенных раундов
+        // Используем явное сравнение с undefined и null, чтобы корректно обрабатывать player2
+        if (round.player1 !== undefined && round.player1 !== null && 
+            round.player2 !== undefined && round.player2 !== null) {
           let expectedResult: 'win' | 'lose' | 'draw';
           if (round.player1 > round.player2) {
             expectedResult = 'win';
@@ -392,15 +394,22 @@ export class GameService {
       
       // Считаем победы для каждого игрока
       game.rounds.forEach((round, index) => {
-        console.log(`Раунд ${index + 1}: результат ${round.result}, значения ${round.player1} vs ${round.player2}`);
-        if (round.result === 'win') {
-          player1Wins++;
-          console.log(`Игрок 1 выиграл раунд ${index + 1}, теперь у него ${player1Wins} побед`);
-        } else if (round.result === 'lose') {
-          player2Wins++;
-          console.log(`Игрок 2 выиграл раунд ${index + 1}, теперь у него ${player2Wins} побед`);
+        // Проверяем, что раунд завершен (оба игрока сделали ход и есть результат)
+        if (round.player1 !== undefined && round.player1 !== null && 
+            round.player2 !== undefined && round.player2 !== null && 
+            round.result) {
+          console.log(`Раунд ${index + 1}: результат ${round.result}, значения ${round.player1} vs ${round.player2}`);
+          if (round.result === 'win') {
+            player1Wins++;
+            console.log(`Игрок 1 выиграл раунд ${index + 1}, теперь у него ${player1Wins} побед`);
+          } else if (round.result === 'lose') {
+            player2Wins++;
+            console.log(`Игрок 2 выиграл раунд ${index + 1}, теперь у него ${player2Wins} побед`);
+          } else {
+            console.log(`Раунд ${index + 1} закончился вничью`);
+          }
         } else {
-          console.log(`Раунд ${index + 1} закончился вничью`);
+          console.log(`Пропускаем незавершенный раунд ${index + 1}: player1=${round.player1}, player2=${round.player2}, result=${round.result}`);
         }
       });
       

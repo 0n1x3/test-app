@@ -448,15 +448,30 @@ export function MultiplayerDiceGame({
           const serverBetAmount = Number(data.game.betAmount);
           // Проверяем, нужно ли обновлять значение ставки
           if (!isNaN(serverBetAmount) && serverBetAmount > 0 && displayedBetAmount === 0) {
-            console.log('Обновляем ставку с сервера:', serverBetAmount);
             setDisplayedBetAmount(serverBetAmount);
-          } else {
-            console.log('Сохраняем текущую ставку:', displayedBetAmount);
           }
         }
-        // Обновляем состояние игры
-        if (data.status) {
-          setGameState(data.status);
+        
+        // Проверяем состояние игры и устанавливаем текущий ход
+        if (data.status === 'playing' && data.currentPlayer) {
+          const currentTelegramId = telegramId || getTelegramUserId();
+          if (currentTelegramId) {
+            const telegramIdStr = currentTelegramId.toString();
+            const isCurrentPlayerTurn = data.currentPlayer.toString() === telegramIdStr;
+            
+            console.log('Обновление статуса хода из gameStatus:', {
+              currentPlayer: data.currentPlayer,
+              myTelegramId: telegramIdStr,
+              isMyTurn: isCurrentPlayerTurn
+            });
+            
+            // Устанавливаем статус хода
+            setIsMyTurn(isCurrentPlayerTurn);
+            useUserStore.getState().setIsCurrentTurn(isCurrentPlayerTurn);
+            
+            // Устанавливаем состояние игры
+            setGameState('playing');
+          }
         }
       });
 
@@ -618,6 +633,22 @@ export function MultiplayerDiceGame({
             console.log('Статус хода через 100мс после начала игры:');
             console.log('isMyTurn:', isMyTurn);
             console.log('isCurrentTurn в хранилище:', useUserStore.getState().isCurrentTurn);
+            
+            // Если обнаружено несоответствие, принудительно коррекируем
+            const currentTelegramId = telegramId || getTelegramUserId();
+            if (currentTelegramId) {
+              const telegramIdStr = currentTelegramId.toString();
+              const shouldBeMyTurn = data.firstPlayer.toString() === telegramIdStr;
+              
+              if (isMyTurn !== shouldBeMyTurn) {
+                console.warn('Обнаружено несоответствие статуса хода, исправляем:', { 
+                  текущийСтатус: isMyTurn, 
+                  долженБыть: shouldBeMyTurn 
+                });
+                setIsMyTurn(shouldBeMyTurn);
+                useUserStore.getState().setIsCurrentTurn(shouldBeMyTurn);
+              }
+            }
           }, 100);
           
           toast.success('Игра началась!');
