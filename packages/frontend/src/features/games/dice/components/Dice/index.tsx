@@ -39,19 +39,39 @@ export function Dice({ value, rolling, size = 'large', onRollEnd, enhancedAnimat
   const prevValueRef = useRef<number>(value);
   // Добавляем флаг для отслеживания состояния анимации
   const isAnimatingRef = useRef<boolean>(false);
+  // Добавляем ref для отслеживания предыдущего значения prop rolling
+  const prevRollingRef = useRef<boolean | undefined>(rolling);
+
+  // Эффект для предотвращения повторного запуска анимации при одинаковых значениях rolling
+  useEffect(() => {
+    // Если значение rolling изменилось с false на true, запускаем анимацию
+    if (rolling && !prevRollingRef.current && !isAnimatingRef.current) {
+      console.log(`[Dice] Начало анимации для кубика, значение: ${value}`);
+      isAnimatingRef.current = true;
+      animationStepsRef.current = 0;
+      animate();
+    }
+    
+    // Если значение rolling изменилось с true на false, останавливаем анимацию
+    if (!rolling && prevRollingRef.current) {
+      console.log(`[Dice] Остановка анимации для кубика, значение: ${value}`);
+      isAnimatingRef.current = false;
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    }
+    
+    // Обновляем ref с предыдущим значением rolling
+    prevRollingRef.current = rolling;
+  }, [rolling, value]);
 
   // Анимация броска кубика
   const animate = () => {
-    if (!rolling) {
+    if (!rolling || !isAnimatingRef.current) {
+      console.log(`[Dice] Анимация остановлена, rolling: ${rolling}, isAnimating: ${isAnimatingRef.current}`);
       cancelAnimationFrame(animationRef.current!);
       isAnimatingRef.current = false; // Сбрасываем флаг анимации
       return;
-    }
-
-    // Защита от дублирования анимации
-    if (!isAnimatingRef.current) {
-      isAnimatingRef.current = true;
-      console.log('Начало анимации для кубика', value);
     }
 
     // Увеличиваем шаги анимации для отслеживания длительности

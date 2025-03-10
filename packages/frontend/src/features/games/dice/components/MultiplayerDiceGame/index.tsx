@@ -258,6 +258,33 @@ export function MultiplayerDiceGame({
     console.log('Настройка соединения с сокетом, userId:', userIdParam || userId);
     
     // Проверяем, есть ли уже активное соединение
+    if (socketRef.current && socketRef.current.connected) {
+      console.log('Соединение уже активно, отключаем старые обработчики');
+      
+      // Отключаем все существующие обработчики чтобы избежать дублирования
+      socketRef.current.off('connect');
+      socketRef.current.off('connect_error');
+      socketRef.current.off('error');
+      socketRef.current.off('disconnect');
+      socketRef.current.off('diceGameStarted');
+      socketRef.current.off('diceMove');
+      socketRef.current.off('roundResult');
+      socketRef.current.off('gameResult');
+      socketRef.current.off('playerJoined');
+      socketRef.current.off('playerLeft');
+      socketRef.current.off('updatePlayers');
+      socketRef.current.off('gameInfo');
+      socketRef.current.off('error');
+      
+      // Отключаем общий обработчик всех событий
+      socketRef.current.offAny();
+      
+      // Закрываем соединение
+      socketRef.current.disconnect();
+      console.log('Старое соединение закрыто');
+    }
+    
+    // Проверяем, есть ли уже активное соединение
     if (socketRef.current && socketRef.current.connected && hasJoinedRoomRef.current) {
       console.log('Соединение уже установлено, пропускаем повторное подключение');
       return;
@@ -676,11 +703,11 @@ export function MultiplayerDiceGame({
           return;
         }
         
-        // Создаем уникальный идентификатор текущего хода
-        const moveId = `${data.telegramId}_${data.value}_${Date.now().toString().substr(-6)}`;
+        // Создаем уникальный идентификатор текущего хода на основе реальных данных
+        // Это поможет избежать дублирования обработки одного и того же события
+        const moveId = `${data.telegramId}_${data.value}_${data.timestamp || Date.now()}`;
         
         // Проверяем, не был ли уже обработан этот ход в текущей сессии
-        // Это простой механизм debounce для предотвращения дублирования
         if (lastProcessedMoveRef.current === moveId) {
           console.log('Этот ход уже был обработан, пропускаем:', moveId);
           return;
@@ -744,17 +771,31 @@ export function MultiplayerDiceGame({
           useUserStore.getState().setIsCurrentTurn(myNextTurn);
           console.log(`Обновлен статус хода: isMyTurn = ${myNextTurn}, isCurrentTurn в хранилище = ${myNextTurn}`);
           
-          // Добавляем уведомления о смене хода с временной задержкой для анимации
-          setTimeout(() => {
-            if (myNextTurn) {
-              toast.success('Ваш ход!', { duration: 3000 });
-            } else {
-              toast('Ход соперника', {
-                icon: '🎲',
-                duration: 3000
-              });
-            }
-          }, 1200); // Задержка больше чем длительность анимации (1000мс)
+          // Создаем ключ для отслеживания последнего уведомления для каждого хода
+          // Это поможет избежать дублирования уведомлений при получении дублирующихся событий
+          const notificationKey = `notification_${data.telegramId}_${data.value}_${currentRound || 1}`;
+          
+          // Проверяем, было ли уже показано уведомление для этого хода
+          const hasNotified = sessionStorage.getItem(notificationKey);
+          
+          if (!hasNotified) {
+            // Помечаем, что уведомление было показано
+            sessionStorage.setItem(notificationKey, 'true');
+            
+            // Добавляем уведомления о смене хода с временной задержкой для анимации
+            setTimeout(() => {
+              if (myNextTurn) {
+                toast.success('Ваш ход!', { duration: 3000 });
+              } else {
+                toast('Ход соперника', {
+                  icon: '🎲',
+                  duration: 3000
+                });
+              }
+            }, 1200); // Задержка больше чем длительность анимации (1000мс)
+          } else {
+            console.log('Пропускаем дублирующее уведомление о ходе:', notificationKey);
+          }
         } else {
           console.warn('В данных хода отсутствует информация о следующем игроке или нет текущего telegramId:', {
             nextMove: data.nextMove,
@@ -1444,27 +1485,37 @@ export function MultiplayerDiceGame({
 
   // Проверяем, получаем ли мы информацию о ставке через socket
   useEffect(() => {
-    // Вместо создания нового соединения, используем существующее
+    // Используем существующее соединение, а не создаем новое
     if (socketRef.current && socketRef.current.connected) {
-      console.log('Using existing socket to check game data');
-      socketRef.current.emit('getGameInfo', { gameId });
+      console.log('Запрашиваем информацию об игре через существующее соединение');
       
-      // Добавляем обработчик только один раз для получения информации об игре
+      // Отключаем предыдущий обработчик gameInfo, если он был
+      socketRef.current.off('gameInfo');
+      
+      // Регистрируем новый обработчик
       const handleGameInfo = (gameInfo: any) => {
-        console.log('Received game info:', gameInfo);
+        console.log('Получена информация об игре:', gameInfo);
         if (gameInfo && gameInfo.betAmount) {
-          console.log('Полученная ставка:', gameInfo.betAmount);
+          console.log('Полученная ставка через сокет:', gameInfo.betAmount);
         }
       };
       
+      // Добавляем обработчик для получения информации об игре
       socketRef.current.on('gameInfo', handleGameInfo);
+      
+      // Отправляем запрос
+      socketRef.current.emit('getGameInfo', { gameId });
       
       return () => {
         // Удаляем обработчик при размонтировании
-        socketRef.current?.off('gameInfo', handleGameInfo);
+        if (socketRef.current) {
+          socketRef.current.off('gameInfo', handleGameInfo);
+        }
       };
+    } else {
+      console.log('Соединение не установлено, информация о ставке будет запрошена позже');
     }
-  }, [gameId]);
+  }, [gameId, socketRef.current?.connected]);
 
   // Обработчик для возврата в лобби
   const handleBackToLobby = useCallback(() => {
