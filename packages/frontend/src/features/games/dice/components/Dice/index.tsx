@@ -33,16 +33,24 @@ export function Dice({ value, rolling, size = 'large', onRollEnd }: DiceProps) {
   const [rotation, setRotation] = useState<DiceRotation>(INITIAL_ROTATION);
   const rotationRef = useRef(INITIAL_ROTATION);
   const animationRef = useRef<number>();
+  const animationStepsRef = useRef(0);
+  const targetRotationRef = useRef<DiceRotation>({ ...INITIAL_ROTATION });
+  const prevValueRef = useRef<number>(value);
 
+  // Более энергичная анимация с несколькими оборотами
   const animate = () => {
     if (!rolling) {
       cancelAnimationFrame(animationRef.current!);
       return;
     }
 
-    rotationRef.current.x += 8;
-    rotationRef.current.y += 10;
-    rotationRef.current.z += 6;
+    // Увеличиваем шаги анимации для отслеживания длительности
+    animationStepsRef.current += 1;
+
+    // Более быстрое и хаотичное вращение
+    rotationRef.current.x += 15;
+    rotationRef.current.y += 18;
+    rotationRef.current.z += 12;
 
     setRotation({
       x: rotationRef.current.x,
@@ -54,18 +62,62 @@ export function Dice({ value, rolling, size = 'large', onRollEnd }: DiceProps) {
   };
 
   useEffect(() => {
+    // Инициализация при первом рендере
+    if (prevValueRef.current !== value) {
+      prevValueRef.current = value;
+    }
+
     if (rolling) {
+      // Сохраняем целевое вращение для будущего использования
+      targetRotationRef.current = { ...valueToRotation[value] };
+      
+      // Сбрасываем шаги анимации
+      animationStepsRef.current = 0;
+      
+      // Начинаем анимацию
       animationRef.current = requestAnimationFrame(animate);
     } else if (value) {
-      console.log('Setting dice to value:', value);
-      const targetRotation = valueToRotation[value];
-      console.log('Target rotation:', targetRotation);
-      
-      setRotation({
-        x: targetRotation.x,
-        y: targetRotation.y,
-        z: targetRotation.z
-      });
+      // Если только что завершилась анимация броска
+      if (animationStepsRef.current > 0) {
+        console.log('Finishing dice roll animation to value:', value);
+        
+        // Получаем целевое вращение для нового значения кубика
+        const targetRotation = valueToRotation[value];
+        console.log('Target rotation:', targetRotation);
+        
+        // Добавляем несколько полных оборотов для более зрелищной анимации
+        const extraRotations = {
+          x: targetRotation.x + 360 * 2, // 2 дополнительных оборота по X
+          y: targetRotation.y + 360 * 3, // 3 дополнительных оборота по Y
+          z: targetRotation.z + 360 * 1  // 1 дополнительный оборот по Z
+        };
+        
+        // Устанавливаем конечную анимацию
+        // Используем setTimeout для создания перехода между значениями
+        setTimeout(() => {
+          setRotation(extraRotations);
+          
+          // Затем устанавливаем конечную позицию без дополнительных оборотов
+          setTimeout(() => {
+            setRotation(targetRotation);
+            
+            // Сбрасываем счетчик шагов анимации
+            animationStepsRef.current = 0;
+            
+            // Вызываем колбэк завершения анимации, если он передан
+            if (onRollEnd) {
+              onRollEnd();
+            }
+          }, 500); // Даем 500мс на завершение анимации
+          
+        }, 0);
+      } else {
+        // Если это просто обычное обновление значения (без анимации броска)
+        console.log('Setting dice to value:', value);
+        const targetRotation = valueToRotation[value];
+        console.log('Target rotation:', targetRotation);
+        setRotation(targetRotation);
+      }
     }
 
     return () => {
@@ -73,7 +125,7 @@ export function Dice({ value, rolling, size = 'large', onRollEnd }: DiceProps) {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [rolling, value]);
+  }, [rolling, value, onRollEnd]);
 
   // Функция для рендеринга правильного количества точек для каждой грани
   const renderDots = (faceValue: number) => {
