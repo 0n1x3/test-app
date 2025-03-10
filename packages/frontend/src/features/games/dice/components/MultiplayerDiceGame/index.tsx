@@ -79,7 +79,7 @@ const GameField = ({
   
   return (
     <div className="game-field">
-      <div className="player-dice">
+      <div className="player-side-dice">
         <div className={`dice-container ${isRolling && isPlayerTurn ? 'rolling' : ''}`}>
           <Dice 
             value={playerDice} 
@@ -91,7 +91,7 @@ const GameField = ({
       
       <div className="vs-indicator">VS</div>
       
-      <div className="opponent-dice">
+      <div className="opponent-side-dice">
         <div className={`dice-container ${isRolling && !isPlayerTurn ? 'rolling' : ''}`}>
           <Dice 
             value={opponentDice} 
@@ -1483,6 +1483,15 @@ export function MultiplayerDiceGame({
                 {isMyTurn && <div className="turn-indicator">Ваш ход</div>}
               </div>
               <div className="player-score">{playerScore}</div>
+              <div className="player-dice">
+                <div className={`dice-container ${isRolling && isMyTurn ? 'rolling' : ''}`}>
+                  <Dice 
+                    value={playerDice} 
+                    size="large" 
+                    rolling={isRolling && isMyTurn}
+                  />
+                </div>
+              </div>
             </div>
             
             <div className="round-info">
@@ -1491,10 +1500,10 @@ export function MultiplayerDiceGame({
                 <Icon icon="material-symbols:diamond-rounded" />
                 <span>{displayedBetAmount}</span>
               </div>
+              <div className="vs-indicator">VS</div>
             </div>
             
             <div className="opponent-side">
-              <div className="opponent-score">{opponentScore}</div>
               <div className={`opponent-avatar ${!isMyTurn ? 'active-turn' : ''}`}>
                 {opponentData?.avatarUrl ? (
                   <img src={opponentData.avatarUrl} alt={opponentData.username || 'Opponent'} />
@@ -1503,16 +1512,20 @@ export function MultiplayerDiceGame({
                 )}
                 {!isMyTurn && <div className="turn-indicator">Ходит</div>}
               </div>
+              <div className="opponent-score">{opponentScore}</div>
+              <div className="opponent-dice">
+                <div className={`dice-container ${isRolling && !isMyTurn ? 'rolling' : ''}`}>
+                  <Dice 
+                    value={opponentDice} 
+                    size="large"
+                    rolling={isRolling && !isMyTurn}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <GameField 
-          playerDice={playerDice}
-          opponentDice={opponentDice}
-          isRolling={isRolling}
-        />
-        
         <div className="controls-area">
           {gameResult ? (
             <GameResult result={gameResult} />
