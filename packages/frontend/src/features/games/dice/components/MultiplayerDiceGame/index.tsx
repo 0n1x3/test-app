@@ -153,6 +153,9 @@ export function MultiplayerDiceGame({
   const [gameStarted, setGameStarted] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
   
+  // Добавляем ref для отслеживания последнего обработанного хода
+  const lastProcessedMoveRef = useRef<string | null>(null);
+  
   // Инициализируем displayedBetAmount с корректным значением из пропсов
   const [displayedBetAmount, setDisplayedBetAmount] = useState(() => {
     const numericBetAmount = Number(betAmount);
@@ -673,6 +676,19 @@ export function MultiplayerDiceGame({
           return;
         }
         
+        // Создаем уникальный идентификатор текущего хода
+        const moveId = `${data.telegramId}_${data.value}_${Date.now().toString().substr(-6)}`;
+        
+        // Проверяем, не был ли уже обработан этот ход в текущей сессии
+        // Это простой механизм debounce для предотвращения дублирования
+        if (lastProcessedMoveRef.current === moveId) {
+          console.log('Этот ход уже был обработан, пропускаем:', moveId);
+          return;
+        }
+        
+        // Записываем текущий ход как обработанный
+        lastProcessedMoveRef.current = moveId;
+        
         // Получим строковое представление telegramId для сравнения, защищенное от null
         const currentTelegramId = telegramId || getTelegramUserId();
         const telegramIdStr = currentTelegramId?.toString() || '';
@@ -682,7 +698,8 @@ export function MultiplayerDiceGame({
           moverTelegramId: data.telegramId,
           myTelegramId: telegramIdStr,
           nextMove: data.nextMove,
-          diceValue: data.value 
+          diceValue: data.value,
+          moveId
         });
         
         // Проверяем, кто сделал ход: мы или оппонент

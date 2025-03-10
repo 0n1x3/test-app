@@ -37,12 +37,21 @@ export function Dice({ value, rolling, size = 'large', onRollEnd, enhancedAnimat
   const animationStepsRef = useRef(0);
   const targetRotationRef = useRef<DiceRotation>({ ...INITIAL_ROTATION });
   const prevValueRef = useRef<number>(value);
+  // Добавляем флаг для отслеживания состояния анимации
+  const isAnimatingRef = useRef<boolean>(false);
 
   // Анимация броска кубика
   const animate = () => {
     if (!rolling) {
       cancelAnimationFrame(animationRef.current!);
+      isAnimatingRef.current = false; // Сбрасываем флаг анимации
       return;
+    }
+
+    // Защита от дублирования анимации
+    if (!isAnimatingRef.current) {
+      isAnimatingRef.current = true;
+      console.log('Начало анимации для кубика', value);
     }
 
     // Увеличиваем шаги анимации для отслеживания длительности
