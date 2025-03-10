@@ -48,11 +48,13 @@ const WINS_NEEDED = 2;
 const GameField = ({ 
   playerDice, 
   opponentDice, 
-  isRolling 
+  isPlayerRolling,
+  isOpponentRolling
 }: { 
   playerDice: number;
   opponentDice: number;
-  isRolling: boolean;
+  isPlayerRolling: boolean;
+  isOpponentRolling: boolean;
 }) => {
   const { telegramId } = useUserStore();
   const isPlayerTurn = useUserStore(state => state.isCurrentTurn);
@@ -61,30 +63,31 @@ const GameField = ({
   console.log('GameField render:', { 
     playerDice, 
     opponentDice, 
-    isRolling, 
+    isPlayerRolling,
+    isOpponentRolling,
     isPlayerTurn,
-    playerRolling: isRolling && isPlayerTurn,
-    opponentRolling: isRolling && !isPlayerTurn
+    playerRolling: isPlayerRolling,
+    opponentRolling: isOpponentRolling
   });
   
   // Логируем завершение анимации через setTimeout
   useEffect(() => {
-    if (isRolling) {
+    if (isPlayerRolling || isOpponentRolling) {
       const timer = setTimeout(() => {
         console.log('Анимация броска завершена через таймер');
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [isRolling]);
+  }, [isPlayerRolling, isOpponentRolling]);
   
   return (
     <div className="game-field">
       <div className="player-side-dice">
-        <div className={`dice-container ${isRolling && isPlayerTurn ? 'rolling' : ''}`}>
+        <div className={`dice-container ${isPlayerRolling ? 'rolling' : ''}`}>
           <Dice 
             value={playerDice} 
             size="large" 
-            rolling={isRolling && isPlayerTurn}
+            rolling={isPlayerRolling}
           />
         </div>
       </div>
@@ -92,11 +95,11 @@ const GameField = ({
       <div className="vs-indicator">VS</div>
       
       <div className="opponent-side-dice">
-        <div className={`dice-container ${isRolling && !isPlayerTurn ? 'rolling' : ''}`}>
+        <div className={`dice-container ${isOpponentRolling ? 'rolling' : ''}`}>
           <Dice 
             value={opponentDice} 
             size="large"
-            rolling={isRolling && !isPlayerTurn}
+            rolling={isOpponentRolling}
           />
         </div>
       </div>
@@ -136,7 +139,9 @@ export function MultiplayerDiceGame({
   const [players, setPlayers] = useState<Player[]>([]);
   const [gameState, setGameState] = useState<GameState>('waiting');
   const [isMyTurn, setIsMyTurn] = useState(false);
-  const [isRolling, setIsRolling] = useState(false);
+  // Заменяем общее состояние isRolling на два раздельных
+  const [isPlayerRolling, setIsPlayerRolling] = useState(false);
+  const [isOpponentRolling, setIsOpponentRolling] = useState(false);
   const [playerDice, setPlayerDice] = useState(1);
   const [opponentDice, setOpponentDice] = useState(1);
   const [currentRound, setCurrentRound] = useState(1);
@@ -688,14 +693,14 @@ export function MultiplayerDiceGame({
         if (isMoveByOpponent) {
           console.log('Ход сделал оппонент, анимируем его бросок');
           // Запускаем анимацию броска оппонента
-          setIsRolling(true);
+          setIsOpponentRolling(true);
           setIsMyTurn(false); // Убеждаемся, что статус текущего хода = false
           useUserStore.getState().setIsCurrentTurn(false);
           
           // Через секунду завершаем анимацию и устанавливаем результат
           setTimeout(() => {
             setOpponentDice(data.value);
-            setIsRolling(false);
+            setIsOpponentRolling(false);
             console.log('Анимация броска оппонента завершена, результат:', data.value);
           }, 1000);
         }
@@ -953,7 +958,7 @@ export function MultiplayerDiceGame({
   // Функция для броска кубика
   const rollDice = () => {
     console.log('Нажата кнопка "Бросить кубик", текущее состояние:', {
-      isRolling: isRolling,
+      isRolling: isPlayerRolling,
       isMyTurn: isMyTurn,
       gameState: gameState,
       currentRound: currentRound,
@@ -962,7 +967,7 @@ export function MultiplayerDiceGame({
     });
     
     // Проверяем, что сейчас наш ход и анимация не запущена
-    if (isRolling) {
+    if (isPlayerRolling) {
       console.log('Анимация броска уже запущена, ожидаем её завершения');
       return;
     }
@@ -984,7 +989,7 @@ export function MultiplayerDiceGame({
     console.log('Начинаем бросок кубика, наш ход:', isMyTurn);
     
     // Начинаем анимацию для кубика игрока
-    setIsRolling(true);
+    setIsPlayerRolling(true);
     console.log('Multiplayer roll initiated, анимируем только кубик игрока (наш)');
     
     // Генерируем случайное значение от 1 до 6
@@ -999,7 +1004,7 @@ export function MultiplayerDiceGame({
       if (isNaN(userTelegramId)) {
         console.error('Ошибка: telegramId не является числом:', currentTelegramId);
         toast.error('Ошибка при отправке хода');
-        setIsRolling(false);
+        setIsPlayerRolling(false);
         return;
       }
       
@@ -1023,12 +1028,12 @@ export function MultiplayerDiceGame({
     } else {
       console.error('Ошибка: отсутствует соединение с сервером');
       toast.error('Ошибка: нет соединения с сервером');
-      setIsRolling(false);
+      setIsPlayerRolling(false);
     }
     
     // Анимация броска длится 1 секунду
     setTimeout(() => {
-      setIsRolling(false);
+      setIsPlayerRolling(false);
       console.log('Multiplayer roll completed');
     }, 1000);
   };
@@ -1510,21 +1515,21 @@ export function MultiplayerDiceGame({
 
         <div className="dice-area">
           <div className="player-dice-area">
-            <div className={`dice-container ${isRolling && isMyTurn ? 'rolling' : ''}`}>
+            <div className={`dice-container ${isPlayerRolling && isMyTurn ? 'rolling' : ''}`}>
               <Dice 
                 value={playerDice} 
                 size="large" 
-                rolling={isRolling && isMyTurn}
+                rolling={isPlayerRolling && isMyTurn}
               />
             </div>
           </div>
           
           <div className="opponent-dice-area">
-            <div className={`dice-container ${isRolling && !isMyTurn ? 'rolling' : ''}`}>
+            <div className={`dice-container ${isOpponentRolling && !isMyTurn ? 'rolling' : ''}`}>
               <Dice 
                 value={opponentDice} 
                 size="large"
-                rolling={isRolling && !isMyTurn}
+                rolling={isOpponentRolling && !isMyTurn}
               />
             </div>
           </div>
@@ -1535,11 +1540,11 @@ export function MultiplayerDiceGame({
             <GameResult result={gameResult} />
           ) : (
             <button 
-              className={`roll-button ${isMyTurn && !isRolling ? 'active' : 'inactive'}`}
+              className={`roll-button ${isMyTurn && !isPlayerRolling ? 'active' : 'inactive'}`}
               onClick={rollDice}
-              disabled={isRolling || !isMyTurn}
+              disabled={isPlayerRolling || !isMyTurn}
             >
-              {isMyTurn ? (isRolling ? 'Бросаем...' : 'Бросить кубик') : 'Ожидание хода соперника'}
+              {isMyTurn ? (isPlayerRolling ? 'Бросаем...' : 'Бросить кубик') : 'Ожидание хода соперника'}
             </button>
           )}
         </div>
