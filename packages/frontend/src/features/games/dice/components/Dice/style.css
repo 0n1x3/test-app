@@ -11,7 +11,7 @@
   height: 80px;
   position: relative;
   transform-style: preserve-3d;
-  transition: transform 0.8s cubic-bezier(0.3, 0.1, 0.3, 1);
+  transition: transform 1s ease-out;
 }
 
 .dice.small {
@@ -227,11 +227,23 @@
 
 /* Анимация вращения кубика */
 .dice.rolling {
-  animation: roll 1s ease-out forwards;
-  animation-timing-function: cubic-bezier(0.17, 0.67, 0.83, 0.67);
+  animation: roll 1.5s ease-out forwards;
+}
+
+.dice.enhanced-animation {
+  transition: transform 0.8s cubic-bezier(0.3, 0.1, 0.3, 1);
+}
+
+.dice.enhanced-animation.rolling {
+  animation: enhanced-roll 1s cubic-bezier(0.17, 0.67, 0.83, 0.67) forwards;
 }
 
 @keyframes roll {
+  0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+  100% { transform: rotateX(720deg) rotateY(360deg) rotateZ(360deg); }
+}
+
+@keyframes enhanced-roll {
   0% { 
     transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); 
     animation-timing-function: ease-in;

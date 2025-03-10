@@ -1515,21 +1515,23 @@ export function MultiplayerDiceGame({
 
         <div className="dice-area">
           <div className="player-dice-area">
-            <div className={`dice-container ${isPlayerRolling && isMyTurn ? 'rolling' : ''}`}>
+            <div className={`dice-container ${isPlayerRolling ? 'rolling' : ''}`}>
               <Dice 
                 value={playerDice} 
                 size="large" 
-                rolling={isPlayerRolling && isMyTurn}
+                rolling={isPlayerRolling}
+                enhancedAnimation={true}
               />
             </div>
           </div>
           
           <div className="opponent-dice-area">
-            <div className={`dice-container ${isOpponentRolling && !isMyTurn ? 'rolling' : ''}`}>
+            <div className={`dice-container ${isOpponentRolling ? 'rolling' : ''}`}>
               <Dice 
                 value={opponentDice} 
                 size="large"
-                rolling={isOpponentRolling && !isMyTurn}
+                rolling={isOpponentRolling}
+                enhancedAnimation={true}
               />
             </div>
           </div>

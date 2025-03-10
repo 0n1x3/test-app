@@ -8,6 +8,7 @@ interface DiceProps {
   rolling?: boolean;
   size?: 'small' | 'medium' | 'large';
   onRollEnd?: () => void;
+  enhancedAnimation?: boolean;
 }
 
 type DiceRotation = {
@@ -29,7 +30,7 @@ const valueToRotation: Record<number, DiceRotation> = {
   4: { x: 90, y: 0, z: 0 }                    // Нижняя грань (4)
 };
 
-export function Dice({ value, rolling, size = 'large', onRollEnd }: DiceProps) {
+export function Dice({ value, rolling, size = 'large', onRollEnd, enhancedAnimation = false }: DiceProps) {
   const [rotation, setRotation] = useState<DiceRotation>(INITIAL_ROTATION);
   const rotationRef = useRef(INITIAL_ROTATION);
   const animationRef = useRef<number>();
@@ -37,7 +38,7 @@ export function Dice({ value, rolling, size = 'large', onRollEnd }: DiceProps) {
   const targetRotationRef = useRef<DiceRotation>({ ...INITIAL_ROTATION });
   const prevValueRef = useRef<number>(value);
 
-  // Более энергичная анимация с несколькими оборотами
+  // Анимация броска кубика
   const animate = () => {
     if (!rolling) {
       cancelAnimationFrame(animationRef.current!);
@@ -47,10 +48,18 @@ export function Dice({ value, rolling, size = 'large', onRollEnd }: DiceProps) {
     // Увеличиваем шаги анимации для отслеживания длительности
     animationStepsRef.current += 1;
 
-    // Более быстрое и хаотичное вращение
-    rotationRef.current.x += 15;
-    rotationRef.current.y += 18;
-    rotationRef.current.z += 12;
+    // Скорость вращения зависит от enhancedAnimation
+    if (enhancedAnimation) {
+      // Более быстрое и хаотичное вращение для мультиплеера
+      rotationRef.current.x += 15;
+      rotationRef.current.y += 18;
+      rotationRef.current.z += 12;
+    } else {
+      // Стандартное вращение для игры с ботом
+      rotationRef.current.x += 8;
+      rotationRef.current.y += 10;
+      rotationRef.current.z += 6;
+    }
 
     setRotation({
       x: rotationRef.current.x,
@@ -77,9 +86,9 @@ export function Dice({ value, rolling, size = 'large', onRollEnd }: DiceProps) {
       // Начинаем анимацию
       animationRef.current = requestAnimationFrame(animate);
     } else if (value) {
-      // Если только что завершилась анимация броска
-      if (animationStepsRef.current > 0) {
-        console.log('Finishing dice roll animation to value:', value);
+      // Если включена улучшенная анимация и только что завершилась анимация броска
+      if (enhancedAnimation && animationStepsRef.current > 0) {
+        console.log('Finishing enhanced dice roll animation to value:', value);
         
         // Получаем целевое вращение для нового значения кубика
         const targetRotation = valueToRotation[value];
@@ -112,11 +121,19 @@ export function Dice({ value, rolling, size = 'large', onRollEnd }: DiceProps) {
           
         }, 0);
       } else {
-        // Если это просто обычное обновление значения (без анимации броска)
+        // Стандартная анимация для игры с ботом
         console.log('Setting dice to value:', value);
         const targetRotation = valueToRotation[value];
         console.log('Target rotation:', targetRotation);
         setRotation(targetRotation);
+        
+        // Сбрасываем счетчик шагов анимации
+        animationStepsRef.current = 0;
+        
+        // Вызываем колбэк завершения анимации, если он передан
+        if (onRollEnd) {
+          onRollEnd();
+        }
       }
     }
 
@@ -125,7 +142,7 @@ export function Dice({ value, rolling, size = 'large', onRollEnd }: DiceProps) {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [rolling, value, onRollEnd]);
+  }, [rolling, value, onRollEnd, enhancedAnimation]);
 
   // Функция для рендеринга правильного количества точек для каждой грани
   const renderDots = (faceValue: number) => {
@@ -148,7 +165,7 @@ export function Dice({ value, rolling, size = 'large', onRollEnd }: DiceProps) {
   return (
     <div className={`dice-container ${size}`}>
       <div 
-        className={`dice ${rolling ? 'rolling' : ''}`}
+        className={`dice ${rolling ? 'rolling' : ''} ${enhancedAnimation ? 'enhanced-animation' : ''}`}
         style={{
           transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg) rotateZ(${rotation.z}deg)`
         }}
