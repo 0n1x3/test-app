@@ -1427,31 +1427,26 @@ export function MultiplayerDiceGame({
 
   // Проверяем, получаем ли мы информацию о ставке через socket
   useEffect(() => {
-    // Подключаемся к socket.io для получения информации о ставке
-    const socketUrl = process.env.NEXT_PUBLIC_API_URL || 'https://test.timecommunity.xyz';
-    const socket = io(`${socketUrl}`, {
-      path: '/socket.io',
-      transports: ['websocket'],
-      query: {
-        gameId
-      }
-    });
-    
-    socket.on('connect', () => {
-      console.log('Connected to socket to check game data');
-      socket.emit('getGameInfo', { gameId });
-    });
-    
-    socket.on('gameInfo', (gameInfo) => {
-      console.log('Received game info from socket:', gameInfo);
-      if (gameInfo && gameInfo.betAmount) {
-        console.log('Полученная ставка через сокет:', gameInfo.betAmount);
-      }
-    });
-    
-    return () => {
-      socket.disconnect();
-    };
+    // Вместо создания нового соединения, используем существующее
+    if (socketRef.current && socketRef.current.connected) {
+      console.log('Using existing socket to check game data');
+      socketRef.current.emit('getGameInfo', { gameId });
+      
+      // Добавляем обработчик только один раз для получения информации об игре
+      const handleGameInfo = (gameInfo: any) => {
+        console.log('Received game info:', gameInfo);
+        if (gameInfo && gameInfo.betAmount) {
+          console.log('Полученная ставка:', gameInfo.betAmount);
+        }
+      };
+      
+      socketRef.current.on('gameInfo', handleGameInfo);
+      
+      return () => {
+        // Удаляем обработчик при размонтировании
+        socketRef.current?.off('gameInfo', handleGameInfo);
+      };
+    }
   }, [gameId]);
 
   // Обработчик для возврата в лобби
