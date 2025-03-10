@@ -47,6 +47,7 @@
   padding: var(--game-padding);
   background: var(--game-background);
   border-radius: var(--game-border-radius);
+  margin-bottom: 15px;
 }
 
 .player-side,
@@ -139,19 +140,15 @@
 }
 
 .game-field {
-  display: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 15px 0;
 }
 
 .opponent-dice,
 .player-dice {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100px;
-  height: 100px;
-  position: relative;
-  margin-top: 10px;
+  display: none;
 }
 
 .vs-indicator {
@@ -285,6 +282,25 @@
   }
 }
 
+/* Стили для области с кубиками */
+.dice-area {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  padding: 15px 0;
+  margin-bottom: 15px;
+}
+
+.player-dice-area,
+.opponent-dice-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 120px;
+  height: 120px;
+}
+
 /* Стили для контейнера кубика */
 .dice-container {
   width: 100%;
@@ -293,21 +309,18 @@
   justify-content: center;
   align-items: center;
   transition: transform 0.3s ease;
+  background: transparent;
 }
 
 .dice-container.rolling {
   animation: shake 0.5s infinite;
 }
 
-/* Стили для мобильных устройств */
+/* Медиа-запрос для мобильных устройств */
 @media (max-width: 480px) {
-  .opponent-dice,
-  .player-dice {
-    width: 80px;
-    height: 80px;
-  }
-  
-  .vs-indicator {
-    font-size: 18px;
+  .player-dice-area,
+  .opponent-dice-area {
+    width: 90px;
+    height: 90px;
   }
 }

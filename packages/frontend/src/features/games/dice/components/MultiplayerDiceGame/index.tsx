@@ -1483,15 +1483,6 @@ export function MultiplayerDiceGame({
                 {isMyTurn && <div className="turn-indicator">Ваш ход</div>}
               </div>
               <div className="player-score">{playerScore}</div>
-              <div className="player-dice">
-                <div className={`dice-container ${isRolling && isMyTurn ? 'rolling' : ''}`}>
-                  <Dice 
-                    value={playerDice} 
-                    size="large" 
-                    rolling={isRolling && isMyTurn}
-                  />
-                </div>
-              </div>
             </div>
             
             <div className="round-info">
@@ -1513,15 +1504,28 @@ export function MultiplayerDiceGame({
                 {!isMyTurn && <div className="turn-indicator">Ходит</div>}
               </div>
               <div className="opponent-score">{opponentScore}</div>
-              <div className="opponent-dice">
-                <div className={`dice-container ${isRolling && !isMyTurn ? 'rolling' : ''}`}>
-                  <Dice 
-                    value={opponentDice} 
-                    size="large"
-                    rolling={isRolling && !isMyTurn}
-                  />
-                </div>
-              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="dice-area">
+          <div className="player-dice-area">
+            <div className={`dice-container ${isRolling && isMyTurn ? 'rolling' : ''}`}>
+              <Dice 
+                value={playerDice} 
+                size="large" 
+                rolling={isRolling && isMyTurn}
+              />
+            </div>
+          </div>
+          
+          <div className="opponent-dice-area">
+            <div className={`dice-container ${isRolling && !isMyTurn ? 'rolling' : ''}`}>
+              <Dice 
+                value={opponentDice} 
+                size="large"
+                rolling={isRolling && !isMyTurn}
+              />
             </div>
           </div>
         </div>
