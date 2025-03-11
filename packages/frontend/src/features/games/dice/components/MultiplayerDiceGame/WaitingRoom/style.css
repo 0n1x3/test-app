@@ -32,16 +32,16 @@
   justify-content: center;
   width: 100%;
   max-width: 400px;
-  margin-top: 8px;
+  margin-top: 4px;
 }
 
 .copy-link-button {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 20px;
-  border-radius: 8px;
-  font-size: 16px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -60,20 +60,38 @@
   animation: spin 1s linear infinite;
 }
 
+.copy-link-button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+}
+
 /* Стили для информации об игре */
+.game-header {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.game-header h2 {
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+  margin: 0;
+}
+
 .game-info-details {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 8px;
-  margin-top: 8px;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 4px;
 }
 
 .game-id {
-  font-size: 14px;
+  font-size: 12px;
   color: rgba(255, 255, 255, 0.7);
   background: rgba(255, 255, 255, 0.1);
-  padding: 4px 8px;
+  padding: 2px 6px;
   border-radius: 4px;
 }
 

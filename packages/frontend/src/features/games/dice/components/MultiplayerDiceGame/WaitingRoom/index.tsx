@@ -55,7 +55,7 @@ export function WaitingRoom({
       
       {/* Информация об игре */}
       <div className="game-header">
-        <h2>Игра в кости</h2>
+        <h2>Ставка</h2>
         <div className="game-info-details">
           <BetInfo amount={betAmount} />
           <div className="game-id">ID: #{shortGameId}</div>
@@ -80,11 +80,11 @@ export function WaitingRoom({
           <h2>Ожидание соперника</h2>
           <p>Поделитесь ссылкой с другом или дождитесь пока кто-то присоединится</p>
           
-          {/* Кнопка копирования ссылки приглашения */}
+          {/* Кнопка копирования ссылки */}
           <div className="waiting-room-controls">
             <button className="copy-link-button" onClick={onCopyInviteLink}>
               <Icon icon="solar:copy-linear" />
-              Копировать ссылку-приглашение
+              Копировать ссылку
             </button>
           </div>
           
