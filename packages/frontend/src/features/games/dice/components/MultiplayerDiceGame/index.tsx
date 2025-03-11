@@ -817,52 +817,59 @@ export function MultiplayerDiceGame({
       });
 
       // Обработчик для результата раунда
-      newSocket.on('roundResult', (data) => {
+      newSocket.on('roundResult', (data: any) => {
         console.log('Получен результат раунда:', data);
         
-        // Обновляем номер текущего раунда
-        setCurrentRound(data.round + 1);
+        // Получаем ID текущего пользователя
+        const currentUserId = telegramId || getTelegramUserId();
         
-        // Получаем telegramId текущего игрока
-        const currentTelegramId = telegramId || getTelegramUserId();
-        const telegramIdStr = currentTelegramId?.toString() || '';
+        if (!currentUserId) {
+          console.error('Не удалось определить ID текущего пользователя');
+          return;
+        }
         
-        // Определяем, является ли текущий игрок первым игроком (player1) или вторым (player2)
-        const isPlayer1 = data.players && data.players[0]?.toString() === telegramIdStr;
+        // Определяем, кто есть кто в данном раунде
+        // players[0] - это первый игрок в массиве игроков на сервере
+        // players[1] - это второй игрок в массиве игроков на сервере
+        const isCurrentUserPlayer1 = String(data.players[0]) === String(currentUserId);
+        const isCurrentUserPlayer2 = String(data.players[1]) === String(currentUserId);
         
-        console.log('Определяем счет для игрока:', {
-          isPlayer1,
-          currentTelegramId: telegramIdStr,
+        console.log('Анализ результата раунда:', {
+          currentUserId,
           players: data.players,
+          isCurrentUserPlayer1,
+          isCurrentUserPlayer2,
           result: data.result,
           player1Value: data.player1Value,
           player2Value: data.player2Value
         });
         
-        // Обновляем счет с учетом того, какой игрок текущий
-        if (isPlayer1) {
-          // Если текущий игрок - player1, то используем прямой результат
-          if (data.result === 'win') {
-            setPlayerScore(prev => prev + 1);
-            toast.success('Вы выиграли раунд!');
-          } else if (data.result === 'lose') {
-            setOpponentScore(prev => prev + 1);
-            toast('Раунд проигран', { icon: '😔' });
-          } else {
-            toast('Ничья в раунде', { icon: '🤝' });
-          }
+        // Определяем, выиграл ли текущий пользователь раунд
+        let currentUserWon = false;
+        
+        if (isCurrentUserPlayer1 && data.result === 'win') {
+          currentUserWon = true;
+        } else if (isCurrentUserPlayer2 && data.result === 'lose') {
+          currentUserWon = true;
+        } else if (data.result === 'draw') {
+          // Ничья - никто не получает очко
+          currentUserWon = false;
         } else {
-          // Если текущий игрок - player2, то инвертируем результат
-          if (data.result === 'win') {
-            setOpponentScore(prev => prev + 1);
-            toast('Раунд проигран', { icon: '😔' });
-          } else if (data.result === 'lose') {
-            setPlayerScore(prev => prev + 1);
-            toast.success('Вы выиграли раунд!');
-          } else {
-            toast('Ничья в раунде', { icon: '🤝' });
-          }
+          // Текущий пользователь проиграл
+          currentUserWon = false;
         }
+        
+        console.log('Результат для текущего пользователя:', currentUserWon ? 'победа' : 'поражение');
+        
+        // Обновляем счет
+        if (currentUserWon) {
+          setPlayerScore(prevScore => prevScore + 1);
+        } else if (data.result !== 'draw') {
+          setOpponentScore(prevScore => prevScore + 1);
+        }
+        
+        // Обновляем номер текущего раунда
+        setCurrentRound(data.round + 1);
       });
 
       // Добавляем обработчик для окончания игры
