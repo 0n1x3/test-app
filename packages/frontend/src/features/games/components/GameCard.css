@@ -16,8 +16,7 @@
   align-items: center;
   padding: 8px 12px;
   background: #232323;
-  gap: 6px 8px;
-  row-gap: 6px;
+  gap: 8px;
 }
 
 .game-name {
@@ -29,7 +28,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
   flex: 1;
-  order: 2;
   min-width: 0;
 }
 
@@ -43,7 +41,7 @@
   font-weight: 600;
   color: white;
   flex-shrink: 0;
-  order: 1;
+  margin-right: 8px;
 }
 
 .game-bet svg {
@@ -60,9 +58,7 @@
   align-items: center;
   font-size: 12px;
   color: #CCCCCC;
-  order: 3;
-  width: 100%;
-  margin: 0;
+  flex: 1;
 }
 
 .status-text {
@@ -74,8 +70,6 @@
 .game-actions {
   display: flex;
   gap: 6px;
-  order: 4;
-  margin-left: auto;
 }
 
 .join-button, .copy-button {

@@ -27,37 +27,41 @@ export function GameCard({ game, onJoin, onDelete, isCreator }: GameCardProps) {
   return (
     <div className="game-card" role="article" aria-label={`Игра ${formatGameName(game.name, game._id)}`}>
       <div className="game-info">
-        <div className="game-bet" title={`Ставка: ${game.betAmount}`}>
-          <Icon icon="material-symbols:diamond-rounded" aria-hidden="true" />
-          {game.betAmount}
+        <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+          <div className="game-bet" title={`Ставка: ${game.betAmount}`}>
+            <Icon icon="material-symbols:diamond-rounded" aria-hidden="true" />
+            {game.betAmount}
+          </div>
+          <div className="game-name" title={formatGameName(game.name, game._id)}>
+            {formatGameName(game.name, game._id)}
+          </div>
         </div>
-        <div className="game-name" title={formatGameName(game.name, game._id)}>
-          {formatGameName(game.name, game._id)}
-        </div>
-        <div className="player-count">
-          <Icon icon="mdi:account" aria-hidden="true" />
-          {game.players.length}/2
-          <span className="status-text">Ожидание игроков</span>
-        </div>
-        <div className="game-actions">
-          {isCreator && onDelete && (
+        <div style={{ display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'space-between' }}>
+          <div className="player-count">
+            <Icon icon="mdi:account" aria-hidden="true" />
+            {game.players.length}/2
+            <span className="status-text">Ожидание игроков</span>
+          </div>
+          <div className="game-actions">
+            {isCreator && onDelete && (
+              <button 
+                className="copy-button" 
+                onClick={onDelete} 
+                title="Удалить игру"
+                aria-label="Удалить игру"
+              >
+                <Icon icon="mdi:delete" aria-hidden="true" />
+              </button>
+            )}
             <button 
-              className="copy-button" 
-              onClick={onDelete} 
-              title="Удалить игру"
-              aria-label="Удалить игру"
+              className="join-button" 
+              onClick={onJoin}
+              title="Присоединиться к игре"
+              aria-label="Присоединиться к игре"
             >
-              <Icon icon="mdi:delete" aria-hidden="true" />
+              <Icon icon="mdi:play" aria-hidden="true" />
             </button>
-          )}
-          <button 
-            className="join-button" 
-            onClick={onJoin}
-            title="Присоединиться к игре"
-            aria-label="Присоединиться к игре"
-          >
-            <Icon icon="mdi:play" aria-hidden="true" />
-          </button>
+          </div>
         </div>
       </div>
     </div>
