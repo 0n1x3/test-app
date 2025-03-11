@@ -14,9 +14,9 @@
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 12px 4px;
+  padding: 8px 12px 0px;
   background: #232323;
-  gap: 8px;
+  gap: 0px;
 }
 
 .game-name {
@@ -71,6 +71,7 @@
 .game-actions {
   display: flex;
   gap: 6px;
+  margin-bottom: 4px;
 }
 
 .join-button, .copy-button {
@@ -80,11 +81,13 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 5px 8px;
+  padding: 6px 10px;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   transition: all 0.2s;
+  height: 30px;
+  width: 30px;
 }
 
 .join-button {

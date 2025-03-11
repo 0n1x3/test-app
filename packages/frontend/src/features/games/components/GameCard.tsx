@@ -36,7 +36,7 @@ export function GameCard({ game, onJoin, onDelete, isCreator }: GameCardProps) {
             {formatGameName(game.name, game._id)}
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'space-between', marginBottom: '-4px' }}>
           <div className="player-count">
             <Icon icon="mdi:account" aria-hidden="true" />
             {game.players.length}/2
@@ -50,7 +50,7 @@ export function GameCard({ game, onJoin, onDelete, isCreator }: GameCardProps) {
                 title="Удалить игру"
                 aria-label="Удалить игру"
               >
-                <Icon icon="mdi:delete" aria-hidden="true" />
+                <Icon icon="mdi:delete" style={{ fontSize: '16px' }} aria-hidden="true" />
               </button>
             )}
             <button 
@@ -59,7 +59,7 @@ export function GameCard({ game, onJoin, onDelete, isCreator }: GameCardProps) {
               title="Присоединиться к игре"
               aria-label="Присоединиться к игре"
             >
-              <Icon icon="mdi:play" aria-hidden="true" />
+              <Icon icon="mdi:play" style={{ fontSize: '16px' }} aria-hidden="true" />
             </button>
           </div>
         </div>
