@@ -2,56 +2,66 @@
   display: flex;
   flex-direction: column;
   background: #1A1A1A;
-  border-radius: 12px;
+  border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  margin: 0 8px;
+  max-width: calc(100% - 16px);
 }
 
 .game-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px;
+  padding: 12px 14px;
   background: #232323;
 }
 
 .game-name {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   color: white;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70%;
 }
 
 .game-bet {
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 18px;
-  font-weight: 700;
-  color: white;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #FFD700;
 }
 
 .game-bet svg {
-  color: #2196F3;
+  margin-right: 4px;
+  font-size: 14px;
 }
 
 .game-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
+  padding: 10px 14px;
 }
 
 .player-count {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 14px;
+  font-size: 13px;
+  color: #CCCCCC;
 }
 
 .status-text {
+  font-size: 13px;
+  color: #AAAAAA;
   margin-left: 8px;
-  color: rgba(255, 255, 255, 0.5);
 }
 
 .game-actions {
@@ -60,33 +70,33 @@
 }
 
 .join-button, .copy-button {
-  width: 36px;
-  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
+  background: none;
   border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
 }
 
 .join-button {
-  background: #2196F3;
+  background: #4CAF50;
   color: white;
 }
 
 .join-button:hover {
-  background: #1976D2;
-  transform: translateY(-2px);
+  background: #45a049;
 }
 
 .copy-button {
   background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.7);
+  color: white;
 }
 
 .copy-button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
+  background: rgba(255, 255, 255, 0.15);
 } 

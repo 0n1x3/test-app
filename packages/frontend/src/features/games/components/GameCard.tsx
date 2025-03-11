@@ -24,38 +24,50 @@ const formatGameName = (name: string, id: string | undefined) => {
 };
 
 export function GameCard({ game, onJoin, onDelete, isCreator }: GameCardProps) {
-  console.log('GameCard props:', { 
-    gameId: game._id, 
-    gameName: game.name, 
-    isCreator, 
-    hasDeleteHandler: !!onDelete 
-  });
-  
+  const handleCopy = () => {
+    console.log('Copy link');
+  };
+
   return (
     <div className="game-card">
       <div className="game-info">
-        <div className="game-name">{formatGameName(game.name, game._id)}</div>
+        <div className="game-name" title={formatGameName(game.name, game._id)}>
+          {formatGameName(game.name, game._id)}
+        </div>
         <div className="game-bet">
-          <Icon icon="material-symbols:diamond-rounded" />
-          <span>{game.betAmount}</span>
+          <Icon icon="mdi:diamond" />
+          {game.betAmount}
         </div>
       </div>
-      
       <div className="game-footer">
         <div className="player-count">
           <Icon icon="mdi:account" />
-          <span>{game.players.length}/2</span>
+          {game.players.length}/2
           <span className="status-text">Ожидание игроков</span>
         </div>
-        
         <div className="game-actions">
           {isCreator && onDelete && (
-            <button className="copy-button" onClick={onDelete} title="Удалить игру">
+            <button 
+              className="copy-button" 
+              onClick={onDelete} 
+              title="Удалить игру"
+            >
               <Icon icon="mdi:delete" />
             </button>
           )}
-          <button className="join-button" onClick={onJoin}>
-            <Icon icon="mdi:login" />
+          <button 
+            className="copy-button" 
+            onClick={handleCopy}
+            title="Копировать ссылку"
+          >
+            <Icon icon="mdi:content-copy" />
+          </button>
+          <button 
+            className="join-button" 
+            onClick={onJoin}
+            title="Присоединиться к игре"
+          >
+            <Icon icon="mdi:play" />
           </button>
         </div>
       </div>

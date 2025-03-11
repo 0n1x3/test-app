@@ -1,28 +1,26 @@
 .lobby-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 16px;
   height: 100%;
-  background-color: #000000;
-  min-height: calc(100vh - env(safe-area-inset-bottom) - env(safe-area-inset-top));
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 8px;
+  box-sizing: border-box;
 }
 
 .create-game-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 48px;
-  background: linear-gradient(90deg, #2196F3 0%, #4CAF50 100%);
-  border-radius: 12px;
+  background: linear-gradient(90deg, #2196F3 0%, #21CBF3 100%);
   color: white;
-  font-size: 16px;
-  font-weight: 600;
   border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
+  height: 44px;
+  margin-bottom: 12px;
   transition: all 0.2s;
-  padding: 0 24px;
+  padding: 0 20px;
   width: 100%;
 }
 
@@ -40,18 +38,20 @@
 .games-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   flex: 1;
+  overflow-y: auto;
+  padding: 0 0 10px 0;
 }
 
 .game-item {
   background: rgba(33, 33, 33, 0.5);
-  border-radius: 12px;
-  padding: 16px;
+  border-radius: 10px;
+  padding: 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .game-header {
@@ -61,66 +61,73 @@
 }
 
 .game-name {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   color: white;
+  margin: 0;
 }
 
 .game-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 8px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .game-players {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: #808080;
-  font-size: 14px;
+  gap: 6px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .player-status {
-  margin-left: 8px;
-  font-size: 12px;
-  color: #808080;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .bet-amount {
   display: flex;
   align-items: center;
   gap: 4px;
-  color: #2196F3;
-  font-size: 14px;
-  font-weight: 500;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #FFD700;
 }
 
 .game-actions {
   display: flex;
+  justify-content: flex-end;
   gap: 8px;
 }
 
 .action-button {
-  width: 36px;
-  height: 36px;
+  background: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
   display: flex;
   align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  color: #2196F3;
-  background: rgba(33, 150, 243, 0.1);
-  transition: all 0.2s;
+  gap: 6px;
 }
 
 .action-button:hover {
-  background: #2196F3;
-  color: white;
+  background: #1976D2;
 }
 
 .copy-link {
-  border: 1px solid #2196F3;
+  cursor: pointer;
 }
 
 .no-games {
@@ -128,26 +135,26 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 32px 16px;
-  color: rgba(255, 255, 255, 0.5);
+  height: 200px;
   text-align: center;
-  flex: 1;
-  min-height: 200px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 15px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  padding: 20px;
+  margin: 10px 8px;
 }
 
 .no-games-icon {
-  font-size: 48px;
-  opacity: 0.5;
+  font-size: 40px;
+  margin-bottom: 10px;
 }
 
 .join-game {
-  border: 1px solid #4CAF50;
-  color: #4CAF50;
-  background: rgba(76, 175, 80, 0.1);
+  background: #4CAF50;
+  color: white;
 }
 
 .join-game:hover {
-  background: #4CAF50;
-  color: white;
+  background: #45a049;
 } 
