@@ -27,7 +27,7 @@ export function GameCard({ game, onJoin, onDelete, isCreator }: GameCardProps) {
   return (
     <div className="game-card" role="article" aria-label={`Игра ${formatGameName(game.name, game._id)}`}>
       <div className="game-info">
-        <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+        <div style={{ display: 'flex', alignItems: 'center', width: '100%', marginBottom: '4px' }}>
           <div className="game-bet" title={`Ставка: ${game.betAmount}`}>
             <Icon icon="material-symbols:diamond-rounded" aria-hidden="true" />
             {game.betAmount}
@@ -36,7 +36,7 @@ export function GameCard({ game, onJoin, onDelete, isCreator }: GameCardProps) {
             {formatGameName(game.name, game._id)}
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'space-between', marginTop: '4px' }}>
           <div className="player-count">
             <Icon icon="mdi:account" aria-hidden="true" />
             {game.players.length}/2
