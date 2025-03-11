@@ -281,7 +281,9 @@
 /* Добавляю стиль, который гарантирует отсутствие лишних отступов у карточек */
 .active-games-list .game-card {
   margin-bottom: 0 !important;
-  padding-bottom: 8px !important;
+  padding-bottom: 16px !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
 }
 
 /* Улучшаем пустой список игр */
