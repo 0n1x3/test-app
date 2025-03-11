@@ -263,7 +263,7 @@ export function LobbyInterface({
 
   return (
     <div className="lobby-interface">
-      <div className="active-games-list">
+      <div className="active-games-list" style={{ gap: '3px' }}>
         {loading ? (
           <div className="loading-indicator">
             <span className="loading-spinner"></span>
