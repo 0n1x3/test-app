@@ -55,9 +55,11 @@ export function WaitingRoom({
       
       {/* Информация об игре */}
       <div className="game-header">
-        <h2>Ставка</h2>
         <div className="game-info-details">
-          <BetInfo amount={betAmount} />
+          <div className="bet-container">
+            <span className="bet-label">Ставка</span>
+            <BetInfo amount={betAmount} />
+          </div>
           <div className="game-id">ID: #{shortGameId}</div>
         </div>
       </div>
