@@ -11,10 +11,13 @@
 
 .game-info {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 12px;
+  padding: 8px 12px;
   background: #232323;
+  gap: 6px 8px;
+  row-gap: 6px;
 }
 
 .game-name {
@@ -25,7 +28,9 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 70%;
+  flex: 1;
+  order: 2;
+  min-width: 0;
 }
 
 .game-bet {
@@ -37,6 +42,8 @@
   font-size: 13px;
   font-weight: 600;
   color: white;
+  flex-shrink: 0;
+  order: 1;
 }
 
 .game-bet svg {
@@ -48,18 +55,14 @@
   flex-shrink: 0;
 }
 
-.game-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 12px;
-}
-
 .player-count {
   display: flex;
   align-items: center;
   font-size: 12px;
   color: #CCCCCC;
+  order: 3;
+  width: 100%;
+  margin: 0;
 }
 
 .status-text {
@@ -71,6 +74,8 @@
 .game-actions {
   display: flex;
   gap: 6px;
+  order: 4;
+  margin-left: auto;
 }
 
 .join-button, .copy-button {

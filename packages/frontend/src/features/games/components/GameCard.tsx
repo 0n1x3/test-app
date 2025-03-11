@@ -27,15 +27,13 @@ export function GameCard({ game, onJoin, onDelete, isCreator }: GameCardProps) {
   return (
     <div className="game-card" role="article" aria-label={`Игра ${formatGameName(game.name, game._id)}`}>
       <div className="game-info">
-        <div className="game-name" title={formatGameName(game.name, game._id)}>
-          {formatGameName(game.name, game._id)}
-        </div>
         <div className="game-bet" title={`Ставка: ${game.betAmount}`}>
           <Icon icon="material-symbols:diamond-rounded" aria-hidden="true" />
           {game.betAmount}
         </div>
-      </div>
-      <div className="game-footer">
+        <div className="game-name" title={formatGameName(game.name, game._id)}>
+          {formatGameName(game.name, game._id)}
+        </div>
         <div className="player-count">
           <Icon icon="mdi:account" aria-hidden="true" />
           {game.players.length}/2
