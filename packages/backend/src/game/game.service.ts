@@ -430,6 +430,12 @@ export class GameService {
           }
         });
         
+        // Определяем константы для проверки окончания игры
+        const maxRounds = 5;
+        const winsNeeded = 2;
+        const isMaxRoundsReached = game.currentRound >= maxRounds;
+        const hasWinner = player1Wins >= winsNeeded || player2Wins >= winsNeeded;
+        
         // Добавляем подробное логирование перед проверкой победителя
         console.log('Итоговый подсчет побед:', {
           player1Wins,
@@ -438,12 +444,6 @@ export class GameService {
           winsNeeded,
           maxRounds
         });
-        
-        // Завершаем игру, если один из игроков набрал 2 очка или прошло максимум 5 раундов
-        const maxRounds = 5;
-        const winsNeeded = 2;
-        const isMaxRoundsReached = game.currentRound >= maxRounds;
-        const hasWinner = player1Wins >= winsNeeded || player2Wins >= winsNeeded;
         
         // Добавляем логирование для отладки
         console.log(`Проверка окончания игры: раунд ${game.currentRound}, победы игрока 1: ${player1Wins}, победы игрока 2: ${player2Wins}`);
