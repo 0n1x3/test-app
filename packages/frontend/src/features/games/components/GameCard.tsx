@@ -25,8 +25,8 @@ const formatGameName = (name: string, id: string | undefined) => {
 
 export function GameCard({ game, onJoin, onDelete, isCreator }: GameCardProps) {
   return (
-    <div className="game-card" role="article" aria-label={`Игра ${formatGameName(game.name, game._id)}`}>
-      <div className="game-info">
+    <div className="game-card" role="article" aria-label={`Игра ${formatGameName(game.name, game._id)}`} style={{ marginBottom: 0, paddingBottom: 0 }}>
+      <div className="game-info" style={{ marginBottom: 0, paddingBottom: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', width: '100%', marginBottom: '4px' }}>
           <div className="game-bet" title={`Ставка: ${game.betAmount}`}>
             <Icon icon="material-symbols:diamond-rounded" aria-hidden="true" />
@@ -36,7 +36,7 @@ export function GameCard({ game, onJoin, onDelete, isCreator }: GameCardProps) {
             {formatGameName(game.name, game._id)}
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'space-between', marginBottom: '-4px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'space-between', marginBottom: 0, paddingBottom: 0 }}>
           <div className="player-count">
             <Icon icon="mdi:account" aria-hidden="true" />
             {game.players.length}/2
@@ -50,7 +50,7 @@ export function GameCard({ game, onJoin, onDelete, isCreator }: GameCardProps) {
                 title="Удалить игру"
                 aria-label="Удалить игру"
               >
-                <Icon icon="mdi:delete" style={{ fontSize: '16px' }} aria-hidden="true" />
+                <Icon icon="mdi:delete" style={{ fontSize: '18px' }} aria-hidden="true" />
               </button>
             )}
             <button 
@@ -59,7 +59,7 @@ export function GameCard({ game, onJoin, onDelete, isCreator }: GameCardProps) {
               title="Присоединиться к игре"
               aria-label="Присоединиться к игре"
             >
-              <Icon icon="mdi:play" style={{ fontSize: '16px' }} aria-hidden="true" />
+              <Icon icon="mdi:play" style={{ fontSize: '18px' }} aria-hidden="true" />
             </button>
           </div>
         </div>

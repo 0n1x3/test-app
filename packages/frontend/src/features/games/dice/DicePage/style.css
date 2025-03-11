@@ -272,10 +272,16 @@
 .active-games-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   padding: 0;
   margin: 0;
   margin-bottom: 80px; /* Для нижнего меню */
+}
+
+/* Добавляю стиль, который гарантирует отсутствие лишних отступов у карточек */
+.active-games-list .game-card {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
 }
 
 /* Улучшаем пустой список игр */
