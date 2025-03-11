@@ -11,6 +11,12 @@ import './style.css';
 import { PageContainer } from '@/components/_layout/PageContainer';
 import { WaitingRoom } from './WaitingRoom/index';
 import { Balance } from '@/components/_common/Balance';
+import { 
+  MAX_ATTEMPTS, 
+  MAX_AUTO_JOIN_ATTEMPTS, 
+  MAX_ROUNDS, 
+  
+} from './gameConfig';
 
 // Удаляем объявление глобального интерфейса, так как оно определено в global.d.ts
 
@@ -37,12 +43,6 @@ interface Player {
   username?: string;
   avatarUrl?: string;
 }
-
-// Константы
-const MAX_ATTEMPTS = 5;
-const MAX_AUTO_JOIN_ATTEMPTS = 3; // Максимум 3 попытки автоматического присоединения
-const MAX_ROUNDS = 5;
-const WINS_NEEDED = 2;
 
 // Компонент для отображения игрового поля
 const GameField = ({ 
@@ -422,7 +422,8 @@ export function MultiplayerDiceGame({
         connectionAttemptRef.current += 1;
         
         // Добавляем автоматическое переподключение при ошибке
-        if (connectionAttemptRef.current < 5) {
+        // Используем MAX_ATTEMPTS вместо захардкоженного значения 5
+        if (connectionAttemptRef.current < MAX_ATTEMPTS) {
           const retryDelay = 3000 + (connectionAttemptRef.current * 1000); // Увеличиваем задержку с каждой попыткой
           console.log(`Попытка переподключения #${connectionAttemptRef.current} через ${retryDelay/1000} сек...`);
           
