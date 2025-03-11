@@ -36,7 +36,7 @@ export function GameCard({ game, onJoin, onDelete, isCreator }: GameCardProps) {
             {formatGameName(game.name, game._id)}
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'space-between', marginTop: '4px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'space-between' }}>
           <div className="player-count">
             <Icon icon="mdi:account" aria-hidden="true" />
             {game.players.length}/2
