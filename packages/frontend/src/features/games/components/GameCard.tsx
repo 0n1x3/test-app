@@ -26,7 +26,7 @@ const formatGameName = (name: string, id: string | undefined) => {
 export function GameCard({ game, onJoin, onDelete, isCreator }: GameCardProps) {
   return (
     <div className="game-card" role="article" aria-label={`Игра ${formatGameName(game.name, game._id)}`} style={{ marginBottom: 0, paddingBottom: 0 }}>
-      <div className="game-info" style={{ marginBottom: 0, paddingBottom: 0 }}>
+      <div className="game-info" style={{ marginBottom: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', width: '100%', marginBottom: '4px' }}>
           <div className="game-bet" title={`Ставка: ${game.betAmount}`}>
             <Icon icon="material-symbols:diamond-rounded" aria-hidden="true" />
@@ -36,7 +36,7 @@ export function GameCard({ game, onJoin, onDelete, isCreator }: GameCardProps) {
             {formatGameName(game.name, game._id)}
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'space-between', marginBottom: 0, paddingBottom: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'space-between', marginTop: '4px' }}>
           <div className="player-count">
             <Icon icon="mdi:account" aria-hidden="true" />
             {game.players.length}/2

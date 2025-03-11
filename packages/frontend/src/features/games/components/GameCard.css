@@ -16,7 +16,7 @@
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 12px 0px;
+  padding: 8px 12px 8px;
   background: #232323;
   gap: 0px;
   margin-bottom: 0 !important;
@@ -75,7 +75,6 @@
   display: flex;
   gap: 6px;
   margin-bottom: 0 !important;
-  padding-bottom: 8px;
 }
 
 .join-button, .copy-button {
