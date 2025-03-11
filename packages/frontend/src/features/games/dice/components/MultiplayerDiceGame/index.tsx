@@ -41,7 +41,7 @@ interface Player {
 // Константы
 const MAX_ATTEMPTS = 5;
 const MAX_AUTO_JOIN_ATTEMPTS = 3; // Максимум 3 попытки автоматического присоединения
-const MAX_ROUNDS = 7;
+const MAX_ROUNDS = 5;
 const WINS_NEEDED = 2;
 
 // Компонент для отображения игрового поля

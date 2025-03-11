@@ -413,8 +413,8 @@ export class GameService {
         }
       });
       
-      // Завершаем игру, если один из игроков набрал 2 очка или прошло максимум 7 раундов
-      const maxRounds = 7;
+      // Завершаем игру, если один из игроков набрал 2 очка или прошло максимум 5 раундов
+      const maxRounds = 5;
       const winsNeeded = 2;
       const isMaxRoundsReached = game.currentRound >= maxRounds;
       const hasWinner = player1Wins >= winsNeeded || player2Wins >= winsNeeded;
