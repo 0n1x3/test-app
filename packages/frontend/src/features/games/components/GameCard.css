@@ -2,9 +2,9 @@
   display: flex;
   flex-direction: column;
   background: #1A1A1A;
-  border-radius: 10px;
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   margin: 0 8px;
   max-width: calc(100% - 16px);
 }
@@ -13,12 +13,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 14px;
+  padding: 10px 12px;
   background: #232323;
 }
 
 .game-name {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: white;
   margin: 0;
@@ -32,41 +32,45 @@
   display: flex;
   align-items: center;
   background: rgba(0, 0, 0, 0.2);
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 14px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 13px;
   font-weight: 600;
-  color: #FFD700;
+  color: white;
 }
 
 .game-bet svg {
-  margin-right: 4px;
-  font-size: 14px;
+  margin-right: 3px;
+  font-size: 13px;
+  width: 14px;
+  height: 14px;
+  color: #2196F3;
+  flex-shrink: 0;
 }
 
 .game-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 14px;
+  padding: 8px 12px;
 }
 
 .player-count {
   display: flex;
   align-items: center;
-  font-size: 13px;
+  font-size: 12px;
   color: #CCCCCC;
 }
 
 .status-text {
-  font-size: 13px;
+  font-size: 12px;
   color: #AAAAAA;
-  margin-left: 8px;
+  margin-left: 6px;
 }
 
 .game-actions {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
 .join-button, .copy-button {
@@ -76,9 +80,9 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-size: 13px;
+  padding: 5px 8px;
+  border-radius: 4px;
+  font-size: 12px;
   font-weight: 500;
   transition: all 0.2s;
 }

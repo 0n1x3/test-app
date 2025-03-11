@@ -24,24 +24,20 @@ const formatGameName = (name: string, id: string | undefined) => {
 };
 
 export function GameCard({ game, onJoin, onDelete, isCreator }: GameCardProps) {
-  const handleCopy = () => {
-    console.log('Copy link');
-  };
-
   return (
-    <div className="game-card">
+    <div className="game-card" role="article" aria-label={`Игра ${formatGameName(game.name, game._id)}`}>
       <div className="game-info">
         <div className="game-name" title={formatGameName(game.name, game._id)}>
           {formatGameName(game.name, game._id)}
         </div>
-        <div className="game-bet">
-          <Icon icon="mdi:diamond" />
+        <div className="game-bet" title={`Ставка: ${game.betAmount}`}>
+          <Icon icon="material-symbols:diamond-rounded" aria-hidden="true" />
           {game.betAmount}
         </div>
       </div>
       <div className="game-footer">
         <div className="player-count">
-          <Icon icon="mdi:account" />
+          <Icon icon="mdi:account" aria-hidden="true" />
           {game.players.length}/2
           <span className="status-text">Ожидание игроков</span>
         </div>
@@ -51,23 +47,18 @@ export function GameCard({ game, onJoin, onDelete, isCreator }: GameCardProps) {
               className="copy-button" 
               onClick={onDelete} 
               title="Удалить игру"
+              aria-label="Удалить игру"
             >
-              <Icon icon="mdi:delete" />
+              <Icon icon="mdi:delete" aria-hidden="true" />
             </button>
           )}
-          <button 
-            className="copy-button" 
-            onClick={handleCopy}
-            title="Копировать ссылку"
-          >
-            <Icon icon="mdi:content-copy" />
-          </button>
           <button 
             className="join-button" 
             onClick={onJoin}
             title="Присоединиться к игре"
+            aria-label="Присоединиться к игре"
           >
-            <Icon icon="mdi:play" />
+            <Icon icon="mdi:play" aria-hidden="true" />
           </button>
         </div>
       </div>
