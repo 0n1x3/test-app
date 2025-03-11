@@ -299,11 +299,7 @@ export class GameService {
         });
       }
       // Сохраняем ход первого игрока
-      game.rounds[game.currentRound - 1] = {
-        player1: value,
-        player2: null,
-        result: null
-      };
+      game.rounds[game.currentRound - 1].player1 = value;
       
       // Переход хода к другому игроку
       const nextPlayerIndex = (playerIndex + 1) % game.players.length;
@@ -364,30 +360,6 @@ export class GameService {
         
         console.log(`Результат раунда ${game.currentRound}: ${result}, значения: ${player1Value} vs ${player2Value}`);
         
-        // Проверяем целостность данных раундов
-        for (let i = 0; i < game.rounds.length; i++) {
-          const round = game.rounds[i];
-          // Проверяем и корректируем результат только для завершенных раундов
-          // Используем явное сравнение с undefined и null, чтобы корректно обрабатывать player2
-          if (round.player1 !== undefined && round.player1 !== null && 
-              round.player2 !== undefined && round.player2 !== null) {
-            let expectedResult: 'win' | 'lose' | 'draw';
-            if (round.player1 > round.player2) {
-              expectedResult = 'win';
-            } else if (round.player1 < round.player2) {
-              expectedResult = 'lose';
-            } else {
-              expectedResult = 'draw';
-            }
-            
-            // Если результат отличается от ожидаемого, исправляем его
-            if (round.result !== expectedResult) {
-              console.warn(`Обнаружено несоответствие в раунде ${i + 1}: ожидался результат ${expectedResult}, а был ${round.result}. Корректируем.`);
-              round.result = expectedResult;
-            }
-          }
-        }
-        
         // Подробно логируем раунды для отладки
         console.log(`Раунды перед подсчетом побед:`, JSON.stringify(game.rounds));
         
@@ -406,27 +378,24 @@ export class GameService {
         
         // Считаем победы для каждого игрока
         game.rounds.forEach((round, index) => {
-          // Проверяем, что раунд завершен (оба игрока сделали ход и есть результат)
-          if (round && round.player1 !== undefined && round.player1 !== null && 
-              round.player2 !== undefined && round.player2 !== null && 
-              round.result) {
-            console.log(`Подсчет побед: Раунд ${index + 1} завершен:`, {
+          if (round.player1 !== null && round.player2 !== null) {
+            console.log(`Проверка раунда ${index + 1}:`, {
               player1: round.player1,
               player2: round.player2,
-              result: round.result
+              result: round.result || (round.player1 > round.player2 ? 'win' : round.player1 < round.player2 ? 'lose' : 'draw')
             });
             
-            if (round.result === 'win') {
+            const roundResult = round.result || (round.player1 > round.player2 ? 'win' : round.player1 < round.player2 ? 'lose' : 'draw');
+            
+            if (roundResult === 'win') {
               player1Wins++;
               console.log(`Игрок 1 выиграл раунд ${index + 1}, всего побед: ${player1Wins}`);
-            } else if (round.result === 'lose') {
+            } else if (roundResult === 'lose') {
               player2Wins++;
               console.log(`Игрок 2 выиграл раунд ${index + 1}, всего побед: ${player2Wins}`);
             } else {
               console.log(`Раунд ${index + 1} закончился вничью`);
             }
-          } else {
-            console.log(`Пропускаем незавершенный раунд ${index + 1}:`, round);
           }
         });
         
