@@ -23,7 +23,6 @@ interface WaitingRoomProps {
   socketError: string | null;
   onCopyInviteLink: () => void;
   onReconnect: () => void;
-  onJoinGame: () => void;
   isJoining: boolean;
 }
 
@@ -35,7 +34,6 @@ export function WaitingRoom({
   socketError,
   onCopyInviteLink,
   onReconnect,
-  onJoinGame,
   isJoining
 }: WaitingRoomProps) {
   // Получаем последние 4 символа ID игры
@@ -87,24 +85,6 @@ export function WaitingRoom({
             <button className="copy-link-button" onClick={onCopyInviteLink}>
               <Icon icon="solar:copy-linear" />
               Копировать ссылку-приглашение
-            </button>
-            
-            <button 
-              className={`join-game-button ${isJoining ? 'joining' : ''}`} 
-              onClick={onJoinGame}
-              disabled={isJoining}
-            >
-              {isJoining ? (
-                <>
-                  <Icon icon="solar:spinner-line-duotone" className="spinning" />
-                  Подключение...
-                </>
-              ) : (
-                <>
-                  <Icon icon="solar:login-3-linear" />
-                  Присоединиться к игре
-                </>
-              )}
             </button>
           </div>
           

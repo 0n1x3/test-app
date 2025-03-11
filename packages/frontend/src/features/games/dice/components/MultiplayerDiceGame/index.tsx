@@ -1699,7 +1699,6 @@ export function MultiplayerDiceGame({
           socketError={socketError}
           onCopyInviteLink={copyInviteLink}
           onReconnect={() => setupSocketConnection()}
-          onJoinGame={handleJoinGame}
           isJoining={isJoining}
         />
       </PageContainer>

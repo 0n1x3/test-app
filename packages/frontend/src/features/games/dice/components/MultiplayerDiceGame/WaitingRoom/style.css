@@ -35,8 +35,7 @@
   margin-top: 8px;
 }
 
-.copy-link-button,
-.join-game-button {
+.copy-link-button {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -48,36 +47,7 @@
   transition: all 0.2s ease;
   border: none;
   color: white;
-}
-
-.copy-link-button {
   background: linear-gradient(45deg, #0098EA, #0077cc);
-}
-
-.join-game-button {
-  background: linear-gradient(45deg, #4CAF50, #45a049);
-}
-
-.join-game-button.joining {
-  background: linear-gradient(45deg, #666666, #444444);
-  cursor: not-allowed;
-  opacity: 0.8;
-}
-
-.join-game-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.8;
-}
-
-.copy-link-button:hover,
-.join-game-button:not(:disabled):hover {
-  transform: translateY(-2px);
-  filter: brightness(1.1);
-}
-
-.copy-link-button:active,
-.join-game-button:not(:disabled):active {
-  transform: translateY(0);
 }
 
 @keyframes spin {
