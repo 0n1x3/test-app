@@ -24,7 +24,6 @@
 .game-header {
   width: 100%;
   padding: var(--game-padding);
-  background: var(--game-background);
   border-radius: var(--game-border-radius);
   display: flex;
   flex-direction: column;
