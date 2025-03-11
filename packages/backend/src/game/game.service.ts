@@ -290,10 +290,19 @@ export class GameService {
     // Если это первый игрок в текущем раунде
     if (!game.rounds[game.currentRound - 1]) {
       console.log(`Первый ход в раунде ${game.currentRound}`);
+      // Убеждаемся, что массив раундов имеет правильную длину
+      while (game.rounds.length < game.currentRound) {
+        game.rounds.push({
+          player1: null,
+          player2: null,
+          result: null
+        });
+      }
+      // Сохраняем ход первого игрока
       game.rounds[game.currentRound - 1] = {
         player1: value,
-        player2: null, // Используем null вместо 0, чтобы явно показать, что значение отсутствует
-        result: null // Используем null вместо 'draw', так как результат еще неизвестен
+        player2: null,
+        result: null
       };
       
       // Переход хода к другому игроку
@@ -329,168 +338,186 @@ export class GameService {
     // Если это второй игрок в раунде
     else {
       console.log(`Второй ход в раунде ${game.currentRound}`);
-      game.rounds[game.currentRound - 1].player2 = value;
-      
-      // Определяем результат раунда
-      const player1Value = game.rounds[game.currentRound - 1].player1;
-      const player2Value = value;
-      
-      let result: 'win' | 'lose' | 'draw';
-      
-      if (player1Value > player2Value) {
-        result = 'win';
-        console.log(`Игрок 1 побеждает в раунде ${game.currentRound}: ${player1Value} > ${player2Value}`);
-      } else if (player1Value < player2Value) {
-        result = 'lose';
-        console.log(`Игрок 2 побеждает в раунде ${game.currentRound}: ${player1Value} < ${player2Value}`);
-      } else {
-        result = 'draw';
-        console.log(`Ничья в раунде ${game.currentRound}: ${player1Value} = ${player2Value}`);
-      }
-      
-      game.rounds[game.currentRound - 1].result = result;
-      
-      console.log(`Результат раунда ${game.currentRound}: ${result}, значения: ${player1Value} vs ${player2Value}`);
-      
-      // Проверяем целостность данных раундов
-      for (let i = 0; i < game.rounds.length; i++) {
-        const round = game.rounds[i];
-        // Проверяем и корректируем результат только для завершенных раундов
-        // Используем явное сравнение с undefined и null, чтобы корректно обрабатывать player2
-        if (round.player1 !== undefined && round.player1 !== null && 
-            round.player2 !== undefined && round.player2 !== null) {
-          let expectedResult: 'win' | 'lose' | 'draw';
-          if (round.player1 > round.player2) {
-            expectedResult = 'win';
-          } else if (round.player1 < round.player2) {
-            expectedResult = 'lose';
-          } else {
-            expectedResult = 'draw';
-          }
-          
-          // Если результат отличается от ожидаемого, исправляем его
-          if (round.result !== expectedResult) {
-            console.warn(`Обнаружено несоответствие в раунде ${i + 1}: ожидался результат ${expectedResult}, а был ${round.result}. Корректируем.`);
-            round.result = expectedResult;
-          }
-        }
-      }
-      
-      // Подробно логируем раунды для отладки
-      console.log(`Раунды перед подсчетом побед:`, JSON.stringify(game.rounds));
-      
-      // Отправляем результат раунда
-      this.server.to(`game_${gameId}`).emit('roundResult', {
-        round: game.currentRound,
-        players: game.players.map(p => p.telegramId),
-        result,
-        player1Value,
-        player2Value
-      });
-      
-      // Проверяем, закончилась ли игра
-      let player1Wins = 0;
-      let player2Wins = 0;
-      
-      // Считаем победы для каждого игрока
-      game.rounds.forEach((round, index) => {
-        // Проверяем, что раунд завершен (оба игрока сделали ход и есть результат)
-        if (round.player1 !== undefined && round.player1 !== null && 
-            round.player2 !== undefined && round.player2 !== null && 
-            round.result) {
-          console.log(`Раунд ${index + 1}: результат ${round.result}, значения ${round.player1} vs ${round.player2}`);
-          if (round.result === 'win') {
-            player1Wins++;
-            console.log(`Игрок 1 выиграл раунд ${index + 1}, теперь у него ${player1Wins} побед`);
-          } else if (round.result === 'lose') {
-            player2Wins++;
-            console.log(`Игрок 2 выиграл раунд ${index + 1}, теперь у него ${player2Wins} побед`);
-          } else {
-            console.log(`Раунд ${index + 1} закончился вничью`);
-          }
+      // Обновляем существующий раунд
+      const currentRound = game.rounds[game.currentRound - 1];
+      if (currentRound && currentRound.player1 !== null) {
+        currentRound.player2 = value;
+        
+        // Определяем результат раунда
+        const player1Value = currentRound.player1;
+        const player2Value = value;
+        
+        let result: 'win' | 'lose' | 'draw';
+        
+        if (player1Value > player2Value) {
+          result = 'win';
+          console.log(`Игрок 1 побеждает в раунде ${game.currentRound}: ${player1Value} > ${player2Value}`);
+        } else if (player1Value < player2Value) {
+          result = 'lose';
+          console.log(`Игрок 2 побеждает в раунде ${game.currentRound}: ${player1Value} < ${player2Value}`);
         } else {
-          console.log(`Пропускаем незавершенный раунд ${index + 1}: player1=${round.player1}, player2=${round.player2}, result=${round.result}`);
+          result = 'draw';
+          console.log(`Ничья в раунде ${game.currentRound}: ${player1Value} = ${player2Value}`);
         }
-      });
-      
-      // Завершаем игру, если один из игроков набрал 2 очка или прошло максимум 5 раундов
-      const maxRounds = 5;
-      const winsNeeded = 2;
-      const isMaxRoundsReached = game.currentRound >= maxRounds;
-      const hasWinner = player1Wins >= winsNeeded || player2Wins >= winsNeeded;
-      
-      // Добавляем логирование для отладки
-      console.log(`Проверка окончания игры: раунд ${game.currentRound}, победы игрока 1: ${player1Wins}, победы игрока 2: ${player2Wins}`);
-      console.log(`hasWinner: ${hasWinner}, isMaxRoundsReached: ${isMaxRoundsReached}`);
-      
-      // Принудительно проверяем критерии окончания игры
-      let shouldEndGame = false;
-      let winner: number;
-      
-      // Если кто-то выиграл 2 раунда, игра должна закончиться
-      if (player1Wins >= winsNeeded) {
-        shouldEndGame = true;
-        winner = game.players[0].telegramId;
-        console.log(`Игра завершена: Игрок 1 набрал ${player1Wins} побед`);
-      } else if (player2Wins >= winsNeeded) {
-        shouldEndGame = true;
-        winner = game.players[1].telegramId;
-        console.log(`Игра завершена: Игрок 2 набрал ${player2Wins} побед`);
-      } 
-      // Если достигнут максимальный раунд, игра тоже должна закончиться
-      else if (isMaxRoundsReached) {
-        shouldEndGame = true;
-        // Определяем победителя по количеству побед
-        if (player1Wins > player2Wins) {
+        
+        currentRound.result = result;
+        
+        console.log(`Результат раунда ${game.currentRound}: ${result}, значения: ${player1Value} vs ${player2Value}`);
+        
+        // Проверяем целостность данных раундов
+        for (let i = 0; i < game.rounds.length; i++) {
+          const round = game.rounds[i];
+          // Проверяем и корректируем результат только для завершенных раундов
+          // Используем явное сравнение с undefined и null, чтобы корректно обрабатывать player2
+          if (round.player1 !== undefined && round.player1 !== null && 
+              round.player2 !== undefined && round.player2 !== null) {
+            let expectedResult: 'win' | 'lose' | 'draw';
+            if (round.player1 > round.player2) {
+              expectedResult = 'win';
+            } else if (round.player1 < round.player2) {
+              expectedResult = 'lose';
+            } else {
+              expectedResult = 'draw';
+            }
+            
+            // Если результат отличается от ожидаемого, исправляем его
+            if (round.result !== expectedResult) {
+              console.warn(`Обнаружено несоответствие в раунде ${i + 1}: ожидался результат ${expectedResult}, а был ${round.result}. Корректируем.`);
+              round.result = expectedResult;
+            }
+          }
+        }
+        
+        // Подробно логируем раунды для отладки
+        console.log(`Раунды перед подсчетом побед:`, JSON.stringify(game.rounds));
+        
+        // Отправляем результат раунда
+        this.server.to(`game_${gameId}`).emit('roundResult', {
+          round: game.currentRound,
+          players: game.players.map(p => p.telegramId),
+          result,
+          player1Value,
+          player2Value
+        });
+        
+        // Проверяем, закончилась ли игра
+        let player1Wins = 0;
+        let player2Wins = 0;
+        
+        // Считаем победы для каждого игрока
+        game.rounds.forEach((round, index) => {
+          // Проверяем, что раунд завершен (оба игрока сделали ход и есть результат)
+          if (round && round.player1 !== undefined && round.player1 !== null && 
+              round.player2 !== undefined && round.player2 !== null && 
+              round.result) {
+            console.log(`Подсчет побед: Раунд ${index + 1} завершен:`, {
+              player1: round.player1,
+              player2: round.player2,
+              result: round.result
+            });
+            
+            if (round.result === 'win') {
+              player1Wins++;
+              console.log(`Игрок 1 выиграл раунд ${index + 1}, всего побед: ${player1Wins}`);
+            } else if (round.result === 'lose') {
+              player2Wins++;
+              console.log(`Игрок 2 выиграл раунд ${index + 1}, всего побед: ${player2Wins}`);
+            } else {
+              console.log(`Раунд ${index + 1} закончился вничью`);
+            }
+          } else {
+            console.log(`Пропускаем незавершенный раунд ${index + 1}:`, round);
+          }
+        });
+        
+        // Добавляем подробное логирование перед проверкой победителя
+        console.log('Итоговый подсчет побед:', {
+          player1Wins,
+          player2Wins,
+          currentRound: game.currentRound,
+          winsNeeded,
+          maxRounds
+        });
+        
+        // Завершаем игру, если один из игроков набрал 2 очка или прошло максимум 5 раундов
+        const maxRounds = 5;
+        const winsNeeded = 2;
+        const isMaxRoundsReached = game.currentRound >= maxRounds;
+        const hasWinner = player1Wins >= winsNeeded || player2Wins >= winsNeeded;
+        
+        // Добавляем логирование для отладки
+        console.log(`Проверка окончания игры: раунд ${game.currentRound}, победы игрока 1: ${player1Wins}, победы игрока 2: ${player2Wins}`);
+        console.log(`hasWinner: ${hasWinner}, isMaxRoundsReached: ${isMaxRoundsReached}`);
+        
+        // Принудительно проверяем критерии окончания игры
+        let shouldEndGame = false;
+        let winner: number;
+        
+        // Если кто-то выиграл 2 раунда, игра должна закончиться
+        if (player1Wins >= winsNeeded) {
+          shouldEndGame = true;
           winner = game.players[0].telegramId;
-          console.log(`Игра завершена по максимальному количеству раундов: Выиграл игрок 1 со счетом ${player1Wins}:${player2Wins}`);
-        } else if (player2Wins > player1Wins) {
+          console.log(`Игра завершена: Игрок 1 набрал ${player1Wins} побед`);
+        } else if (player2Wins >= winsNeeded) {
+          shouldEndGame = true;
           winner = game.players[1].telegramId;
-          console.log(`Игра завершена по максимальному количеству раундов: Выиграл игрок 2 со счетом ${player2Wins}:${player1Wins}`);
-        } else {
-          // В случае ничьей, выбираем случайного победителя
-          const randomWinnerIndex = Math.random() < 0.5 ? 0 : 1;
-          winner = game.players[randomWinnerIndex].telegramId;
-          console.log(`Игра завершена по максимальному количеству раундов с ничьей: случайно выбран победитель - игрок ${randomWinnerIndex + 1}`);
+          console.log(`Игра завершена: Игрок 2 набрал ${player2Wins} побед`);
+        } 
+        // Если достигнут максимальный раунд, игра тоже должна закончиться
+        else if (isMaxRoundsReached) {
+          shouldEndGame = true;
+          // Определяем победителя по количеству побед
+          if (player1Wins > player2Wins) {
+            winner = game.players[0].telegramId;
+            console.log(`Игра завершена по максимальному количеству раундов: Выиграл игрок 1 со счетом ${player1Wins}:${player2Wins}`);
+          } else if (player2Wins > player1Wins) {
+            winner = game.players[1].telegramId;
+            console.log(`Игра завершена по максимальному количеству раундов: Выиграл игрок 2 со счетом ${player2Wins}:${player1Wins}`);
+          } else {
+            // В случае ничьей, выбираем случайного победителя
+            const randomWinnerIndex = Math.random() < 0.5 ? 0 : 1;
+            winner = game.players[randomWinnerIndex].telegramId;
+            console.log(`Игра завершена по максимальному количеству раундов с ничьей: случайно выбран победитель - игрок ${randomWinnerIndex + 1}`);
+          }
         }
-      }
-      
-      if (shouldEndGame) {
-        game.status = 'finished';
         
-        console.log(`Игра завершена. Победитель: ${winner}, счет: ${player1Wins}-${player2Wins}, раунд: ${game.currentRound}`);
-        
-        // Отправляем уведомление о завершении игры
-        this.server.to(`game_${gameId}`).emit('gameEnd', {
-          gameId,
-          winner,
-          score: [player1Wins, player2Wins],
-          rounds: game.currentRound
-        });
-        
-        // Начисляем выигрыш победителю
-        const totalBet = game.betAmount * 2;
-        await this.transactionsService.processPayout(
-          winner,
-          totalBet,
-          'dice_win'
-        );
-      } else {
-        // Переходим к следующему раунду
-        game.currentRound++;
-        
-        // Первый ход в новом раунде отдаем первому игроку
-        game.currentPlayer = String(game.players[0].telegramId);
-        
-        console.log(`Переход к новому раунду ${game.currentRound}, первым ходит игрок ${game.currentPlayer}`);
-        
-        // Отправляем событие о ходе и информацию о следующем игроке
-        this.server.to(`game_${gameId}`).emit('diceMove', {
-          gameId,
-          telegramId: telegramId,
-          value,
-          nextMove: game.players[0].telegramId
-        });
+        if (shouldEndGame) {
+          game.status = 'finished';
+          
+          console.log(`Игра завершена. Победитель: ${winner}, счет: ${player1Wins}-${player2Wins}, раунд: ${game.currentRound}`);
+          
+          // Отправляем уведомление о завершении игры
+          this.server.to(`game_${gameId}`).emit('gameEnd', {
+            gameId,
+            winner,
+            score: [player1Wins, player2Wins],
+            rounds: game.currentRound
+          });
+          
+          // Начисляем выигрыш победителю
+          const totalBet = game.betAmount * 2;
+          await this.transactionsService.processPayout(
+            winner,
+            totalBet,
+            'dice_win'
+          );
+        } else {
+          // Переходим к следующему раунду
+          game.currentRound++;
+          
+          // Первый ход в новом раунде отдаем первому игроку
+          game.currentPlayer = String(game.players[0].telegramId);
+          
+          console.log(`Переход к новому раунду ${game.currentRound}, первым ходит игрок ${game.currentPlayer}`);
+          
+          // Отправляем событие о ходе и информацию о следующем игроке
+          this.server.to(`game_${gameId}`).emit('diceMove', {
+            gameId,
+            telegramId: telegramId,
+            value,
+            nextMove: game.players[0].telegramId
+          });
+        }
       }
     }
     
